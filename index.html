@@ -42,10 +42,31 @@
                 </div>
             </div>
             <div class="form-right" id="form-right">
+                <h1>Sign Up</h1><br>
+                <p>Let’s Start Your Wonderful Journey With TrackMate</p><br><br><br><br>
+                <div class="input-info">
+                    <div class="holder-2 pass-1">
+                        <input type="text" name="username" id="username" required>
+                        <label for="email" class="username" >username</label>
+                    </div>
+                    <div class="holder-2 pass-2">
+                        <input type="text" name="email-2" id="email-2" required>
+                        <label for="" class="email-2">Email</label>
+                    </div>
+                     <div class="holder-2 pass-3">
+                        <input type="password" name="Password" id="Password" required>
+                        <label for="Password" class="Password" >Password</label>
+                    </div>
+                    <div class="holder-2 pass-4">
+                        <input type="password" name="c-password" id="c-password" required>
+                        <label for="password" class="c-password">Comfirm Password</label>
+                    </div>
+                </div>
                 <div class="img">
                     <img src="./img/bea878c72be85a123e48a48b9a0d7d44.png" alt="">
                 </div>
             </div>
+
         </div>
     </div>
 </body>
@@ -55,7 +76,8 @@
         console.log(signup);
         signup.addEventListener("click", function () {
             event.preventDefault();
-            document.getElementById("form-right").style
+            const form = document.getElementById("form-right");
+            form.classList.add("rotateform");
         });
     </script>
 </html>

@@ -178,14 +178,107 @@ body{
     transition: all ease-in-out 0.5s;
 }
 .form-right{
+    /* background-color: rgb(0, 204, 255); */
     width: 50%;
+    padding: 5% 10% 2% 10%;
+    font-family: var(--font);
+    input{
+        outline: none;
+    }
+}
+.form-right > p{
+    margin-bottom: 1rem;
+    opacity: 0.7;
+    font-weight: bold;
+}
+.form-right .holder-2 label{
+    position: absolute;
+}
+.pass-1 input:focus + label,
+.pass-1 input:valid + label{
+    top: 17.7rem;
+    transition: all ease 0.5s;
+    left: 71rem;
+    background-color: white;
+}
+.pass-1 label{
+    top: 19.3rem;
+    left: 71rem;
+    transition: all ease 0.5s;
+
+    
+}
+.pass-2 input:focus + label,
+.pass-2 input:valid + label{
+    top: 24rem;
+    transition: all ease 0.5s;
+    left: 71rem;
+    background-color: white;
+}
+.pass-2 label{
+    top: 25.4rem;
+    left: 71rem;
+    transition: all ease 0.5s;
+
+    
+}
+.pass-3 input:focus + label,
+.pass-3 input:valid + label{
+    top: 30.1rem;
+    transition: all ease 0.5s;
+    left: 71rem;
+    background-color: white;
+}
+.pass-3 label{
+    top: 31.6rem;
+    left: 71rem;
+    transition: all ease 0.5s;
+
+    
+}
+.pass-4 input:focus + label,
+.pass-4 input:valid + label{
+    top: 36.4rem;
+    transition: all ease 0.5s;
+    left: 71rem;
+    background-color: white;
+}
+.pass-4 label{
+    top: 38rem;
+    left: 71rem;
+    transition: all ease 0.5s;
+
+    
+}
+.form-right::before{
+    content: "";
+    z-index: 1;
+    top: 3.57rem;
+    left: 50%;
+    position: absolute;
+    width: 48rem;
+    height: 51.48rem;
     background: rgb(113,141,235);
     background: linear-gradient(180deg, rgba(113,141,235,1) 0%, rgba(164,118,215,1) 100%);
-    .img{
-        width: 100%;
-        height: auto;
-        margin-top: 6rem;
-        margin-left: -4rem;
-        /* background-color: #000; */
-    }
+    
+}
+.form-right .img{
+    width: 50%;
+    /* transform: translateY(-10%); */
+    margin-left: -14rem;
+    /* background-color: #000; */
+    height: 30rem;
+    margin-top: -20rem;
+    overflow: hidden;
+    position: absolute;
+    z-index: 2;
+}
+.form-right .img img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.rotateform{
+    transform: translateX(-100%);
+    transition: all ease-in-out 0.9s;
 }
