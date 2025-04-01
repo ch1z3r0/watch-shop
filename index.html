@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wathc</title>
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="formlogin">
+            <div class="form-left">
+                <h1>Sign In</h1>
+                <p>Welcome Back! Please Enter Your Information</p>
+                <div class="input-info">
+                    <div class="holder">
+                        <input type="text" name="email" id="email" required>
+                        <label for="email" class="email" >Email</label>
+                    </div>
+                    <div class="holder-pass">
+                        <input type="password" name="password" id="password" required>
+                        <label for="password" class="password">Password</label>
+                    </div>
+                </div>
+                <a href="#">Forget Password</a><br>
+                <div class="footer">
+                    <button class="Login">Sign In</button>
+                    <div class="signin-other">
+                        <hr>
+                        <p>Or Signin With</p>
+                        <hr>
+                    </div>
+                    <div class="icon">
+                        <img src="./img/LinkedIn_logo_initials.png.webp" alt="">
+                        <img src="./img/Facebook_Logo_(2019).png.webp" alt="">
+                        <img src="./img/Instagram_icon.png" alt="">
+                        <img src="./img/Google_Icons-09-512.jpg" alt="">
+                    </div>
+                </div>
+                <div class="donthaveacc">
+                    <p>Don't Have Account? <span class="sign-up">Sign Up</span></p>
+                </div>
+            </div>
+            <div class="form-right" id="form-right">
+                <div class="img">
+                    <img src="./img/bea878c72be85a123e48a48b9a0d7d44.png" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+    <script src="./js/script.js"></script>
+    <script>
+        const signup = document.querySelector(".sign-up");
+        console.log(signup);
+        signup.addEventListener("click", function () {
+            event.preventDefault();
+            document.getElementById("form-right").style
+        });
+    </script>
+</html>
