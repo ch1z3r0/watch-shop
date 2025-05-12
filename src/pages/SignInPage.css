@@ -24,21 +24,64 @@
 	color: #000;
 }
 
-.signin-form > h1 {
+.signin-form > h1,
+p {
 	padding: 0;
 	margin: 0;
 }
-
-form > ul {
-	padding: 0;
+.signin-form > form {
+	display: flex;
+	flex-direction: column;
+	width: 70%;
 }
 
-ul > li {
+.signin-form > form > ul {
+	padding: 0;
+	width: 100%;
+}
+
+.signin-form > form > ul > li {
 	list-style-type: none;
+	width: 100%;
+}
+.signin-form > form > ul > li > input {
+	width: 100%;
+	/* padding: 0; */
+}
+
+.signin-form > p {
+	align-self: start;
+}
+
+.signin-with {
+	display: flex;
+	align-items: center;
+	width: 70%;
+}
+.signin-with > hr {
+	flex-grow: 1;
+	border-top: 1px solid black;
+}
+
+.signin-with-icons {
+	width: 70%;
+	display: flex;
+	justify-content: space-evenly;
+}
+.signin-with-icons > img {
+	width: 48px;
+	height: 48px;
+	position: relative;
 }
 
 .signin-banner {
 	width: 50%;
 	height: 100%;
-	/* background-color: green; */
+	display: flex;
+	align-content: center;
+	justify-content: center;
+}
+.signin-banner > img {
+	width: 100%;
+	object-fit: contain;
 }
