@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { auth } from './firebase';
 import {
 	getRedirectResult,
@@ -8,8 +7,8 @@ import {
 } from 'firebase/auth';
 
 // Google Sign-in (Redirect) Function
+const provider = new GoogleAuthProvider();
 export const signInWithGoogleRedirect = () => {
-	const provider = new GoogleAuthProvider();
 	// Use the imported 'auth' instance
 	signInWithRedirect(auth, provider); // Returns void or a promise that resolves when redirect starts
 };
@@ -20,16 +19,11 @@ export const handleGoogleRedirectResultOnLoad = () => {
 };
 
 // Handle Sign In with Email and Password
-
-const authState = () => {
-	const [error, setError] = useState(null); // To display errors
-	return;
-};
-
-export default auth;
-
-export const handleSignInWithEmailAndPassword = async (e) => {
-	e.preventDefault();
+export const handleSignInWithEmailAndPassword = async (
+	email,
+	password,
+	setError
+) => {
 	try {
 		const userCredential = await signInWithEmailAndPassword(
 			auth,
@@ -39,7 +33,6 @@ export const handleSignInWithEmailAndPassword = async (e) => {
 		// Signed in successfully
 		const user = userCredential.user;
 		console.log('User signed in:', user);
-		navigate('/');
 	} catch (error) {
 		// Handle errors
 		const errorCode = error.code;

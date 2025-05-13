@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@firebase/util": "^1.11.1",
+    "dompurify": "^3.2.5",
     "firebase": "^11.7.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
