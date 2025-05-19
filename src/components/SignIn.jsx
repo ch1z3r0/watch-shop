@@ -1,37 +1,20 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { app } from './firebase';
-import {
-	handleSignInWithEmailAndPassword,
-	signInWithGoogleRedirect,
-} from './auth';
-import useGoogleSignInRedirectResult from '../hooks/useGoogleSignInRedirectResult';
+import { handleSignInWithEmailAndPassword } from './auth';
+import useGoogleSignInPopup from '../hooks/useGoogleSignInPopup';
 
 import facebook_icon from '../assets/icons/facebook-icon.svg';
 import google_icon from '../assets/icons/google-icon.svg';
 import github_icon from '../assets/icons/github-icon.svg';
 import x_twitter_icon from '../assets/icons/x-twitter-icon.svg';
-import { getRedirectResult } from 'firebase/auth';
 
 const SignIn = () => {
-	// Get the auth instance
-	const auth = getAuth(app);
-	useGoogleSignInRedirectResult();
-	// useEffect(() => {
-	// 	const checkRedirect = async () => {
-	// 		const result = await getRedirectResult(auth);
-	// 		console.log('Directly in component result:', result);
-	// 		if (result?.user) {
-	// 			console.log('User found directly in component');
-	// 			// window.location.href = '/'; // Force a full page redirect
-	// 		} else {
-	// 			console.log('No result directly in component');
-	// 		}
-	// 	};
-
-	// 	checkRedirect();
-	// }, []);
+	const {
+		user: googleUser,
+		error: googleError,
+		isLoading: googleIsLoading,
+		signIn: googleSignIn,
+	} = useGoogleSignInPopup();
 
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
@@ -48,7 +31,7 @@ const SignIn = () => {
 	};
 
 	const handleGoogleSignIn = () => {
-		signInWithGoogleRedirect();
+		signIn();
 	};
 
 	return (
@@ -61,7 +44,7 @@ const SignIn = () => {
 					<li>
 						<input
 							type='email'
-							value={email}
+							// value={email}
 							onChange={(e) => {
 								setEmail(e.target.value);
 							}}
@@ -72,7 +55,7 @@ const SignIn = () => {
 					<li>
 						<input
 							type='password'
-							value={password}
+							// value={password}
 							onChange={(e) => {
 								setPassword(e.target.value);
 							}}

@@ -1,22 +1,10 @@
 import { auth } from './firebase';
-import {
-	getRedirectResult,
-	GoogleAuthProvider,
-	signInWithEmailAndPassword,
-	signInWithRedirect,
-} from 'firebase/auth';
-
-// Google Sign-in (Redirect) Function
-const provider = new GoogleAuthProvider();
-export const signInWithGoogleRedirect = () => {
-	// Use the imported 'auth' instance
-	signInWithRedirect(auth, provider); // Returns void or a promise that resolves when redirect starts
-};
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 // Handle Google Redirect Result Function (call this on page load)
-export const handleGoogleRedirectResultOnLoad = () => {
-	return getRedirectResult(auth);
-};
+// export const handleGoogleRedirectResultOnLoad = () => {
+// 	return getRedirectResult(auth);
+// };
 
 // Handle Sign In with Email and Password
 export const handleSignInWithEmailAndPassword = async (
