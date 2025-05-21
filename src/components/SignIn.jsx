@@ -31,7 +31,7 @@ const SignIn = () => {
 	};
 
 	const handleGoogleSignIn = () => {
-		signIn();
+		googleSignIn();
 	};
 
 	return (
@@ -44,7 +44,7 @@ const SignIn = () => {
 					<li>
 						<input
 							type='email'
-							// value={email}
+							value={email}
 							onChange={(e) => {
 								setEmail(e.target.value);
 							}}
@@ -55,7 +55,7 @@ const SignIn = () => {
 					<li>
 						<input
 							type='password'
-							// value={password}
+							value={password}
 							onChange={(e) => {
 								setPassword(e.target.value);
 							}}
@@ -68,7 +68,7 @@ const SignIn = () => {
 			</form>
 			<div className='signin-with'>
 				<hr />
-				<p>Or Sign In with</p>
+				<p>Or Sign In With</p>
 				<hr />
 			</div>
 			<div className='signin-with-icons'>
@@ -76,6 +76,10 @@ const SignIn = () => {
 				<img src={facebook_icon} alt='Facebook Icon' />
 				<img src={github_icon} alt='Github Icon' />
 				<img src={x_twitter_icon} alt='LinkedIn Icon' />
+			</div>
+			<div className='no-account'>
+				<span>Don't Have Account?</span>
+				<span> Sign Up</span>
 			</div>
 		</div>
 	);

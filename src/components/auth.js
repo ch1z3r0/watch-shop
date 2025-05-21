@@ -1,11 +1,6 @@
 import { auth } from './firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 
-// Handle Google Redirect Result Function (call this on page load)
-// export const handleGoogleRedirectResultOnLoad = () => {
-// 	return getRedirectResult(auth);
-// };
-
 // Handle Sign In with Email and Password
 export const handleSignInWithEmailAndPassword = async (
 	email,
@@ -20,7 +15,7 @@ export const handleSignInWithEmailAndPassword = async (
 		);
 		// Signed in successfully
 		const user = userCredential.user;
-		console.log('User signed in:', user);
+		console.log('User signed in:', user.email);
 	} catch (error) {
 		// Handle errors
 		const errorCode = error.code;

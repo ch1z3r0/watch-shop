@@ -1,4 +1,4 @@
-.signin-container {
+.signup-container {
 	width: 75vw;
 	height: 100vh;
 	/* background-image: linear-gradient(to bottom, #4c51d9b2, #7e3ac6b2); */
@@ -14,8 +14,7 @@
 	flex-direction: row;
 	font-size: 1.1rem;
 }
-
-.signin-form {
+.signup-form {
 	width: 50%;
 	height: 100%;
 	background-color: #fff;
@@ -27,32 +26,42 @@
 	padding-bottom: 3rem;
 }
 
-.signin-form > h1,
+.signup-form > h1,
 p {
 	padding: 0;
 	margin: 0;
 }
-.signin-form > form {
+.signup-form > form {
 	display: flex;
 	flex-direction: column;
 	width: 70%;
 }
 
-.signin-form > form > ul {
+.signup-form > form > ul {
 	padding: 0;
 	width: 100%;
 }
 
-.signin-form > form > ul > li {
+.signup-form > form > ul > li {
 	list-style-type: none;
 	width: 100%;
 }
-.signin-form > form > ul > li > input {
+.signup-form > form > ul > li > input {
 	width: 100%;
 	/* padding: 0; */
 }
+.signup-form > form > ul > li:last-of-type > input {
+	width: auto;
+	/* padding: 0; */
+}
+.signup-form > form > ul > li:last-of-type > span > span {
+	font-weight: 600;
+	color: #9747ff;
+	cursor: pointer;
+	text-decoration: none;
+}
 
-.signin-form > form > p {
+.signup-form > form > p {
 	align-self: start;
 	font-weight: 500;
 	color: #9747ff;
@@ -60,50 +69,39 @@ p {
 	text-decoration: none;
 }
 
-.signin-with {
+.signup-with {
 	display: flex;
 	align-items: center;
 	width: 70%;
 }
-.signin-with > hr {
+.signup-with > hr {
 	flex-grow: 1;
 	border-top: 1px solid black;
 }
-.signin-with > p {
+.signup-with > p {
 	margin-left: 0.5rem;
 	margin-right: 0.5rem;
 }
 
-.signin-with-icons {
+.signup-with-icons {
 	width: 70%;
 	display: flex;
 	justify-content: space-evenly;
 }
-.signin-with-icons > img {
+.signup-with-icons > img {
 	width: 48px;
 	height: 48px;
 	position: relative;
 }
 
-.signin-banner {
+.signup-banner {
 	width: 50%;
 	height: 100%;
 	display: flex;
 	align-content: center;
 	justify-content: center;
 }
-.no-account {
-	margin-top: auto;
-	font-size: 1.2rem;
-}
-.no-account > span:last-of-type {
-	font-weight: 600;
-	color: #9747ff;
-	cursor: pointer;
-	text-decoration: none;
-}
-
-.signin-banner > img {
+.signup-banner > img {
 	width: 100%;
 	object-fit: contain;
 }
