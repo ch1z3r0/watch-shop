@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { handleSignInWithEmailAndPassword } from './auth';
 import useGoogleSignInPopup from '../hooks/useGoogleSignInPopup';
 
@@ -79,7 +79,9 @@ const SignIn = () => {
 			</div>
 			<div className='no-account'>
 				<span>Don't Have Account?</span>
-				<span> Sign Up</span>
+				<span>
+					<Link to='/signup'> Sign Up</Link>
+				</span>
 			</div>
 		</div>
 	);

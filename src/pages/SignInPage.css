@@ -16,7 +16,8 @@
 }
 
 .signin-form {
-	width: 50%;
+	flex: 1;
+	/* width: 50%; */
 	height: 100%;
 	background-color: #fff;
 	display: flex;
@@ -25,6 +26,7 @@
 	color: #000;
 	padding-top: 2rem;
 	padding-bottom: 3rem;
+	z-index: 2;
 }
 
 .signin-form > h1,
@@ -96,7 +98,7 @@ p {
 	margin-top: auto;
 	font-size: 1.2rem;
 }
-.no-account > span:last-of-type {
+.no-account > span > :first-child {
 	font-weight: 600;
 	color: #9747ff;
 	cursor: pointer;
@@ -104,6 +106,8 @@ p {
 }
 
 .signin-banner > img {
+	flex: 1;
 	width: 100%;
 	object-fit: contain;
+	z-index: 1;
 }

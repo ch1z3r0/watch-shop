@@ -1,8 +1,7 @@
 .signup-container {
-	width: 75vw;
+	/* width: 75vw;
 	height: 100vh;
-	/* background-image: linear-gradient(to bottom, #4c51d9b2, #7e3ac6b2); */
-	/* background: rgb(113, 141, 235); */
+	
 	background: linear-gradient(
 		180deg,
 		rgba(113, 141, 235, 1) 0%,
@@ -12,9 +11,10 @@
 	justify-self: center;
 	display: flex;
 	flex-direction: row;
-	font-size: 1.1rem;
+	font-size: 1.1rem; */
 }
 .signup-form {
+	flex: 1;
 	width: 50%;
 	height: 100%;
 	background-color: #fff;
@@ -24,6 +24,7 @@
 	color: #000;
 	padding-top: 2rem;
 	padding-bottom: 3rem;
+	z-index: 2;
 }
 
 .signup-form > h1,
@@ -94,14 +95,16 @@ p {
 	position: relative;
 }
 
-.signup-banner {
+/* .signup-banner {
+	flex: 1;
 	width: 50%;
 	height: 100%;
 	display: flex;
 	align-content: center;
 	justify-content: center;
+	z-index: 1;
 }
 .signup-banner > img {
 	width: 100%;
 	object-fit: contain;
-}
+} */

@@ -2,6 +2,7 @@ import facebook_icon from '../assets/icons/facebook-icon.svg';
 import google_icon from '../assets/icons/google-icon.svg';
 import github_icon from '../assets/icons/github-icon.svg';
 import x_twitter_icon from '../assets/icons/x-twitter-icon.svg';
+import { Link } from 'react-router-dom';
 
 const SignUp = () => {
 	return (
@@ -53,7 +54,9 @@ const SignUp = () => {
 			</div>
 			<div className='no-account'>
 				<span>Already Have Account?</span>
-				<span> Sign In</span>
+				<span>
+					<Link to='/signin'> Sign In</Link>
+				</span>
 			</div>
 		</div>
 	);
