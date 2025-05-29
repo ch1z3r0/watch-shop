@@ -14,14 +14,14 @@ const SignInPage = () => {
 			alt='Sign Up Background'
 			className='background-image'
 			// Example animation for the image as it appears with the page
-			initial={{ opacity: 0, scale: 0.8 }}
-			animate={{ opacity: 1, scale: 1 }}
-			exit={{ opacity: 0, scale: 0.8 }}
-			transition={{ duration: 0.7, ease: 'easeInOut' }}
+			// initial={{ opacity: 0, scale: 0.8 }}
+			// animate={{ opacity: 1, scale: 1 }}
+			// exit={{ opacity: 0, scale: 0.8 }}
+			// transition={{ duration: 0.7, ease: 'easeInOut' }}
 		/>
 	);
 	return (
-		<AuthLayout imageContent={signInImage}>
+		<AuthLayout imageContent={signInImage} formType='signInForm'>
 			{/* <div className='signin-container'>
 				<SignIn />
 				<div className='signin-banner'>
