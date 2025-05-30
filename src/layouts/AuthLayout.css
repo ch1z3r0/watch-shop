@@ -28,7 +28,6 @@
 }
 
 .form-panel {
-	left: 0; /* Initially positioned at the left edge of the container */
 	background-color: #ffffff;
 	z-index: 2; /* Ensure form panel is on top during slide */
 }
