@@ -4,27 +4,26 @@ import { AnimatePresence, motion } from 'framer-motion';
 import './AuthLayout.css';
 
 const AuthLayout = ({ children, imageContent, formType }) => {
-	// const prevFormTypeRef = useRef(formType);
+	const prevFormTypeRef = useRef(formType);
 
-	// useEffect(() => {
-	// 	prevFormTypeRef.current = formType;
-	// }, [formType]);
+	useEffect(() => {
+		prevFormTypeRef.current = formType;
+	}, [formType]);
 
-	// const prevFormType = prevFormTypeRef.current;
-	// const initialPanelState =
-	// 	prevFormType === 'signInForm' ? 'signInActive' : 'signUpActive';
+	const prevFormType = prevFormTypeRef.current;
+
+	const initialPanelState =
+		prevFormType === 'signInForm' ? 'signUpActive' : 'signInActive';
+	const currentPanelState =
+		formType === 'signInForm' ? 'signInActive' : 'signUpActive';
 
 	const isSignInForm = formType === 'signInForm';
-	// Determine the current state for the panel animations
-	const currentPanelState = isSignInForm ? 'signInActive' : 'signUpActive';
 
-	// console.log(formType);
-	console.log('currentPanelState:', currentPanelState);
+	console.log('Current formType:', formType);
 
 	// --- Variants for the Form Panel (the entire panel that slides horizontally) ---
 	const formPanelSlideVariants = {
 		signInActive: {
-			// transform: 'translateX(0%)', // Form panel is at its default left position
 			x: '0%',
 			transition: {
 				type: 'spring',
@@ -69,7 +68,6 @@ const AuthLayout = ({ children, imageContent, formType }) => {
 	// --- Variants for the Image Panel (slides horizontally, opposite of form) ---
 	const imagePanelSlideVariants = {
 		signInActive: {
-			// transform: 'translateX(0%)', // Image panel is at its default right position
 			x: '0%',
 			transition: {
 				type: 'spring',
@@ -110,24 +108,16 @@ const AuthLayout = ({ children, imageContent, formType }) => {
 			},
 		},
 	};
-	// console.log(
-	// 	'formPanelSlideVariants:',
-	// 	formPanelSlideVariants[currentPanelState]
-	// );
-	// console.log(
-	// 	'imagePanelSlideVariants:',
-	// 	imagePanelSlideVariants[currentPanelState]
-	// );
+
 	return (
 		<>
 			<motion.div className='auth-layout-container'>
 				<motion.div
-					// key='form-panel-key'
+					key='form-panel-key'
 					className='form-panel'
-					// initial={false}
-					animate={currentPanelState}
-					// exit={currentPanelState}
 					variants={formPanelSlideVariants}
+					animate={currentPanelState}
+					initial={initialPanelState}
 				>
 					<AnimatePresence mode='wait' initial={false}>
 						<motion.div
@@ -137,6 +127,12 @@ const AuthLayout = ({ children, imageContent, formType }) => {
 							animate='animate'
 							exit='exit'
 							variants={formContentMorphVariants}
+							// onAnimationStart={() =>
+							// 	console.log('form-section animation started')
+							// }
+							// onAnimationComplete={() =>
+							// 	console.log('form-section animation completed')
+							// }
 						>
 							{children}
 						</motion.div>
@@ -144,12 +140,11 @@ const AuthLayout = ({ children, imageContent, formType }) => {
 				</motion.div>
 
 				<motion.div
-					// key='image-panel-key'
+					key='image-panel-key'
 					className='image-panel'
-					// initial={false}
 					animate={currentPanelState}
-					// exit={currentPanelState}
 					variants={imagePanelSlideVariants}
+					initial={initialPanelState}
 				>
 					<AnimatePresence mode='wait' initial={false}>
 						<motion.div
