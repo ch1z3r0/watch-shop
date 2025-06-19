@@ -127,12 +127,6 @@ const AuthLayout = ({ children, imageContent, formType }) => {
 							animate='animate'
 							exit='exit'
 							variants={formContentMorphVariants}
-							// onAnimationStart={() =>
-							// 	console.log('form-section animation started')
-							// }
-							// onAnimationComplete={() =>
-							// 	console.log('form-section animation completed')
-							// }
 						>
 							{children}
 						</motion.div>

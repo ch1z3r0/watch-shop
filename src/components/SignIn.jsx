@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { handleSignInWithEmailAndPassword } from './auth';
+// import { handleSignInWithEmailAndPassword } from './auth';
 import useGoogleSignInPopup from '../hooks/useGoogleSignInPopup';
 
 import facebook_icon from '../assets/icons/facebook-icon.svg';
 import google_icon from '../assets/icons/google-icon.svg';
 import github_icon from '../assets/icons/github-icon.svg';
 import x_twitter_icon from '../assets/icons/x-twitter-icon.svg';
+import useSignInWithEmailAndPassword from '../hooks/useSignInWithEmailAndPassword';
 
 const SignIn = () => {
 	const {
@@ -16,17 +17,22 @@ const SignIn = () => {
 		signIn: googleSignIn,
 	} = useGoogleSignInPopup();
 
+	const {
+		signIn: emailSignIn,
+		isLoading: emailIsLoading,
+		error: emailError,
+	} = useSignInWithEmailAndPassword();
+
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
-	const [error, setError] = useState(null); // To display errors
-	const navigate = useNavigate();
+	// const [error, setError] = useState(null); // To display errors
+	// const navigate = useNavigate();
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		setError(null); //clear previous errors
 		try {
-			await handleSignInWithEmailAndPassword(email, password, setError);
-			navigate('/');
+			await emailSignIn(email, password);
+			// navigate('/');
 		} catch (error) {}
 	};
 
