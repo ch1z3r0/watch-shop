@@ -1,0 +1,15 @@
+.banner-container {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-self: center;
+	margin-top: 1rem;
+	overflow: hidden;
+	scroll-snap-align: start;
+	scroll-snap-stop: always;
+	height: 100vh;
+}
+
+.banner-section > img {
+	width: 100%;
+}

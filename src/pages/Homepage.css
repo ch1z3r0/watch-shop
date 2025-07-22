@@ -1,0 +1,15 @@
+.bg1 {
+	position: fixed;
+	z-index: -1;
+	width: 100%;
+	height: 100%;
+	/* overflow: visible; */
+}
+
+.homepage {
+	scroll-snap-type: y mandatory;
+	overflow-y: scroll;
+	height: 100%;
+	scrollbar-width: none;
+	scroll-behavior: smooth;
+}

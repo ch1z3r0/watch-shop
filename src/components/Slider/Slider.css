@@ -1,0 +1,325 @@
+/* .carousel-section::before {
+	bottom: initial;
+	top: -1px;
+}
+.carousel-section::after,
+::before {
+	content: '';
+	position: absolute;
+	bottom: -1px;
+	left: 0;
+	width: 100%;
+	height: 2px;
+	background-color: #000;
+	z-index: -1;
+} */
+
+.carousel-container-wrap {
+	/* padding: 5vh 0 5vh;
+	height: 792px; */
+	position: relative;
+	max-width: 1920px;
+	overflow: hidden;
+	margin: 0 auto;
+	padding: 5.555555556vw 0vw 5vw;
+}
+
+.carousel-container-wrap * {
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	vertical-align: top;
+}
+
+.background-slider {
+	position: absolute;
+	z-index: 1;
+}
+
+.carousel-wrap {
+	position: relative;
+	/* background-color: rgb(78, 78, 196); */
+	display: flex;
+	flex-wrap: wrap;
+	align-items: flex-end;
+	-webkit-box-align: end;
+}
+
+.carousel-container {
+	overflow: visible;
+	z-index: 2;
+	position: relative;
+	left: 50%;
+	top: 0;
+	width: 1920px;
+	width: 133.3333333333vw;
+	-webkit-transform: translateX(-50%);
+	transform: translateX(-50%);
+	margin: 0 auto;
+}
+
+.carousel {
+	height: 100%;
+}
+
+.slider-wrapper {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	z-index: 1;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-transition-property: -webkit-transform;
+	transition-property: -webkit-transform;
+	transition-property: transform;
+	transition-property: transform, -webkit-transform;
+	-webkit-box-sizing: content-box;
+	box-sizing: content-box;
+	-webkit-transform: translate3d(31.54vw, 0px, 0px);
+	transform: translate3d(31.54vw, 0px, 0px);
+}
+.carousel-item {
+	width: 68.6111111111vw;
+	height: 40.2777777778vw;
+	border-radius: 1.3888888889vw;
+	margin: 0vw 0.8333333333vw;
+	overflow: hidden;
+	flex-shrink: 0;
+	-webkit-transform: translateZ(0);
+	transform: translateZ(0);
+}
+
+.video-container {
+	height: 100%;
+	overflow: hidden;
+	position: relative;
+}
+
+.video-container video {
+	position: absolute;
+	top: 0;
+	left: 50%;
+	width: 100%;
+	height: 100%;
+	-webkit-transform: translateX(-50%);
+	transform: translateX(-50%);
+}
+
+.carousel-scrollbar {
+	position: relative;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: flex;
+	-ms-flex-item-align: center;
+	align-self: center;
+	width: 988px;
+	width: 68.6111111111vw;
+	height: 20px;
+	height: 1.3888888889vw;
+	margin: 40px auto 0px;
+	margin: 2.7777777778vw auto 0vw;
+	overflow: hidden;
+	background-color: transparent;
+
+	border-radius: 10px;
+	background: rgba(0, 0, 0, 0.1);
+}
+
+.carousel-scrollbar::after {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 0;
+	width: 100%;
+	height: 4px;
+	-webkit-transform: translateY(-50%);
+	transform: translateY(-50%);
+	background-color: #5b5b5b;
+	opacity: 1 !important;
+	border-radius: 2px;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+
+.scrollbar-drag {
+	height: 100%;
+	width: 100%;
+	position: relative;
+	background: rgba(0, 0, 0, 0.5);
+	border-radius: 10px;
+	left: 0;
+	top: 0;
+
+	cursor: pointer;
+	z-index: 1;
+	background: transparent;
+
+	transform: translate3d(247px, 0px, 0px);
+	transition-duration: 0ms;
+	width: 247px;
+}
+
+.scrollbar-drag::after {
+	content: '';
+	position: absolute;
+	top: 50%;
+	left: 0;
+	height: 4px;
+	width: 100%;
+	-webkit-transform: translateY(-50%);
+	transform: translateY(-50%);
+	background-color: #fff;
+	border-radius: 2px;
+}
+
+.carousel-navigation-wrap {
+	z-index: 2;
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	width: 988px;
+	width: 68.6111111111vw;
+	margin: 0 auto;
+}
+.carousel-navigation-arrow {
+	position: absolute;
+	top: 270px;
+	top: 18.75vw;
+	/* width: 40px; */
+	width: 2.7777777778vw;
+	height: 40px;
+	height: 2.7777777778vw;
+	border-radius: 50%;
+	background-image: url(data:image/svg+xml;charset=utf-8;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA0MCA0MCcgZm9jdXNhYmxlPSdmYWxzZScgYXJpYS1oaWRkZW49J3RydWUnPjxwYXRoIHN0eWxlPSdvcGFjaXR5OjAuNDU7ZmlsbC1ydWxlOmV2ZW5vZGQ7Y2xpcC1ydWxlOmV2ZW5vZGQnIGQ9J00yMCw0MEM5LDQwLDAsMzEsMCwyMFM5LDAsMjAsMHMyMCw5LDIwLDIwUzMxLDQwLDIwLDQweicvPjxnIHN0eWxlPSdvcGFjaXR5OjAuMTUnPjxwYXRoIHN0eWxlPSdmaWxsOiNGRkZGJyBkPSdNMjAsMzlDOS41LDM5LDEsMzAuNSwxLDIwUzkuNSwxLDIwLDFzMTksOC41LDE5LDE5UzMwLjUsMzksMjAsMzkgTTIwLDQwYzExLDAsMjAtOSwyMC0yMFMzMSwwLDIwLDBTMCw5LDAsMjAgUzksNDAsMjAsNDBMMjAsNDB6Jy8+PC9nPjxwYXRoIHN0eWxlPSdmaWxsOiNGRkZGJyBkPSdNMTYuOCwyOC44bC0wLjktMC45bDguMy03LjlsLTguMy03LjlsMC45LTAuOUwyNiwyMEwxNi44LDI4Ljh6Jy8+PC9zdmc+Cg==);
+	background-repeat: no-repeat;
+	background-size: 100%;
+
+	overflow: visible;
+	background-color: transparent;
+	cursor: pointer;
+	/* font-family: 'SamsungOne', arial, sans-serif; */
+	/* font-weight: 400; */
+}
+.carousel-navigation-prev {
+	/* left: -20px; */
+	left: -1.3888888889vw;
+	-webkit-transform: scale(-1);
+	transform: scale(-1);
+}
+.carousel-navigation-next {
+	/* right: -20px; */
+	right: -1.3888888889vw;
+}
+
+.carousel-item .video-container .video-controller {
+	position: absolute;
+	z-index: 3;
+	opacity: 1;
+	right: 2.2222222222vw;
+	bottom: 1.1111111111vw;
+	width: 2.7777777778vw;
+	height: 2.7777777778vw;
+	-webkit-transform: translateZ(0);
+	transform: translateZ(0);
+}
+.carousel-item .video-container .video-controller .progress-icon {
+	width: 2.7777777778vw;
+	height: 2.7777777778vw;
+	-webkit-transform: rotate(-90deg);
+	transform: rotate(-90deg);
+}
+.carousel-item .video-container .video-controller .progress-icon circle {
+	stroke-width: 0.6944444444vw;
+}
+.carousel-item
+	.video-container
+	.video-controller
+	.progress-icon
+	circle:first-child {
+	stroke: rgba(255, 255, 255, 0.4);
+}
+.carousel-item
+	.video-container
+	.video-controller
+	.progress-icon
+	circle:last-child {
+	stroke: #fff;
+	stroke-dasharray: 266;
+	/* stroke-dashoffset: 266; */
+}
+.video-controller-paused {
+	background-image: url(data:image/svg+xml;charset=utf-8;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzNiAzNicgZm9jdXNhYmxlPSdmYWxzZScgYXJpYS1oaWRkZW49J3RydWUnPjxnIHRyYW5zZm9ybT0ndHJhbnNsYXRlKDcuNTUyIDYuMjQpJz48cGF0aCBzdHlsZT0nZmlsbDojZmZmJyBkPSdNMTIuNiwyMS4yYy0wLjQsMC0wLjgtMC4zLTAuOC0wLjhWMy4yYzAtMC40LDAuMy0wLjgsMC44LTAuOGg0LjNjMC40LDAsMC44LDAuMywwLjgsMC44IHYxNy4yYzAsMC40LTAuMywwLjgtMC44LDAuOEgxMi42TDEyLjYsMjEuMnogTTQsMjEuMmMtMC40LDAtMC44LTAuMy0wLjgtMC44VjMuMmMwLTAuNCwwLjMtMC44LDAuOC0wLjhoNC4zIGMwLjQsMCwwLjgsMC4zLDAuOCwwLjh2MTcuMmMwLDAuNC0wLjMsMC44LTAuOCwwLjhINEw0LDIxLjJ6Jy8+PC9nPjwvc3ZnPgo=);
+}
+.video-controller-playing {
+	background-image: url(data:image/svg+xml;charset=utf-8;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAzNiAzNicgZm9jdXNhYmxlPSdmYWxzZScgYXJpYS1oaWRkZW49J3RydWUnPjxnIHRyYW5zZm9ybT0ndHJhbnNsYXRlKDguMzY5IDUuOTM2KSc+PHBhdGggc3R5bGU9J2ZpbGw6I2ZmZicgZD0nTTQuNCwyLjNjMC40LTAuMiwwLjktMC4yLDEuMywwLjFoMC4xTDE4LjMsMTFjMC42LDAuNCwwLjgsMS4yLDAuNCwxLjkgYy0wLjEsMC4xLTAuMiwwLjItMC4zLDAuM2gtMC4xTDUuOCwyMS43QzUuNSwyMS45LDUuMywyMiw1LDIyYy0wLjIsMC0wLjQtMC4xLTAuNi0wLjFjLTAuNC0wLjItMC43LTAuNy0wLjctMS4xVjMuNSBDMy43LDMsMy45LDIuNiw0LjQsMi4zTDQuNCwyLjNMNC40LDIuM3onLz48L2c+PC9zdmc+);
+}
+.video-controller-paused,
+.video-controller-playing {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 2.3611111111vw;
+	height: 2.3611111111vw;
+	background-repeat: no-repeat;
+	background-position: 50%;
+	-webkit-transform: translate(-50%, -50%);
+	transform: translate(-50%, -50%);
+}
+
+@media (min-width: 1440px) {
+	.carousel-container-wrap {
+		padding: 80px 0 72px;
+	}
+	.carousel-container-wrap .carousel-container {
+		width: 1920px;
+	}
+	.carousel-item {
+		border-radius: 20px;
+		height: 580px;
+		width: 988px;
+		margin: 0px 12px;
+	}
+	.slider-wrapper {
+		transition-duration: 0ms;
+		transform: translate3d(454px, 0px, 0px);
+	}
+	.carousel-scrollbar {
+		margin: 40px auto 0px;
+		height: 20px;
+		width: 988px;
+	}
+	.carousel-navigation-wrap {
+		width: 988px;
+	}
+	.carousel-navigation-arrow {
+		height: 40px;
+		width: 40px;
+		top: 270px;
+	}
+	.carousel-navigation-prev {
+		left: -20px;
+	}
+	.carousel-navigation-next {
+		right: -20px;
+	}
+	.carousel-item .video-container .video-controller {
+		height: 40px;
+		width: 40px;
+		right: 32px;
+	}
+	.carousel-item .video-container .video-controller .progress-icon {
+		height: 40px;
+		width: 40px;
+	}
+	.carousel-item .video-container .video-controller .progress-icon circle {
+		stroke-width: 10px;
+	}
+	.video-controller-paused,
+	.video-controller-playing {
+		height: 34px;
+		width: 34px;
+	}
+}

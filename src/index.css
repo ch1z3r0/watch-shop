@@ -8,11 +8,11 @@
 	color-scheme: light dark;
 	color: rgba(255, 255, 255, 0.87);
 	background-color: #242424;
-
 	font-synthesis: none;
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+	scrollbar-width: none;
 }
 
 body {
@@ -22,4 +22,22 @@ body {
 
 * {
 	box-sizing: border-box;
+}
+
+button {
+	border: 0;
+	margin: 0;
+	padding: 0;
+	width: auto;
+	overflow: visible;
+	background: 0;
+	text-align: inherit;
+	border-radius: 0;
+	cursor: pointer;
+	color: inherit;
+	font: inherit;
+	line-height: normal;
+	-webkit-font-smoothing: inherit;
+	-moz-osx-font-smoothing: inherit;
+	-webkit-appearance: none;
 }
