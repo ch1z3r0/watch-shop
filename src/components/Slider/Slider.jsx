@@ -3,17 +3,39 @@ import slide1 from '../../assets/videos/Explore Galaxy Watch Ultra_1.webm';
 import slide2 from '../../assets/videos/Explore Galaxy Watch Ultra_2.webm';
 import slide3 from '../../assets/videos/Explore Galaxy Watch Ultra_3.webm';
 import slide4 from '../../assets/videos/Explore Galaxy Watch Ultra_4.mp4';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 
 const Slider = () => {
 	const videoRef = useRef(null);
 	const [isPlaying, setIsPlaying] = useState(true);
 	const handleVideoPlay = () => setIsPlaying(true);
 	const handleVideoPause = () => setIsPlaying(false);
+	const [videoProgress, setVideoProgress] = useState(0);
+
+	useEffect(() => {
+		const video = videoRef.current;
+		const interval = setInterval(() => {
+			if (!isNaN(video.currentTime)) {
+				setVideoProgress((video.currentTime / video.duration) * 100);
+				console.log(videoProgress);
+			}
+		}, 25);
+		return () => clearInterval(interval);
+	}, []);
+
+	// const handleVideoProgress = (e) => {
+	// 	if (isNaN(e.target.currentTime)) {
+	// 		return;
+	// 	} else {
+	// 		setVideoProgress((e.target.currentTime / e.target.duration) * 100);
+	// 	}
+	// 	console.log(videoProgress);
+	// };
+	const videoDashStroke = 266 - (videoProgress * 266) / 100;
 
 	const handlePlayPause = () => {
 		const video = videoRef.current;
-		console.log(video.currentTime);
+		// console.log(video.currentTime);
 
 		if (video.paused) {
 			video.play();
@@ -40,6 +62,7 @@ const Slider = () => {
 											ref={videoRef}
 											onPlay={handleVideoPlay}
 											onPause={handleVideoPause}
+											// onTimeUpdate={handleVideoProgress}
 										>
 											<source src={slide1} type='video/webm' />
 										</video>
@@ -60,7 +83,10 @@ const Slider = () => {
 													cx='50%'
 													cy='50%'
 													fill='transparent'
-													style={{ strokeDashoffset: 'calc(50 * 266/100)' }} //this is the status of the progress, max is 266
+													style={{
+														strokeDashoffset: `${videoDashStroke}px`,
+														transition: 'width easeIn 0s',
+													}} //this is the status of the progress, max is 266
 												></circle>
 											</svg>
 											<span
