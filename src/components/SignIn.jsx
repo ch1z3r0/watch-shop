@@ -3,13 +3,16 @@ import { Link, useNavigate } from 'react-router-dom';
 // import { handleSignInWithEmailAndPassword } from './auth';
 import useGoogleSignInPopup from '../hooks/useGoogleSignInPopup';
 
-import facebook_icon from '../assets/icons/facebook-icon.svg';
-import google_icon from '../assets/icons/google-icon.svg';
-import github_icon from '../assets/icons/github-icon.svg';
-import x_twitter_icon from '../assets/icons/x-twitter-icon.svg';
+import { ASSETS } from '../assets';
+// import facebook_icon from '../assets/icons/facebook-icon.svg';
+// import google_icon from '../assets/icons/google-icon.svg';
+// import github_icon from '../assets/icons/github-icon.svg';
+// import x_twitter_icon from '../assets/icons/x-twitter-icon.svg';
 import useSignInWithEmailAndPassword from '../hooks/useSignInWithEmailAndPassword';
 
 const SignIn = () => {
+	const { facebookIcon, googleIcon, xTwitterIcon, githubIcon } = ASSETS;
+
 	const {
 		user: googleUser,
 		error: googleError,
@@ -78,10 +81,10 @@ const SignIn = () => {
 				<hr />
 			</div>
 			<div className='signin-with-icons'>
-				<img src={google_icon} alt='Google Icon' onClick={handleGoogleSignIn} />
-				<img src={facebook_icon} alt='Facebook Icon' />
-				<img src={github_icon} alt='Github Icon' />
-				<img src={x_twitter_icon} alt='LinkedIn Icon' />
+				<img src={googleIcon} alt='Google Icon' onClick={handleGoogleSignIn} />
+				<img src={facebookIcon} alt='Facebook Icon' />
+				<img src={githubIcon} alt='Github Icon' />
+				<img src={xTwitterIcon} alt='X Twitter Icon' />
 			</div>
 			<div className='no-account'>
 				<span>Don't Have Account?</span>

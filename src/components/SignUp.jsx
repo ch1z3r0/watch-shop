@@ -1,10 +1,12 @@
-import facebook_icon from '../assets/icons/facebook-icon.svg';
-import google_icon from '../assets/icons/google-icon.svg';
-import github_icon from '../assets/icons/github-icon.svg';
-import x_twitter_icon from '../assets/icons/x-twitter-icon.svg';
+// import facebook_icon from '../assets/icons/facebook-icon.svg';
+// import google_icon from '../assets/icons/google-icon.svg';
+// import github_icon from '../assets/icons/github-icon.svg';
+// import x_twitter_icon from '../assets/icons/x-twitter-icon.svg';
+import { ASSETS } from '../assets';
 import { Link } from 'react-router-dom';
 
 const SignUp = () => {
+	const { facebookIcon, googleIcon, githubIcon, xTwitterIcon } = ASSETS;
 	return (
 		<div className='signup-form'>
 			<h1>Sign Up</h1>
@@ -45,12 +47,12 @@ const SignUp = () => {
 			</div>
 			<div className='signup-with-icons'>
 				<img
-					src={google_icon}
+					src={googleIcon}
 					alt='Google Icon' /* onClick={handleGoogleSignIn} */
 				/>
-				<img src={facebook_icon} alt='Facebook Icon' />
-				<img src={github_icon} alt='Github Icon' />
-				<img src={x_twitter_icon} alt='LinkedIn Icon' />
+				<img src={facebookIcon} alt='Facebook Icon' />
+				<img src={githubIcon} alt='Github Icon' />
+				<img src={xTwitterIcon} alt='X Twitter Icon' />
 			</div>
 			<div className='no-account'>
 				<span>Already Have Account?</span>

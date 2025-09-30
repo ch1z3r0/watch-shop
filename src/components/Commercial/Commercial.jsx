@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 
 import vid1 from '../../assets/videos/commercial.mp4';
-import play from '../../assets/icons/play-solid.svg';
-import pause from '../../assets/icons/pause-solid.svg';
-import mute from '../../assets/icons/volume-xmark-solid.svg';
-import unmute from '../../assets/icons/volume-solid.svg';
+// import play from '../../assets/icons/play-solid.svg';
+// import pause from '../../assets/icons/pause-solid.svg';
+// import mute from '../../assets/icons/volume-xmark-solid.svg';
+// import unmute from '../../assets/icons/volume-solid.svg';
+import { ASSETS } from '../../assets';
 
 import './Commercial.css';
 
 const Commercial = () => {
+	const { play, pause, mute, unmute } = ASSETS;
 	const videoRef = useRef(null);
 	// const snappingRef = useRef(false);
 	const [isPlaying, setIsPlaying] = useState(true);

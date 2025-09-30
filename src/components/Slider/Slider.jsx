@@ -23,14 +23,6 @@ const Slider = () => {
 		return () => clearInterval(interval);
 	}, []);
 
-	// const handleVideoProgress = (e) => {
-	// 	if (isNaN(e.target.currentTime)) {
-	// 		return;
-	// 	} else {
-	// 		setVideoProgress((e.target.currentTime / e.target.duration) * 100);
-	// 	}
-	// 	console.log(videoProgress);
-	// };
 	const videoDashStroke = 266 - (videoProgress * 266) / 100;
 
 	const handlePlayPause = () => {
