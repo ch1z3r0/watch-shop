@@ -14,7 +14,17 @@ export const ASSETS = {
 	watchLogo: cdn.icon('watch-logo.svg'),
 
 	//IMAGES
+	signInBanner: cdn.image('watch1.svg'),
+	signUpBanner: cdn.image('watch2.svg'),
 	homepageBg: cdn.image('background.jpg'),
+	bannerImg: cdn.image('GalaxyWatchUltraBanner.jpg'),
 
-	// fontPrimaryWoff2: cdn.font('Inter-Variable.woff2'),
+	//Videos
+	commercialVideo: cdn.video('commercial.mp4'),
+	slide1: cdn.video('Explore Galaxy Watch Ultra_1.webm'),
+	slide2: cdn.video('Explore Galaxy Watch Ultra_2.webm'),
+	slide3: cdn.video('Explore Galaxy Watch Ultra_3.webm'),
+	slide4: cdn.video('Explore Galaxy Watch Ultra_4.mp4'),
+
+	//Fonts
 };

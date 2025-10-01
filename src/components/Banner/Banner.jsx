@@ -1,9 +1,10 @@
-import watch_ultra from '../../assets/images/GalaxyWatchUltra_KV_PC_1920_071724.jpg';
+import { ASSETS } from '../../utils/assets';
 
 const Banner = () => {
+	const { bannerImg } = ASSETS;
 	return (
 		<div className='banner-container'>
-			<img src={watch_ultra} alt='Galaxy Watch Ultra' />
+			<img src={bannerImg} alt='Galaxy Watch Ultra' />
 		</div>
 	);
 };

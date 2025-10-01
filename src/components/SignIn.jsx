@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 // import { handleSignInWithEmailAndPassword } from './auth';
 import useGoogleSignInPopup from '../hooks/useGoogleSignInPopup';
 
-import { ASSETS } from '../assets';
+import { ASSETS } from '../utils/assets';
 // import facebook_icon from '../assets/icons/facebook-icon.svg';
 // import google_icon from '../assets/icons/google-icon.svg';
 // import github_icon from '../assets/icons/github-icon.svg';

@@ -2,7 +2,7 @@
 // import google_icon from '../assets/icons/google-icon.svg';
 // import github_icon from '../assets/icons/github-icon.svg';
 // import x_twitter_icon from '../assets/icons/x-twitter-icon.svg';
-import { ASSETS } from '../assets';
+import { ASSETS } from '../utils/assets';
 import { Link } from 'react-router-dom';
 
 const SignUp = () => {

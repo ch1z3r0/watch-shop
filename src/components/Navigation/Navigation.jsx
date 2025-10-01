@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 // import watch_logo from '../../assets/icons/watch-logo.svg';
-import { ASSETS } from '../../assets';
+import { ASSETS } from '../../utils/assets';
 
 import './Navigation.css';
 

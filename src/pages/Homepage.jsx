@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import './Homepage.css';
 
-import { ASSETS } from '../assets';
+import { ASSETS } from '../utils/assets';
 // import background1 from '../assets/images/background.jpg';
 
 import Commercial from '../components/Commercial/Commercial';

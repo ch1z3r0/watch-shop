@@ -1,11 +1,13 @@
 import './Slider.css';
-import slide1 from '../../assets/videos/Explore Galaxy Watch Ultra_1.webm';
-import slide2 from '../../assets/videos/Explore Galaxy Watch Ultra_2.webm';
-import slide3 from '../../assets/videos/Explore Galaxy Watch Ultra_3.webm';
-import slide4 from '../../assets/videos/Explore Galaxy Watch Ultra_4.mp4';
+// import slide1 from '../../assets/videos/Explore Galaxy Watch Ultra_1.webm';
+// import slide2 from '../../assets/videos/Explore Galaxy Watch Ultra_2.webm';
+// import slide3 from '../../assets/videos/Explore Galaxy Watch Ultra_3.webm';
+// import slide4 from '../../assets/videos/Explore Galaxy Watch Ultra_4.mp4';
+import { ASSETS } from '../../utils/assets';
 import { useRef, useState, useEffect } from 'react';
 
 const Slider = () => {
+	const { slide1, slide2, slide3, slide4 } = ASSETS;
 	const videoRef = useRef(null);
 	const [isPlaying, setIsPlaying] = useState(true);
 	const handleVideoPlay = () => setIsPlaying(true);
