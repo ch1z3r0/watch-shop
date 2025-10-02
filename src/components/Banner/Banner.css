@@ -1,15 +1,47 @@
 .banner-container {
 	position: relative;
-	display: flex;
-	flex-direction: column;
-	justify-self: center;
-	margin-top: 1rem;
+	margin: 0 auto;
 	overflow: hidden;
-	scroll-snap-align: start;
-	scroll-snap-stop: always;
-	height: 100vh;
+	max-width: 2560px;
+	height: 55.5555555556vw;
+	width: 177.7777777778vw;
+	box-sizing: border-box;
+	padding: 0;
+	vertical-align: top;
 }
 
-.banner-section > img {
+.banner-image {
+	position: absolute;
+	top: 0;
+	left: 50%;
+	transform: translate(-65%);
+	height: 55.5555555556vw;
+	width: 177.7777777778vw;
+}
+.banner-image img {
 	width: 100%;
+}
+.banner-text {
+	position: absolute;
+	z-index: 1;
+	left: 35%;
+	text-align: center;
+	margin-left: 11.8055555556vw;
+	width: 36.9444444444vw;
+}
+
+@media (min-width: 1440px) {
+	.banner-container {
+		height: 800px;
+		width: 2560px;
+	}
+	.banner-image {
+		height: 800px;
+		width: 2560px;
+	}
+	.baner-text {
+		margin-left: 170px;
+		width: 532px;
+		top: 344px;
+	}
 }
