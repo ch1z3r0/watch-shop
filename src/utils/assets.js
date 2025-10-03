@@ -19,6 +19,9 @@ export const ASSETS = {
 	homepageBg: cdn.image('background.jpg'),
 	bannerImg: cdn.image('galaxy-watch-ultra-2025.jpg'),
 	bannerImgV2: cdn.image('galaxy-watch-ultra-2025-v2.jpg'),
+	galaxyWatchUltraTitle: cdn.image('galaxy-watch-ultra-2025-logo-pc.png'),
+	galaxyWatchUltraTitleMo: cdn.image('galaxy-watch-ultra-2025-logo-mo.png'),
+	galaxyAiText: cdn.image('galaxy-watch-ultra-2025-kv-ai-text.png'),
 
 	//Videos
 	commercialVideo: cdn.video('commercial.mp4'),

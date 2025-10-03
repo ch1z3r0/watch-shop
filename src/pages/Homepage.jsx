@@ -16,10 +16,10 @@ const Homepage = () => {
 		<div className='homepage'>
 			<img className='bg1' src={homepageBg} alt='Background Image 1' />
 			<Navigation />
+			{/* <h1>Welcome to Banner Section</h1> */}
+			<Banner />
 			<h1>Welcome to Commercial Section</h1>
 			<Commercial />
-			<h1>Welcome to Banner Section</h1>
-			<Banner />
 			<h1>Slider Section</h1>
 			<Slider />
 		</div>

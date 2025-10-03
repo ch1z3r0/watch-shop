@@ -2,7 +2,8 @@
 	position: relative;
 	margin: 0 auto;
 	overflow: hidden;
-	max-width: 2560px;
+	/* max-width: 2560px; */
+	max-width: 100vw;
 	height: 55.5555555556vw;
 	width: 177.7777777778vw;
 	box-sizing: border-box;
@@ -10,24 +11,75 @@
 	vertical-align: top;
 }
 
-.banner-image {
+.banner-img {
 	position: absolute;
 	top: 0;
 	left: 50%;
-	transform: translate(-65%);
+	/* transform: translate(-66.6666666667%); */
+	transform: translate(-50%);
 	height: 55.5555555556vw;
 	width: 177.7777777778vw;
 }
-.banner-image img {
+.banner-container img {
 	width: 100%;
 }
 .banner-text {
 	position: absolute;
 	z-index: 1;
-	left: 35%;
+	left: 50%;
 	text-align: center;
 	margin-left: 11.8055555556vw;
 	width: 36.9444444444vw;
+	top: 23.8888888889vw;
+}
+.galaxy-ai-wrap {
+	width: 16.0416666667vw;
+	margin: 0 auto;
+}
+.banner-description {
+	color: #eee;
+	font-size: 1.25vw;
+	line-height: 1.3;
+	margin-top: 16px;
+}
+.banner-button-wrap {
+	margin-top: 2.2222222222vw;
+}
+.banner-button-wrap .buy-button {
+	text-align: center;
+}
+.banner-button-wrap .buy-button a {
+	text-decoration: none;
+	-webkit-box-pack: center;
+	-ms-flex-pack: center;
+	justify-content: center;
+	min-height: 2.7777777778vw;
+	min-width: 6.6666666667vw;
+	padding: 0.7638888889vw 1.5277777778vw 0.6944444444vw;
+	line-height: 1.3;
+	letter-spacing: 0;
+	color: #000 !important;
+	background-color: #fff;
+	font-family: 'SamsungOne', arial, sans-serif;
+	font-weight: 700;
+	font-size: 0.9722222222vw;
+	border-radius: 3.4722222222vw;
+	border: 1px solid #fff;
+
+	overflow: hidden;
+	display: inline-flex;
+	-webkit-box-align: center;
+	align-items: center;
+	position: relative;
+	z-index: 6;
+	text-align: center;
+}
+.banner-button-wrap .buy-button a:focus::after,
+.banner-button-wrap .buy-button a:hover::after {
+	width: 100%;
+}
+.banner-button-wrap .buy-button a::after {
+	display: none;
 }
 
 @media (min-width: 1440px) {
@@ -35,13 +87,54 @@
 		height: 800px;
 		width: 2560px;
 	}
-	.banner-image {
+	.banner-img {
 		height: 800px;
 		width: 2560px;
 	}
-	.baner-text {
+	.banner-text {
 		margin-left: 170px;
 		width: 532px;
 		top: 344px;
+	}
+	.galaxy-ai-wrap {
+		width: 231px;
+	}
+}
+
+@media screen and (max-width: 534px) {
+	.banner-container {
+		height: 155.5555555556vw;
+	}
+	.banner-text {
+		left: 0;
+		width: 100%;
+		margin-left: 0;
+		transform: none;
+		top: 20.8333333333vw;
+	}
+	.banner-img {
+		width: 100%;
+		height: 139.4444444444vw;
+	}
+	.banner-text img {
+		visibility: hidden;
+	}
+	.banner-description {
+		padding: 0 3%;
+		width: 100%;
+		font-size: 3.8888888889vw;
+		line-height: 1.4;
+	}
+	.banner-button-wrap {
+		margin-top: 4.16666666667vw;
+	}
+	.banner-button-wrap .buy-button a {
+		min-height: 11.1111111111vw;
+		min-width: 36.1111111111vw;
+		padding: 3.0555555556vw 6.6666666667vw;
+		border-radius: 13.8888888889vw;
+		line-height: 1.2;
+		font-size: 3.8888888889vw;
+		border-radius: 13.8888888889vw;
 	}
 }
