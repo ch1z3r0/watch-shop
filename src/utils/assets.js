@@ -32,5 +32,5 @@ export const ASSETS = {
 
 	//Fonts
 	samsungOne: cdn.font('SamsungOne-400.ttf'),
-	samsungSharpSans: cdn.font('SamsungSharpSans-Bold.ttf'),
+	samsungSharpSansBold: cdn.font('SamsungSharpSans-Bold.ttf'),
 };

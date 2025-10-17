@@ -30,7 +30,8 @@
 	font-size: 4.1666666667vw;
 	line-height: 1.2;
 	outline: 0;
-	font-family: 'SamsungSharpSans', arial, sans-serif;
+	font-family: 'SamsungSharpSans', 'SamsungOne';
+	font-weight: 700;
 }
 
 @media (min-width: 1440px) {
