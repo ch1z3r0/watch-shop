@@ -14,11 +14,18 @@ const Homepage = () => {
 	const { homepageBg } = ASSETS;
 	return (
 		<div className='homepage'>
-			<img className='bg1' src={homepageBg} alt='Background Image 1' />
+			{/* <img className='bg1' src={homepageBg} alt='Background Image 1' /> */}
+			<div className='bg1'></div>
 			<Navigation />
 			{/* <h1>Welcome to Banner Section</h1> */}
 			<Banner />
-			<h1>Welcome to Commercial Section</h1>
+			<div className='title-wrap'>
+				<h2 className='common title'>
+					The toughest
+					<br />
+					Galaxy Watch ever
+				</h2>
+			</div>
 			<Commercial />
 			<h1>Slider Section</h1>
 			<Slider />

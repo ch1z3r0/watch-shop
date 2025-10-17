@@ -31,4 +31,6 @@ export const ASSETS = {
 	slide4: cdn.video('Explore Galaxy Watch Ultra_4.mp4'),
 
 	//Fonts
+	samsungOne: cdn.font('SamsungOne-400.ttf'),
+	samsungSharpSans: cdn.font('SamsungSharpSans-Bold.ttf'),
 };
