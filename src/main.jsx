@@ -4,14 +4,13 @@ import './index.css';
 import App from './App.jsx';
 
 import { ASSETS } from './utils/assets.js';
-import samsungSharp from './assets/fonts/SamsungSharpSans-Bold.ttf';
 // ---- inject fonts globally from ASSETS ----
 (function injectSamsungFonts() {
 	if (document.querySelector('style[data-fonts="samsung"]')) return; // avoid duplicates
 	// console.log(ASSETS.samsungSharpSansBold);
 
 	const css = `
-	@font-face{
+		@font-face{
 		font-family:"SamsungOne";
 		src: url("${ASSETS.samsungOne}") format("truetype");
 		font-weight:400;
