@@ -1,240 +1,113 @@
 import { useRef, useState, useEffect } from 'react';
+import VideoSlide from './VideoSlide';
 
 import './Slider.css';
 import { ASSETS } from '../../utils/assets';
 
 const Slider = () => {
 	const { slide1, slide2, slide3, slide4 } = ASSETS;
+	const sources = [slide1, slide2, slide3, slide4];
 	// const videoRef = useRef(null);
 	// const [isPlaying, setIsPlaying] = useState(true);
-	const handleVideoPlay = () => setIsPlaying(true);
-	const handleVideoPause = () => setIsPlaying(false);
+	// const handleVideoPlay = () => setIsPlaying(true);
+	// const handleVideoPause = () => setIsPlaying(false);
 	// const [videoProgress, setVideoProgress] = useState(0);
 
-	useEffect(() => {
-		const video = videoRef.current;
-		const interval = setInterval(() => {
-			if (!isNaN(video.currentTime)) {
-				setVideoProgress((video.currentTime / video.duration) * 100);
-			}
-		}, 25);
-		return () => clearInterval(interval);
-	}, []);
+	const [index, setIndex] = useState(0);
 
-	const videoDashStroke = 266 - (videoProgress * 266) / 100;
-
-	const handlePlayPause = () => {
-		const video = videoRef.current;
-
-		if (video.paused) {
-			video.play();
-			setIsPlaying(true);
-		} else {
-			video.pause();
-			setIsPlaying(false);
-		}
+	const wrap = (i) => {
+		const len = sources.length;
+		return ((i % len) + len) % len;
 	};
+
+	const next = () => setIndex((i) => wrap(i + 1));
+	const prev = () => setIndex((i) => wrap(i - 1));
+	const goTo = (i) => setIndex(wrap(i));
+
+	// useEffect(() => {
+	// 	const video = videoRef.current;
+	// 	const interval = setInterval(() => {
+	// 		if (!isNaN(video.currentTime)) {
+	// 			setVideoProgress((video.currentTime / video.duration) * 100);
+	// 		}
+	// 	}, 25);
+	// 	return () => clearInterval(interval);
+	// }, []);
+
+	// const videoDashStroke = 266 - (videoProgress * 266) / 100;
+
+	// const handlePlayPause = () => {
+	// 	const video = videoRef.current;
+
+	// 	if (video.paused) {
+	// 		video.play();
+	// 		setIsPlaying(true);
+	// 	} else {
+	// 		video.pause();
+	// 		setIsPlaying(false);
+	// 	}
+	// };
+
 	return (
 		<div className='carousel-section'>
 			<div className='carousel-container-wrap'>
-				<div className='carousel-container background-slider'></div>
+				<div className='carousel-container background-slider' />
 				<div className='carousel-wrap'>
 					<div className='carousel-container'>
 						<div className='carousel slider'>
-							<div className='slider-wrapper'>
-								<div className='carousel-item'>
-									<div className='video-container'>
-										<video
-											playsInline
-											muted
-											autoPlay
-											ref={videoRef}
-											onPlay={handleVideoPlay}
-											onPause={handleVideoPause}
-										>
-											<source src={slide1} type='video/webm' />
-										</video>
-										<button
-											className='video-controller'
-											onClick={handlePlayPause}
-										>
-											<svg className='progress-icon' viewBox='0 0 100 100'>
-												<circle
-													r='42'
-													cx='50%'
-													cy='50%'
-													fill='transparent'
-												></circle>
-												<circle
-													className='draw-line'
-													r='42'
-													cx='50%'
-													cy='50%'
-													fill='transparent'
-													style={{
-														strokeDashoffset: `${videoDashStroke}px`,
-														transition: 'width easeIn 0s',
-													}} //this is the status of the progress, max is 266
-												></circle>
-											</svg>
-											<span
-												className='video-controller-paused'
-												style={{ display: isPlaying ? 'block' : 'none' }}
-											></span>
-											<span
-												className='video-controller-playing'
-												style={{ display: isPlaying ? 'none' : 'block' }}
-											></span>
-										</button>
-									</div>
-								</div>
-								<div className='carousel-item'>
-									<div className='video-container'>
-										<video
-											playsInline
-											muted
-											autoPlay
-											ref={videoRef}
-											onPlay={handleVideoPlay}
-											onPause={handleVideoPause}
-										>
-											<source src={slide2} type='video/webm' />
-										</video>
-										<button
-											className='video-controller'
-											onClick={handlePlayPause}
-										>
-											<svg className='progress-icon' viewBox='0 0 100 100'>
-												<circle
-													r='42'
-													cx='50%'
-													cy='50%'
-													fill='transparent'
-												></circle>
-												<circle
-													className='draw-line'
-													r='42'
-													cx='50%'
-													cy='50%'
-													fill='transparent'
-													style={{
-														strokeDashoffset: `${videoDashStroke}px`,
-														transition: 'width easeIn 0s',
-													}} //this is the status of the progress, max is 266
-												></circle>
-											</svg>
-											<span
-												className='video-controller-paused'
-												style={{ display: isPlaying ? 'block' : 'none' }}
-											></span>
-											<span
-												className='video-controller-playing'
-												style={{ display: isPlaying ? 'none' : 'block' }}
-											></span>
-										</button>
-									</div>
-								</div>
-								<div className='carousel-item'>
-									<div className='video-container'>
-										<video
-											playsInline
-											muted
-											autoPlay
-											ref={videoRef}
-											onPlay={handleVideoPlay}
-											onPause={handleVideoPause}
-										>
-											<source src={slide3} type='video/webm' />
-										</video>
-										<button
-											className='video-controller'
-											onClick={handlePlayPause}
-										>
-											<svg className='progress-icon' viewBox='0 0 100 100'>
-												<circle
-													r='42'
-													cx='50%'
-													cy='50%'
-													fill='transparent'
-												></circle>
-												<circle
-													className='draw-line'
-													r='42'
-													cx='50%'
-													cy='50%'
-													fill='transparent'
-													style={{
-														strokeDashoffset: `${videoDashStroke}px`,
-														transition: 'width easeIn 0s',
-													}} //this is the status of the progress, max is 266
-												></circle>
-											</svg>
-											<span
-												className='video-controller-paused'
-												style={{ display: isPlaying ? 'block' : 'none' }}
-											></span>
-											<span
-												className='video-controller-playing'
-												style={{ display: isPlaying ? 'none' : 'block' }}
-											></span>
-										</button>
-									</div>
-								</div>
-								<div className='carousel-item'>
-									<div className='video-container'>
-										<video
-											playsInline
-											muted
-											autoPlay
-											ref={videoRef}
-											onPlay={handleVideoPlay}
-											onPause={handleVideoPause}
-										>
-											<source src={slide4} type='video/webm' />
-										</video>
-										<button
-											className='video-controller'
-											onClick={handlePlayPause}
-										>
-											<svg className='progress-icon' viewBox='0 0 100 100'>
-												<circle
-													r='42'
-													cx='50%'
-													cy='50%'
-													fill='transparent'
-												></circle>
-												<circle
-													className='draw-line'
-													r='42'
-													cx='50%'
-													cy='50%'
-													fill='transparent'
-													style={{
-														strokeDashoffset: `${videoDashStroke}px`,
-														transition: 'width easeIn 0s',
-													}} //this is the status of the progress, max is 266
-												></circle>
-											</svg>
-											<span
-												className='video-controller-paused'
-												style={{ display: isPlaying ? 'block' : 'none' }}
-											></span>
-											<span
-												className='video-controller-playing'
-												style={{ display: isPlaying ? 'none' : 'block' }}
-											></span>
-										</button>
-									</div>
-								</div>
+							{/* translate wrapper; CSS handles the transition */}
+							<div
+								className='slider-wrapper'
+								style={{ transform: `translateX(-${index * 100}%)` }}
+							>
+								{sources.map((src, i) => (
+									<VideoSlide
+										key={src || i}
+										src={src}
+										active={i === index}
+										onEnded={next}
+									/>
+								))}
 							</div>
 						</div>
+
 						<div className='carousel-navigation-wrap'>
-							<button className='carousel-navigation-arrow carousel-navigation-prev'></button>
-							<button className='carousel-navigation-arrow carousel-navigation-next'></button>
+							<button
+								className='carousel-navigation-arrow carousel-navigation-prev'
+								onClick={prev}
+								aria-label='Previous slide'
+							/>
+							<button
+								className='carousel-navigation-arrow carousel-navigation-next'
+								onClick={next}
+								aria-label='Next slide'
+							/>
 						</div>
-						<div className='carousel-pagination-wrap'></div>
+
+						<div
+							className='carousel-pagination-wrap'
+							role='tablist'
+							aria-label='Slide pagination'
+						>
+							{sources.map((_, i) => (
+								<button
+									key={i}
+									role='tab'
+									aria-selected={i === index}
+									className={`carousel-dot ${i === index ? 'is-active' : ''}`}
+									onClick={() => goTo(i)}
+								/>
+							))}
+						</div>
+
 						<div className='carousel-scrollbar'>
-							<div className='scrollbar-drag'></div>
+							<div
+								className='scrollbar-drag'
+								style={{
+									width: `${(100 / sources.length).toFixed(2)}%`,
+									left: `${(index * 100) / sources.length}%`,
+								}}
+							/>
 						</div>
 					</div>
 				</div>

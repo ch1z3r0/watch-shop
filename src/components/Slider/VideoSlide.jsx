@@ -1,9 +1,13 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 
-const VideoSlide = () => {
+// Ring constants
+const R = 42;
+const CIRC = 2 * Math.PI * R; // ≈ 263.89
+
+const VideoSlide = ({ src, active, onEnded }) => {
 	const videoRef = useRef(null);
 	const [isPlaying, setIsPlaying] = useState(true);
-	const [videoProgress, setVideoProgress] = useState(0);
+	const [progress, setProgress] = useState(0);
 
 	useEffect(() => {
 		const v = videoRef.current;
@@ -29,7 +33,81 @@ const VideoSlide = () => {
 
 	const handleLoadedMetadata = () => handleTimeUpdate();
 
-	return <div>VideoSlide</div>;
+	const handlePlayPause = () => {
+		const v = videoRef.current;
+		if (!v) return;
+		if (v.paused) {
+			const p = v.play();
+			if (p?.catch) p.catch(() => {});
+			setIsPlaying(true);
+		} else {
+			v.pause();
+			setIsPlaying(false);
+		}
+	};
+
+	// (0 = full ring, 100 = empty ring)
+	const strokeOffset = useMemo(
+		() => ((100 - progress) / 100) * CIRC,
+		[progress]
+	);
+
+	return (
+		<div className='carousel-item' aria-hidden={!active}>
+			<div className='video-container'>
+				<video
+					playsInline
+					muted
+					autoPlay
+					ref={videoRef}
+					onTimeUpdate={handleTimeUpdate}
+					onLoadedMetadata={handleLoadedMetadata}
+					onPlay={() => setIsPlaying(true)}
+					onPause={() => setIsPlaying(false)}
+					onEnded={onEnded}
+				>
+					<source src={src} type='video/webm' />
+				</video>
+
+				<button
+					className='video-controller'
+					onClick={handlePlayPause}
+					aria-label={isPlaying ? 'Pause video' : 'Play video'}
+				>
+					<svg
+						className='progress-icon'
+						viewBox='0 0 100 100'
+						role='img'
+						aria-label='Video progress'
+					>
+						<circle r={R} cx='50' cy='50' fill='transparent' />
+						<circle
+							className='draw-line'
+							r={R}
+							cx='50'
+							cy='50'
+							fill='transparent'
+							style={{
+								strokeDasharray: `${CIRC}px`,
+								strokeDashoffset: `${strokeOffset}px`,
+								transition: 'stroke-dashoffset 100ms linear',
+							}}
+						/>
+					</svg>
+
+					{/* When video is playing, show 'pause' icon; when paused, show 'play' icon */}
+					<span
+						className='video-controller-playing'
+						style={{ display: isPlaying ? 'block' : 'none' }}
+					/>
+					<span
+						className='video-controller-paused'
+						style={{ display: isPlaying ? 'none' : 'block' }}
+					/>
+				</button>
+			</div>
+		</div>
+	);
 };
 
 export default VideoSlide;

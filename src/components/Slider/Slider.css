@@ -62,7 +62,10 @@
 .carousel {
 	height: 100%;
 }
-
+.slider-wrapper {
+	display: flex;
+	transition: transform 400ms ease;
+}
 .slider-wrapper {
 	position: relative;
 	width: 100%;
@@ -81,6 +84,7 @@
 	transform: translate3d(31.54vw, 0px, 0px);
 }
 .carousel-item {
+	flex: 0 0 auto;
 	width: 68.6111111111vw;
 	height: 40.2777777778vw;
 	border-radius: 1.3888888889vw;
@@ -231,7 +235,7 @@
 	-webkit-transform: rotate(-90deg);
 	transform: rotate(-90deg);
 }
-.carousel-item .video-container .video-controller .progress-icon circle {
+.carousel-item .video-container .video-controller .progress-icon .draw-line {
 	stroke-width: 0.6944444444vw;
 }
 .carousel-item
@@ -314,7 +318,7 @@
 		height: 40px;
 		width: 40px;
 	}
-	.carousel-item .video-container .video-controller .progress-icon circle {
+	.carousel-item .video-container .video-controller .progress-icon .draw-line {
 		stroke-width: 10px;
 	}
 	.video-controller-paused,
