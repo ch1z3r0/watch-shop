@@ -58,7 +58,8 @@ const Slider = () => {
 							{/* translate wrapper; CSS handles the transition */}
 							<div
 								className='slider-wrapper'
-								style={{ transform: `translateX(-${index * 100}%)` }}
+								/* style={{ transform: `translateX(-${index * 100}%)` }} */
+								style={{ '--offset': `translateX(-${index * 100}%)` }}
 							>
 								{sources.map((src, i) => (
 									<VideoSlide

@@ -64,7 +64,11 @@
 }
 .slider-wrapper {
 	display: flex;
+	--base-tx: 31.54vw; /* initial value lives in CSS */
+	--offset: 0px; /* JS will override this only */
 	transition: transform 400ms ease;
+	display: flex;
+	transform: translateX(calc(var(--base-tx) + var(--offset)));
 }
 .slider-wrapper {
 	position: relative;
@@ -107,6 +111,7 @@
 	left: 50%;
 	width: 100%;
 	height: 100%;
+	z-index: 2;
 	-webkit-transform: translateX(-50%);
 	transform: translateX(-50%);
 }
@@ -244,6 +249,7 @@
 	.progress-icon
 	circle:first-child {
 	stroke: rgba(255, 255, 255, 0.4);
+	transform: translateX(50%);
 }
 .carousel-item
 	.video-container
@@ -285,10 +291,12 @@
 		height: 580px;
 		width: 988px;
 		margin: 0px 12px;
+		/* transform: translateX(50%); */
 	}
 	.slider-wrapper {
-		transition-duration: 0ms;
-		transform: translate3d(454px, 0px, 0px);
+		/* transition-duration: 0ms;
+		transform: translate3d(454px, 0px, 0px); */
+		--base-tx: 454px;
 	}
 	.carousel-scrollbar {
 		margin: 40px auto 0px;
