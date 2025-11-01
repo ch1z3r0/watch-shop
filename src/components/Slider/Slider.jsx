@@ -59,7 +59,8 @@ const Slider = () => {
 							<div
 								className='slider-wrapper'
 								/* style={{ transform: `translateX(-${index * 100}%)` }} */
-								style={{ '--offset': `translateX(-${index * 100}%)` }}
+								/* style={{ '--offset': `-${index * 50}%` }} */
+								style={{ '--index': index }}
 							>
 								{sources.map((src, i) => (
 									<VideoSlide

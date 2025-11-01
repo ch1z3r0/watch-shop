@@ -90,7 +90,7 @@ const VideoSlide = ({ src, active, onEnded }) => {
 							style={{
 								strokeDasharray: `${CIRC}px`,
 								strokeDashoffset: `${strokeOffset}px`,
-								transition: 'stroke-dashoffset 100ms linear',
+								transition: 'stroke-dashoffset 250ms linear',
 							}}
 						/>
 					</svg>

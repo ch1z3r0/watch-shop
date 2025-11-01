@@ -63,12 +63,24 @@
 	height: 100%;
 }
 .slider-wrapper {
-	display: flex;
+	--viewport-w: 133.3333333333vw; /* equals your .carousel-container width */
 	--base-tx: 31.54vw; /* initial value lives in CSS */
 	--offset: 0px; /* JS will override this only */
 	transition: transform 400ms ease;
-	display: flex;
-	transform: translateX(calc(var(--base-tx) + var(--offset)));
+	/* transform: translateX(var(--base-tx)) translateX(var(--offset)); */
+
+	/* slide geometry in vw */
+	--slide-w: 68.6111111111vw;
+	--gap-x: 1.6666666667vw; /* total horizontal gap (left+right margins) */
+	--step: calc(var(--slide-w) + var(--gap-x));
+
+	/* center the first slide by default: 50vw - half the card */
+	--base-center: calc((var(--viewport-w) / 2) - (var(--slide-w) / 2));
+
+	/* index will come from React as a raw number (0,1,2,...) */
+	--index: 0;
+
+	transform: translateX(calc(var(--base-center) - var(--index) * var(--step)));
 }
 .slider-wrapper {
 	position: relative;
@@ -84,15 +96,17 @@
 	transition-property: transform, -webkit-transform;
 	-webkit-box-sizing: content-box;
 	box-sizing: content-box;
-	-webkit-transform: translate3d(31.54vw, 0px, 0px);
-	transform: translate3d(31.54vw, 0px, 0px);
+	/* -webkit-transform: translate3d(31.54vw, 0px, 0px);
+	transform: translate3d(31.54vw, 0px, 0px); */
 }
 .carousel-item {
 	flex: 0 0 auto;
-	width: 68.6111111111vw;
+	/* width: 68.6111111111vw; */
+	width: var(--slide-w);
 	height: 40.2777777778vw;
 	border-radius: 1.3888888889vw;
-	margin: 0vw 0.8333333333vw;
+	/* margin: 0vw 0.8333333333vw; */
+	margin: 0 calc(var(--gap-x) / 2);
 	overflow: hidden;
 	flex-shrink: 0;
 	-webkit-transform: translateZ(0);
@@ -165,7 +179,7 @@
 	z-index: 1;
 	background: transparent;
 
-	transform: translate3d(247px, 0px, 0px);
+	transform: translate3d(0px, 0px, 0px);
 	transition-duration: 0ms;
 	width: 247px;
 }
@@ -257,7 +271,7 @@
 	.progress-icon
 	circle:last-child {
 	stroke: #fff;
-	stroke-dasharray: 266;
+	/* stroke-dasharray: 266; */
 	/* stroke-dashoffset: 266; */
 }
 .video-controller-paused {
@@ -289,14 +303,20 @@
 	.carousel-item {
 		border-radius: 20px;
 		height: 580px;
-		width: 988px;
-		margin: 0px 12px;
+		/* width: 988px; */
+		width: var(--slide-w);
+		margin: 0 calc(var(--gap-x) / 2);
 		/* transform: translateX(50%); */
 	}
 	.slider-wrapper {
 		/* transition-duration: 0ms;
 		transform: translate3d(454px, 0px, 0px); */
+		--viewport-w: 1920px;
 		--base-tx: 454px;
+		--slide-w: 988px; /* your 1440px rules */
+		--gap-x: 24px; /* since you use 12px left + 12px right */
+		--step: calc(var(--slide-w) + var(--gap-x));
+		--base-center: calc((var(--viewport-w) / 2) - (var(--slide-w) / 2));
 	}
 	.carousel-scrollbar {
 		margin: 40px auto 0px;
