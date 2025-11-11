@@ -7,46 +7,21 @@ import { ASSETS } from '../../utils/assets';
 const Slider = () => {
 	const { slide1, slide2, slide3, slide4 } = ASSETS;
 	const sources = [slide1, slide2, slide3, slide4];
-	// const videoRef = useRef(null);
-	// const [isPlaying, setIsPlaying] = useState(true);
-	// const handleVideoPlay = () => setIsPlaying(true);
-	// const handleVideoPause = () => setIsPlaying(false);
-	// const [videoProgress, setVideoProgress] = useState(0);
 
 	const [index, setIndex] = useState(0);
+	const lastIndex = sources.length - 1;
+	const [autoAdvance, setAutoAdvance] = useState(true);
 
-	const wrap = (i) => {
-		const len = sources.length;
-		return ((i % len) + len) % len;
+	const next = () => {
+		setAutoAdvance(true);
+		setIndex((i) => Math.min(i + 1, lastIndex));
 	};
 
-	const next = () => setIndex((i) => wrap(i + 1));
-	const prev = () => setIndex((i) => wrap(i - 1));
-	const goTo = (i) => setIndex(wrap(i));
-
-	// useEffect(() => {
-	// 	const video = videoRef.current;
-	// 	const interval = setInterval(() => {
-	// 		if (!isNaN(video.currentTime)) {
-	// 			setVideoProgress((video.currentTime / video.duration) * 100);
-	// 		}
-	// 	}, 25);
-	// 	return () => clearInterval(interval);
-	// }, []);
-
-	// const videoDashStroke = 266 - (videoProgress * 266) / 100;
-
-	// const handlePlayPause = () => {
-	// 	const video = videoRef.current;
-
-	// 	if (video.paused) {
-	// 		video.play();
-	// 		setIsPlaying(true);
-	// 	} else {
-	// 		video.pause();
-	// 		setIsPlaying(false);
-	// 	}
-	// };
+	const prev = () => {
+		setAutoAdvance(false);
+		setIndex((i) => Math.max(i - 1, 0));
+	};
+	const goTo = (i) => setIndex(Math.max(0, Math.min(i, lastIndex)));
 
 	return (
 		<div className='carousel-section'>
@@ -67,7 +42,7 @@ const Slider = () => {
 										key={src || i}
 										src={src}
 										active={i === index}
-										onEnded={next}
+										onEnded={autoAdvance ? next : undefined}
 									/>
 								))}
 							</div>
@@ -78,15 +53,19 @@ const Slider = () => {
 								className='carousel-navigation-arrow carousel-navigation-prev'
 								onClick={prev}
 								aria-label='Previous slide'
+								disabled={index === 0}
+								// aria-disabled={index === 0}
 							/>
 							<button
 								className='carousel-navigation-arrow carousel-navigation-next'
 								onClick={next}
 								aria-label='Next slide'
+								disabled={index === lastIndex}
+								// aria-disabled={index === lastIndex}
 							/>
 						</div>
 
-						<div
+						{/* <div
 							className='carousel-pagination-wrap'
 							role='tablist'
 							aria-label='Slide pagination'
@@ -100,7 +79,7 @@ const Slider = () => {
 									onClick={() => goTo(i)}
 								/>
 							))}
-						</div>
+						</div> */}
 
 						<div className='carousel-scrollbar'>
 							<div

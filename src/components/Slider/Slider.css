@@ -197,6 +197,12 @@
 	border-radius: 2px;
 }
 
+.carousel-navigation-arrow:disabled {
+	opacity: 0;
+	cursor: not-allowed;
+	pointer-events: none; /* extra safety, though button disabled already blocks */
+}
+
 .carousel-navigation-wrap {
 	z-index: 2;
 	position: absolute;
@@ -263,7 +269,7 @@
 	.progress-icon
 	circle:first-child {
 	stroke: rgba(255, 255, 255, 0.4);
-	transform: translateX(50%);
+	/* transform: translateX(50%); */
 }
 .carousel-item
 	.video-container
