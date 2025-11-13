@@ -21,22 +21,61 @@ const Slider = () => {
 		setAutoAdvance(false);
 		setIndex((i) => Math.max(i - 1, 0));
 	};
-	const goTo = (i) => setIndex(Math.max(0, Math.min(i, lastIndex)));
+	// const goTo = (i) => setIndex(Math.max(0, Math.min(i, lastIndex)));
+
+	// --- Scrollbar interactions ---
+	const trackRef = useRef(null);
+	const [dragging, setDragging] = useState(false);
+
+	const toIndexFromClientX = (clientX) => {
+		const track = trackRef.current;
+		if (!track) return index;
+		const rect = track.getBoundingClientRect();
+		const frac = (clientX - rect.left) / rect.width; // 0..1
+		const clamped = Math.max(0, Math.min(1, frac));
+		return Math.round(clamped * lastIndex);
+	};
+
+	const onPointerDown = (e) => {
+		e.preventDefault();
+		setDragging(true);
+		trackRef.current?.setPointerCapture?.(e.pointerId);
+		setIndex(toIndexFromClientX(e.clientX));
+	};
+
+	const onPointerMove = (e) => {
+		if (!dragging) return;
+		setIndex(toIndexFromClientX(e.clientX));
+	};
+
+	const onPointerUp = (e) => {
+		if (!dragging) return;
+		setDragging(false);
+		trackRef.current?.releasePointerCapture?.(e.pointerId);
+	};
+
+	const onTrackClick = (e) => {
+		// (Optional) supports simple click-to-seek
+		setIndex(toIndexFromClientX(e.clientX));
+	};
 
 	return (
 		<div className='carousel-section'>
 			<div className='carousel-container-wrap'>
-				<div className='carousel-container background-slider' />
+				<div className='background-slider'>
+					<video
+						key={sources[index]} // force reload when src changes
+						src={sources[index]}
+						autoPlay
+						muted
+						loop
+						playsInline
+					/>
+				</div>
 				<div className='carousel-wrap'>
 					<div className='carousel-container'>
 						<div className='carousel slider'>
-							{/* translate wrapper; CSS handles the transition */}
-							<div
-								className='slider-wrapper'
-								/* style={{ transform: `translateX(-${index * 100}%)` }} */
-								/* style={{ '--offset': `-${index * 50}%` }} */
-								style={{ '--index': index }}
-							>
+							<div className='slider-wrapper' style={{ '--index': index }}>
 								{sources.map((src, i) => (
 									<VideoSlide
 										key={src || i}
@@ -65,23 +104,20 @@ const Slider = () => {
 							/>
 						</div>
 
-						{/* <div
-							className='carousel-pagination-wrap'
-							role='tablist'
-							aria-label='Slide pagination'
+						<div
+							className='carousel-scrollbar'
+							ref={trackRef}
+							onClick={onTrackClick}
+							onPointerDown={onPointerDown}
+							onPointerMove={onPointerMove}
+							onPointerUp={onPointerUp}
+							role='slider'
+							aria-label='Slide position'
+							aria-valuemin={1}
+							aria-valuemax={sources.length}
+							aria-valuenow={index + 1}
+							tabIndex={0}
 						>
-							{sources.map((_, i) => (
-								<button
-									key={i}
-									role='tab'
-									aria-selected={i === index}
-									className={`carousel-dot ${i === index ? 'is-active' : ''}`}
-									onClick={() => goTo(i)}
-								/>
-							))}
-						</div> */}
-
-						<div className='carousel-scrollbar'>
 							<div
 								className='scrollbar-drag'
 								style={{

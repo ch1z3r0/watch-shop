@@ -80,7 +80,17 @@ const VideoSlide = ({ src, active, onEnded }) => {
 						role='img'
 						aria-label='Video progress'
 					>
-						<circle r={R} cx='50' cy='50' fill='transparent' />
+						<circle
+							r={R}
+							cx='50'
+							cy='50'
+							fill='transparent'
+							style={{
+								strokeDasharray: `${CIRC}px`,
+								strokeDashoffset: `${strokeOffset}px`,
+								// transition: 'stroke-dashoffset 250ms linear',
+							}}
+						/>
 						<circle
 							className='draw-line'
 							r={R}
@@ -98,11 +108,11 @@ const VideoSlide = ({ src, active, onEnded }) => {
 					{/* When video is playing, show 'pause' icon; when paused, show 'play' icon */}
 					<span
 						className='video-controller-playing'
-						style={{ display: isPlaying ? 'block' : 'none' }}
+						style={{ display: isPlaying ? 'none' : 'block' }}
 					/>
 					<span
 						className='video-controller-paused'
-						style={{ display: isPlaying ? 'none' : 'block' }}
+						style={{ display: isPlaying ? 'block' : 'none' }}
 					/>
 				</button>
 			</div>
