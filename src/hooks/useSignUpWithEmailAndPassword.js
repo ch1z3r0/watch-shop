@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { auth } from '../components/firebase';
@@ -9,27 +9,30 @@ const useSignUpWithEmailAndPassword = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const navigate = useNavigate();
 
-	const signUp = async (email, password) => {
-		setIsLoading(true);
-		setError(null);
+	const signUp = useCallback(
+		async (email, password) => {
+			setIsLoading(true);
+			setError(null);
 
-		try {
-			const result = await createUserWithEmailAndPassword(
-				auth,
-				email,
-				password
-			);
-			const user = result.user;
-			console.log('User signed in:', user.email);
-			if (result.user) {
-				navigate('/');
+			try {
+				const result = await createUserWithEmailAndPassword(
+					auth,
+					email,
+					password
+				);
+				const user = result.user;
+				console.log('User signed in:', user.email);
+				if (result.user) {
+					navigate('/');
+				}
+			} catch (error) {
+				setError(error.message);
+			} finally {
+				setIsLoading(false);
 			}
-		} catch (error) {
-			setError(error.message);
-		} finally {
-			setIsLoading(false);
-		}
-	};
+		},
+		[auth]
+	);
 
 	return { signUp, error, isLoading };
 };

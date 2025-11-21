@@ -26,14 +26,18 @@ const SignUp = () => {
 
 		if (!acceptedTerms) {
 			setLocalError('Must accept terms and conditions!');
+			return;
 		}
 		if (password !== confirmPassword) {
 			setLocalError('Password does not match!');
+			return;
 		}
 
 		try {
 			await emailSignUp(email, password);
-		} catch (error) {}
+		} catch (error) {
+			console.error(error);
+		}
 	};
 	return (
 		<div className='signup-form'>
