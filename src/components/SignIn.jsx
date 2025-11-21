@@ -39,7 +39,7 @@ const SignIn = () => {
 		} catch (error) {}
 	};
 
-	const handleGoogleSignIn = () => {
+	const handleGoogleSignIn = () => { 
 		googleSignIn();
 	};
 

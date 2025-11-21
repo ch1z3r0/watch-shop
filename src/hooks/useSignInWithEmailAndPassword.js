@@ -18,6 +18,7 @@ const useSignInWithEmailAndPassword = () => {
 				console.log('User signed in:', user.email);
 				if (result.user) {
 					navigate('/');
+					console.log(result.user);
 				}
 			} catch (error) {
 				const errorCode = error.code;

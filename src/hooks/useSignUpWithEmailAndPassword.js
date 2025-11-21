@@ -9,19 +9,21 @@ const useSignUpWithEmailAndPassword = () => {
 	const [isLoading, setIsLoading] = useState(false);
 	const navigate = useNavigate();
 
-	const signUp = async (username, email, password) => {
+	const signUp = async (email, password) => {
 		setIsLoading(true);
 		setError(null);
 
 		try {
-			const userCredential = await createUserWithEmailAndPassword(
+			const result = await createUserWithEmailAndPassword(
 				auth,
 				email,
 				password
 			);
-			console.log(userCredential.user);
-			navigate('/');
-			return userCredential.user;
+			const user = result.user;
+			console.log('User signed in:', user.email);
+			if (result.user) {
+				navigate('/');
+			}
 		} catch (error) {
 			setError(error.message);
 		} finally {
@@ -29,7 +31,7 @@ const useSignUpWithEmailAndPassword = () => {
 		}
 	};
 
-	return;
+	return { signUp, error, isLoading };
 };
 
 export default useSignUpWithEmailAndPassword;

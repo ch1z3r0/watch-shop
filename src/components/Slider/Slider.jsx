@@ -66,7 +66,7 @@ const Slider = () => {
 					<video
 						key={sources[index]} // force reload when src changes
 						src={sources[index]}
-						autoPlay={isPlaying}
+						// autoPlay={true}
 						muted
 						loop
 						playsInline

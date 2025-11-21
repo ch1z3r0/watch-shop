@@ -11,13 +11,26 @@ const SignUp = () => {
 	const { facebookIcon, googleIcon, githubIcon, xTwitterIcon } = ASSETS;
 
 	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
+	const [confirmPassword, setConfirmPassword] = useState('');
+	const [localError, setLocalError] = useState('');
+	const [acceptedTerms, setAcceptedTerms] = useState(false);
 	const {
 		signUp: emailSignUp,
 		isLoading: emailIsLoading,
 		error: emailError,
-	} = useSignUpWithEmailAndPassword;
+	} = useSignUpWithEmailAndPassword();
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+		setLocalError('');
+
+		if (!acceptedTerms) {
+			setLocalError('Must accept terms and conditions!');
+		}
+		if (password !== confirmPassword) {
+			setLocalError('Password does not match!');
+		}
+
 		try {
 			await emailSignUp(email, password);
 		} catch (error) {}
@@ -34,18 +47,48 @@ const SignUp = () => {
 					</li>
 					<label htmlFor='email'>Email</label>
 					<li>
-						<input type='text' id='email' />
+						<input
+							type='email'
+							id='email'
+							value={email}
+							onChange={(e) => {
+								setEmail(e.target.value);
+							}}
+							required
+						/>
 					</li>
 					<label htmlFor='password'>Password</label>
 					<li>
-						<input type='text' id='password' />
+						<input
+							type='password'
+							id='password'
+							value={password}
+							onChange={(e) => {
+								setPassword(e.target.value);
+							}}
+							required
+						/>
 					</li>
 					<label htmlFor='confirm-password'>Confirm Password</label>
 					<li>
-						<input type='text' id='confirm-password' />
+						<input
+							type='password'
+							id='confirm-password'
+							value={confirmPassword}
+							onChange={(e) => setConfirmPassword(e.target.value)}
+							required
+						/>
 					</li>
 					<li>
-						<input type='checkbox' name='terms' id='terms' />
+						<input
+							type='checkbox'
+							name='terms'
+							id='terms'
+							checked={acceptedTerms}
+							onChange={(e) => {
+								setAcceptedTerms(e.target.checked);
+							}}
+						/>
 						<span>
 							&nbsp; By checking in the box, you accept our
 							<span> Terms & Conditions </span>
@@ -53,8 +96,14 @@ const SignUp = () => {
 							<span> Privacy Policy</span>
 						</span>
 					</li>
-					<button t ype='submit'>
-						Sign Up
+					{(localError || emailError) && (
+						<li>
+							<span style={{ color: 'red' }}>{localError || emailError}</span>
+						</li>
+					)}
+
+					<button type='submit' disabled={emailIsLoading}>
+						{emailIsLoading ? 'Signing Up...' : 'Sign Up'}
 					</button>
 				</ul>
 			</form>

@@ -4,22 +4,16 @@ import './SignInPage.css';
 // import signin_banner from '../assets/images/watch1.svg';
 import { ASSETS } from '../utils/assets';
 import AuthLayout from '../layouts/AuthLayout';
-import { motion } from 'framer-motion';
 // import signin_banner from '../assets/images/watch2.svg';
 
 const SignInPage = () => {
 	const { signInBanner } = ASSETS;
 	const signInImage = (
 		// You can apply motion to the image directly here if you want to animate it
-		<motion.img
+		<img
 			src={signInBanner}
 			alt='Sign Up Background'
 			className='background-image'
-			// Example animation for the image as it appears with the page
-			// initial={{ opacity: 0, scale: 0.8 }}
-			// animate={{ opacity: 1, scale: 1 }}
-			// exit={{ opacity: 0, scale: 0.8 }}
-			// transition={{ duration: 0.7, ease: 'easeInOut' }}
 		/>
 	);
 	return (
