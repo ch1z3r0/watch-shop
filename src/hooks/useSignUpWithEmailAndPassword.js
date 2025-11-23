@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { auth } from '../components/firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 
 const useSignUpWithEmailAndPassword = () => {
 	const [error, setError] = useState(null);
@@ -10,7 +10,7 @@ const useSignUpWithEmailAndPassword = () => {
 	const navigate = useNavigate();
 
 	const signUp = useCallback(
-		async (email, password) => {
+		async (username, email, password) => {
 			setIsLoading(true);
 			setError(null);
 
@@ -20,10 +20,15 @@ const useSignUpWithEmailAndPassword = () => {
 					email,
 					password
 				);
+				await updateProfile(result.user, {
+					displayName: username,
+				});
 				const user = result.user;
 				console.log('User signed in:', user.email);
+				console.log('Username signed in:', username);
 				if (result.user) {
 					navigate('/');
+					console.log(result.user);
 				}
 			} catch (error) {
 				setError(error.message);

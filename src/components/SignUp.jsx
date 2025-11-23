@@ -10,6 +10,7 @@ import { Link } from 'react-router-dom';
 const SignUp = () => {
 	const { facebookIcon, googleIcon, githubIcon, xTwitterIcon } = ASSETS;
 
+	const [username, setUsername] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [confirmPassword, setConfirmPassword] = useState('');
@@ -27,14 +28,16 @@ const SignUp = () => {
 		if (!acceptedTerms) {
 			setLocalError('Must accept terms and conditions!');
 			return;
-		}
-		if (password !== confirmPassword) {
+		} else if (password !== confirmPassword) {
 			setLocalError('Password does not match!');
+			return;
+		} else if (!username.trim()) {
+			setLocalError('Username Required!');
 			return;
 		}
 
 		try {
-			await emailSignUp(email, password);
+			await emailSignUp(username, email, password);
 		} catch (error) {
 			console.error(error);
 		}
@@ -47,7 +50,15 @@ const SignUp = () => {
 				<ul>
 					<label htmlFor='username'>Username</label>
 					<li>
-						<input type='text' id='username' />
+						<input
+							type='text'
+							id='username'
+							value={username}
+							onChange={(e) => {
+								setUsername(e.target.value);
+							}}
+							required
+						/>
 					</li>
 					<label htmlFor='email'>Email</label>
 					<li>

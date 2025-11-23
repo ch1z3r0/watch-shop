@@ -39,7 +39,7 @@ const SignIn = () => {
 		} catch (error) {}
 	};
 
-	const handleGoogleSignIn = () => { 
+	const handleGoogleSignIn = () => {
 		googleSignIn();
 	};
 
@@ -71,9 +71,16 @@ const SignIn = () => {
 							required
 						/>
 					</li>
+					{/* {(localError || emailError) && (
+						<li>
+							<span style={{ color: 'red' }}>{localError || emailError}</span>
+						</li>
+					)} */}
 				</ul>
-				<button type='submit'>Sign In</button>
 				<p>Forgot Password?</p>
+				<button type='submit' disabled={emailIsLoading}>
+					{emailIsLoading ? 'Signing In...' : 'Sign In'}
+				</button>
 			</form>
 			<div className='signin-with'>
 				<hr />
