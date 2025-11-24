@@ -10,6 +10,7 @@ import SignUpPage from './pages/SignUpPage';
 import RootLayout from './layouts/RootLayout';
 import AuthLayout from './layouts/AuthLayout';
 import { AnimatePresence } from 'framer-motion';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
 
 // const router = createBrowserRouter([
 // 	{
@@ -63,6 +64,16 @@ const router = createBrowserRouter([
 					{
 						index: true,
 						element: <SignUpPage />,
+					},
+				],
+			},
+			{
+				path: '/forgotpassword',
+				element: <AnimatedOutlet />,
+				children: [
+					{
+						index: true,
+						element: <ForgotPasswordPage />,
 					},
 				],
 			},

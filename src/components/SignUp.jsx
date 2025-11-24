@@ -6,6 +6,7 @@ import { useState } from 'react';
 import useSignUpWithEmailAndPassword from '../hooks/useSignUpWithEmailAndPassword';
 import { ASSETS } from '../utils/assets';
 import { Link } from 'react-router-dom';
+import useGoogleSignInPopup from '../hooks/useGoogleSignInPopup';
 
 const SignUp = () => {
 	const { facebookIcon, googleIcon, githubIcon, xTwitterIcon } = ASSETS;
@@ -21,6 +22,7 @@ const SignUp = () => {
 		isLoading: emailIsLoading,
 		error: emailError,
 	} = useSignUpWithEmailAndPassword();
+
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 		setLocalError('');
@@ -42,6 +44,18 @@ const SignUp = () => {
 			console.error(error);
 		}
 	};
+
+	const {
+		user: googleUser,
+		error: googleError,
+		isLoading: googleIsLoading,
+		signIn: googleSignIn,
+	} = useGoogleSignInPopup();
+
+	const handleGoogleSignIn = () => {
+		googleSignIn();
+	};
+
 	return (
 		<div className='signup-form'>
 			<h1>Sign Up</h1>
@@ -128,10 +142,7 @@ const SignUp = () => {
 				<hr />
 			</div>
 			<div className='signup-with-icons'>
-				<img
-					src={googleIcon}
-					alt='Google Icon' /* onClick={handleGoogleSignIn} */
-				/>
+				<img src={googleIcon} alt='Google Icon' onClick={handleGoogleSignIn} />
 				<img src={facebookIcon} alt='Facebook Icon' />
 				<img src={githubIcon} alt='Github Icon' />
 				<img src={xTwitterIcon} alt='X Twitter Icon' />

@@ -16,6 +16,7 @@ export const ASSETS = {
 	//IMAGES
 	signInBanner: cdn.image('watch1.svg'),
 	signUpBanner: cdn.image('watch2.svg'),
+	forgotPasswordBanner: cdn.image('forgot-password-icon.svg'),
 	homepageBg: cdn.image('background.jpg'),
 	bannerImg: cdn.image('galaxy-watch-ultra-2025.jpg'),
 	bannerImgV2: cdn.image('galaxy-watch-ultra-2025-v2.jpg'),

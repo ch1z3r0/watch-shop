@@ -9,9 +9,14 @@ import { ASSETS } from '../utils/assets';
 // import github_icon from '../assets/icons/github-icon.svg';
 // import x_twitter_icon from '../assets/icons/x-twitter-icon.svg';
 import useSignInWithEmailAndPassword from '../hooks/useSignInWithEmailAndPassword';
+import ForgotPassword from './ForgotPassword';
 
 const SignIn = () => {
 	const { facebookIcon, googleIcon, xTwitterIcon, githubIcon } = ASSETS;
+
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
+	const [localError, setLocalError] = useState('');
 
 	const {
 		user: googleUser,
@@ -25,11 +30,6 @@ const SignIn = () => {
 		isLoading: emailIsLoading,
 		error: emailError,
 	} = useSignInWithEmailAndPassword();
-
-	const [email, setEmail] = useState('');
-	const [password, setPassword] = useState('');
-	// const [error, setError] = useState(null); // To display errors
-	// const navigate = useNavigate();
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -71,13 +71,16 @@ const SignIn = () => {
 							required
 						/>
 					</li>
-					{/* {(localError || emailError) && (
+					{(localError || emailError) && (
 						<li>
 							<span style={{ color: 'red' }}>{localError || emailError}</span>
 						</li>
-					)} */}
+					)}
 				</ul>
-				<p>Forgot Password?</p>
+				<span>
+					<Link to='/forgotpassword'>Forgot Password?</Link>
+				</span>
+				{/* <p>Forgot Password?</p> */}
 				<button type='submit' disabled={emailIsLoading}>
 					{emailIsLoading ? 'Signing In...' : 'Sign In'}
 				</button>
