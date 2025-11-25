@@ -4,12 +4,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import useGoogleSignInPopup from '../hooks/useGoogleSignInPopup';
 
 import { ASSETS } from '../utils/assets';
-// import facebook_icon from '../assets/icons/facebook-icon.svg';
-// import google_icon from '../assets/icons/google-icon.svg';
-// import github_icon from '../assets/icons/github-icon.svg';
-// import x_twitter_icon from '../assets/icons/x-twitter-icon.svg';
+
 import useSignInWithEmailAndPassword from '../hooks/useSignInWithEmailAndPassword';
-import ForgotPassword from './ForgotPassword';
 
 const SignIn = () => {
 	const { facebookIcon, googleIcon, xTwitterIcon, githubIcon } = ASSETS;

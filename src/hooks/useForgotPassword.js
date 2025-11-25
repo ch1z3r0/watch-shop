@@ -8,8 +8,15 @@ const useForgotPassword = () => {
 	const [success, setSuccess] = useState(false);
 
 	const sendReset = useCallback(async (email) => {
+		setIsLoading(true);
+		setError(null);
+		setSuccess(false);
+
 		try {
-			await sendPasswordResetEmail(auth, email);
+			await sendPasswordResetEmail(auth, email, {
+				url: 'http://localhost:5173/resetpassword',
+				handleCodeInApp: true,
+			});
 			setSuccess(true);
 			return true;
 		} catch (error) {

@@ -1,7 +1,7 @@
 import { ASSETS } from '../utils/assets';
 import AuthLayout from '../layouts/AuthLayout';
 import ForgotPassword from '../components/ForgotPassword';
-import useForgotPassword from '../hooks/useForgotPassword';
+import './ForgotPasswordPage.css';
 
 const ForgotPasswordPage = () => {
 	const { forgotPasswordBanner } = ASSETS;

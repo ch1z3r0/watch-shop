@@ -11,6 +11,7 @@ import RootLayout from './layouts/RootLayout';
 import AuthLayout from './layouts/AuthLayout';
 import { AnimatePresence } from 'framer-motion';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 
 // const router = createBrowserRouter([
 // 	{
@@ -74,6 +75,16 @@ const router = createBrowserRouter([
 					{
 						index: true,
 						element: <ForgotPasswordPage />,
+					},
+				],
+			},
+			{
+				path: '/resetpassword',
+				element: <AnimatedOutlet />,
+				children: [
+					{
+						index: true,
+						element: <ResetPasswordPage />,
 					},
 				],
 			},
