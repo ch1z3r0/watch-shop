@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import useForgotPassword from '../hooks/useForgotPassword';
 
 const ForgotPassword = () => {
@@ -38,6 +39,12 @@ const ForgotPassword = () => {
 					{success && <p style={{ color: 'green' }}>Reset email sent!</p>}
 				</ul>
 			</form>
+			<div className='no-account'>
+				<span>Remembered Password?</span>
+				<span>
+					<Link to='/signin'> Sign In</Link>
+				</span>
+			</div>
 		</div>
 	);
 };

@@ -6,6 +6,7 @@ import useGoogleSignInPopup from '../hooks/useGoogleSignInPopup';
 import { ASSETS } from '../utils/assets';
 
 import useSignInWithEmailAndPassword from '../hooks/useSignInWithEmailAndPassword';
+import useGithubSignIn from '../hooks/useGithubSignIn';
 
 const SignIn = () => {
 	const { facebookIcon, googleIcon, xTwitterIcon, githubIcon } = ASSETS;
@@ -13,6 +14,13 @@ const SignIn = () => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [localError, setLocalError] = useState('');
+
+	const {
+		user: githubUser,
+		error: githubError,
+		isLoading: githubIsLoading,
+		signIn: githubSignIn,
+	} = useGithubSignIn();
 
 	const {
 		user: googleUser,
@@ -37,6 +45,10 @@ const SignIn = () => {
 
 	const handleGoogleSignIn = () => {
 		googleSignIn();
+	};
+
+	const handleGithubSignIn = () => {
+		githubSignIn();
 	};
 
 	return (
@@ -89,7 +101,7 @@ const SignIn = () => {
 			<div className='signin-with-icons'>
 				<img src={googleIcon} alt='Google Icon' onClick={handleGoogleSignIn} />
 				<img src={facebookIcon} alt='Facebook Icon' />
-				<img src={githubIcon} alt='Github Icon' />
+				<img src={githubIcon} alt='Github Icon' onClick={handleGithubSignIn} />
 				<img src={xTwitterIcon} alt='X Twitter Icon' />
 			</div>
 			<div className='no-account'>

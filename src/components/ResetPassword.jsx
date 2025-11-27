@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { confirmPasswordReset, verifyPasswordResetCode } from 'firebase/auth';
+import { auth } from './firebase';
 
 const ResetPassword = () => {
 	const navigate = useNavigate();
@@ -45,6 +46,7 @@ const ResetPassword = () => {
 		setSuccess(false);
 		try {
 			await confirmPasswordReset(auth, oobCode, password);
+			console.log('clicked ');
 			setSuccess(true);
 			navigate('/signin');
 		} catch (error) {}

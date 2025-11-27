@@ -7,6 +7,7 @@ import useSignUpWithEmailAndPassword from '../hooks/useSignUpWithEmailAndPasswor
 import { ASSETS } from '../utils/assets';
 import { Link } from 'react-router-dom';
 import useGoogleSignInPopup from '../hooks/useGoogleSignInPopup';
+import useGithubSignIn from '../hooks/useGithubSignIn';
 
 const SignUp = () => {
 	const { facebookIcon, googleIcon, githubIcon, xTwitterIcon } = ASSETS;
@@ -52,8 +53,19 @@ const SignUp = () => {
 		signIn: googleSignIn,
 	} = useGoogleSignInPopup();
 
+	const {
+		user: githubUser,
+		error: githubError,
+		isLoading: githubIsLoading,
+		signIn: githubSignIn,
+	} = useGithubSignIn();
+
 	const handleGoogleSignIn = () => {
 		googleSignIn();
+	};
+
+	const handleGithubSignIn = () => {
+		githubSignIn();
 	};
 
 	return (
@@ -144,7 +156,7 @@ const SignUp = () => {
 			<div className='signup-with-icons'>
 				<img src={googleIcon} alt='Google Icon' onClick={handleGoogleSignIn} />
 				<img src={facebookIcon} alt='Facebook Icon' />
-				<img src={githubIcon} alt='Github Icon' />
+				<img src={githubIcon} alt='Github Icon' onClick={handleGithubSignIn} />
 				<img src={xTwitterIcon} alt='X Twitter Icon' />
 			</div>
 			<div className='no-account'>
