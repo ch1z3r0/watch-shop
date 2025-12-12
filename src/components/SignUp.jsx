@@ -8,6 +8,7 @@ import { ASSETS } from '../utils/assets';
 import { Link } from 'react-router-dom';
 import useGoogleSignInPopup from '../hooks/useGoogleSignInPopup';
 import useGithubSignIn from '../hooks/useGithubSignIn';
+import useFacebookSignIn from '../hooks/useFacebookSignIn';
 
 const SignUp = () => {
 	const { facebookIcon, googleIcon, githubIcon, xTwitterIcon } = ASSETS;
@@ -59,6 +60,12 @@ const SignUp = () => {
 		isLoading: githubIsLoading,
 		signIn: githubSignIn,
 	} = useGithubSignIn();
+	const {
+		user: facebookUser,
+		error: facebookError,
+		isLoading: facebookIsLoading,
+		signIn: facebookSignIn,
+	} = useFacebookSignIn();
 
 	const handleGoogleSignIn = () => {
 		googleSignIn();
@@ -66,6 +73,9 @@ const SignUp = () => {
 
 	const handleGithubSignIn = () => {
 		githubSignIn();
+	};
+	const handleFacebookSignIn = () => {
+		facebookSignIn();
 	};
 
 	return (
@@ -155,7 +165,11 @@ const SignUp = () => {
 			</div>
 			<div className='signup-with-icons'>
 				<img src={googleIcon} alt='Google Icon' onClick={handleGoogleSignIn} />
-				<img src={facebookIcon} alt='Facebook Icon' />
+				<img
+					src={facebookIcon}
+					alt='Facebook Icon'
+					onClick={handleFacebookSignIn}
+				/>
 				<img src={githubIcon} alt='Github Icon' onClick={handleGithubSignIn} />
 				<img src={xTwitterIcon} alt='X Twitter Icon' />
 			</div>

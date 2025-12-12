@@ -1,7 +1,12 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app';
 import { getAnalytics } from 'firebase/analytics';
-import { getAuth, GithubAuthProvider, GoogleAuthProvider } from 'firebase/auth';
+import {
+	FacebookAuthProvider,
+	getAuth,
+	GithubAuthProvider,
+	GoogleAuthProvider,
+} from 'firebase/auth';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -28,3 +33,5 @@ export const googleProvider = new GoogleAuthProvider();
 export const githubProvider = new GithubAuthProvider();
 githubProvider.addScope('read:user'); //read public user profile data on Github
 githubProvider.addScope('user:email'); //read users' verified email addresses
+
+export const facebookProvider = new FacebookAuthProvider();

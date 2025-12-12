@@ -7,6 +7,7 @@ import { ASSETS } from '../utils/assets';
 
 import useSignInWithEmailAndPassword from '../hooks/useSignInWithEmailAndPassword';
 import useGithubSignIn from '../hooks/useGithubSignIn';
+import useFacebookSignIn from '../hooks/useFacebookSignIn';
 
 const SignIn = () => {
 	const { facebookIcon, googleIcon, xTwitterIcon, githubIcon } = ASSETS;
@@ -21,6 +22,12 @@ const SignIn = () => {
 		isLoading: githubIsLoading,
 		signIn: githubSignIn,
 	} = useGithubSignIn();
+	const {
+		user: facebookUser,
+		error: facebookError,
+		isLoading: facebookIsLoading,
+		signIn: facebookSignIn,
+	} = useFacebookSignIn();
 
 	const {
 		user: googleUser,
@@ -49,6 +56,10 @@ const SignIn = () => {
 
 	const handleGithubSignIn = () => {
 		githubSignIn();
+	};
+
+	const handleFacebookSignIn = () => {
+		facebookSignIn();
 	};
 
 	return (
@@ -100,7 +111,11 @@ const SignIn = () => {
 			</div>
 			<div className='signin-with-icons'>
 				<img src={googleIcon} alt='Google Icon' onClick={handleGoogleSignIn} />
-				<img src={facebookIcon} alt='Facebook Icon' />
+				<img
+					src={facebookIcon}
+					alt='Facebook Icon'
+					onClick={handleFacebookSignIn}
+				/>
 				<img src={githubIcon} alt='Github Icon' onClick={handleGithubSignIn} />
 				<img src={xTwitterIcon} alt='X Twitter Icon' />
 			</div>
