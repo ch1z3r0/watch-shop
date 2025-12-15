@@ -9,9 +9,12 @@ import { ASSETS } from '../utils/assets';
 import Commercial from '../components/Commercial/Commercial';
 import Banner from '../components/Banner/Banner';
 import Slider from '../components/Slider/Slider';
+import { useAuth } from '../components/AuthProvider';
 
 const Homepage = () => {
 	const { homepageBg } = ASSETS;
+	const { user, isLoading } = useAuth();
+	if (isLoading) return <div>Loading...</div>;
 	return (
 		<div className='homepage'>
 			{/* <img className='bg1' src={homepageBg} alt='Background Image 1' /> */}

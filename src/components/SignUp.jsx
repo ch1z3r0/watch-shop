@@ -171,7 +171,7 @@ const SignUp = () => {
 					onClick={handleFacebookSignIn}
 				/>
 				<img src={githubIcon} alt='Github Icon' onClick={handleGithubSignIn} />
-				<img src={xTwitterIcon} alt='X Twitter Icon' />
+				{/* <img src={xTwitterIcon} alt='X Twitter Icon' /> */}
 			</div>
 			<div className='no-account'>
 				<span>Already Have Account?</span>

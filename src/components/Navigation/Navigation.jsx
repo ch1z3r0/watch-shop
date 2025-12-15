@@ -3,9 +3,14 @@ import { Link } from 'react-router-dom';
 import { ASSETS } from '../../utils/assets';
 
 import './Navigation.css';
+import { useAuth } from '../AuthProvider';
+import { button } from 'framer-motion/client';
+import { signOut } from 'firebase/auth';
+import { auth } from '../firebase';
 
 const Navigation = () => {
 	const { watchLogo } = ASSETS;
+	const { user, isLoading } = useAuth();
 	return (
 		<div className='navbar'>
 			<div>
@@ -18,9 +23,13 @@ const Navigation = () => {
 				<li>Cart</li>
 				<li>About Us</li>
 				<li>
-					<Link className='navbar-items' to='signin'>
-						Sign In
-					</Link>
+					{user ? (
+						<button onClick={() => signOut(auth)}>Sign Out</button>
+					) : (
+						<Link className='navbar-items' to='signin'>
+							Sign In
+						</Link>
+					)}
 				</li>
 			</ul>
 		</div>

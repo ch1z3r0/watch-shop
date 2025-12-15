@@ -4,6 +4,7 @@ import './index.css';
 import App from './App.jsx';
 
 import { ASSETS } from './utils/assets.js';
+import { AuthProvider } from './components/AuthProvider.jsx';
 // ---- inject fonts globally from ASSETS ----
 (function injectSamsungFonts() {
 	if (document.querySelector('style[data-fonts="samsung"]')) return; // avoid duplicates
@@ -34,6 +35,8 @@ import { ASSETS } from './utils/assets.js';
 
 createRoot(document.getElementById('root')).render(
 	<StrictMode>
-		<App />
+		<AuthProvider>
+			<App />
+		</AuthProvider>
 	</StrictMode>
 );
