@@ -10,11 +10,13 @@ import Commercial from '../components/Commercial/Commercial';
 import Banner from '../components/Banner/Banner';
 import Slider from '../components/Slider/Slider';
 import { useAuth } from '../components/AuthProvider';
+import FullScreenLoader from '../components/FullScreenLoader';
 
 const Homepage = () => {
 	const { homepageBg } = ASSETS;
 	const { user, isLoading } = useAuth();
-	if (isLoading) return <div>Loading...</div>;
+	if (!isLoading)
+		return <FullScreenLoader message='Checking your session...' />;
 	return (
 		<div className='homepage'>
 			{/* <img className='bg1' src={homepageBg} alt='Background Image 1' /> */}
