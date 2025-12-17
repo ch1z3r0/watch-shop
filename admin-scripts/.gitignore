@@ -1,0 +1,8 @@
+# Dependencies
+node_modules/
+
+# Service Account Key - NEVER commit this!
+serviceAccountKey.json
+
+# Logs
+*.log

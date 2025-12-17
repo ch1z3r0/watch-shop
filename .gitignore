@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Admin scripts service account
+admin-scripts/serviceAccountKey.json
+admin-scripts/node_modules/

@@ -4,13 +4,13 @@ import { ASSETS } from '../../utils/assets';
 
 import './Navigation.css';
 import { useAuth } from '../AuthProvider';
-import { button } from 'framer-motion/client';
+import { button, li } from 'framer-motion/client';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
 
 const Navigation = () => {
 	const { watchLogo } = ASSETS;
-	const { user, isLoading } = useAuth();
+	const { user, isLoading, isAdmin } = useAuth();
 	return (
 		<div className='navbar'>
 			<div>
@@ -31,6 +31,11 @@ const Navigation = () => {
 						</Link>
 					)}
 				</li>
+				{isAdmin && (
+					<li>
+						<Link className='navbar-items'>Admin</Link>
+					</li>
+				)}
 			</ul>
 		</div>
 	);

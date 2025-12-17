@@ -20,7 +20,6 @@ const useGoogleSignInPopup = () => {
 			// console.log(result);
 			// console.log('User:', result.user);
 			console.log('Welcome,', result.user.displayName + '!');
-			console.log('Signed In with:', result.user.email + '!');
 			// console.log('Google Access Token:', token);
 			if (result.user) {
 				navigate('/');
