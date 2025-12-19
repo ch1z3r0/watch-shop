@@ -2,6 +2,7 @@ import { FacebookAuthProvider, signInWithPopup } from 'firebase/auth';
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth, facebookProvider } from '../components/firebase';
+import { consumeRedirectPath } from '../auth/authRedirect';
 
 const useFacebookSignIn = () => {
 	const [user, setUser] = useState(null);
@@ -19,7 +20,7 @@ const useFacebookSignIn = () => {
 			setUser(result.user);
 			console.log('Welcome, ', result.user.displayName + '!');
 			if (result.user) {
-				navigate('/');
+				navigate(consumeRedirectPath('/'), { replace: true });
 			}
 		} catch (error) {
 			setError(error);

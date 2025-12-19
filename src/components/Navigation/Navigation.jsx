@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ASSETS } from '../../utils/assets';
 
 import './Navigation.css';
-import { useAuth } from '../AuthProvider';
+import { useAuth } from '../../auth/AuthProvider';
 import { button, li } from 'framer-motion/client';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';

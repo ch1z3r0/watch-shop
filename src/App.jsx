@@ -12,21 +12,8 @@ import AuthLayout from './layouts/AuthLayout';
 import { AnimatePresence } from 'framer-motion';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
-
-// const router = createBrowserRouter([
-// 	{
-// 		path: '/',
-// 		element: <Homepage />,
-// 	},
-// 	{
-// 		path: '/signin',
-// 		element: <SignInPage />,
-// 	},
-// 	{
-// 		path: '/signup',
-// 		element: <SignUpPage />,
-// 	},
-// ]);
+import { PublicOnly } from './auth/PublicOnly';
+import RequireAuth from './auth/RequireAuth';
 
 const AnimatedOutlet = () => {
 	const location = useLocation();
@@ -44,49 +31,67 @@ const router = createBrowserRouter([
 		path: '/',
 		element: <RootLayout />,
 		children: [
+			//public (For anyone)
 			{
 				index: true,
 				element: <Homepage />,
 			},
+
+			//public only
 			{
-				path: '/signin',
-				element: <AnimatedOutlet />,
+				element: <PublicOnly />,
 				children: [
 					{
-						index: true,
-						element: <SignInPage />,
+						path: '/signin',
+						element: <AnimatedOutlet />,
+						children: [
+							{
+								index: true,
+								element: <SignInPage />,
+							},
+						],
+					},
+					{
+						path: '/signup',
+						element: <AnimatedOutlet />,
+						children: [
+							{
+								index: true,
+								element: <SignUpPage />,
+							},
+						],
+					},
+					{
+						path: '/forgotpassword',
+						element: <AnimatedOutlet />,
+						children: [
+							{
+								index: true,
+								element: <ForgotPasswordPage />,
+							},
+						],
+					},
+					{
+						path: '/resetpassword',
+						element: <AnimatedOutlet />,
+						children: [
+							{
+								index: true,
+								element: <ResetPasswordPage />,
+							},
+						],
 					},
 				],
 			},
+
+			//Private Route (Only for signed in users)
 			{
-				path: '/signup',
-				element: <AnimatedOutlet />,
-				children: [
-					{
-						index: true,
-						element: <SignUpPage />,
-					},
-				],
-			},
-			{
-				path: '/forgotpassword',
-				element: <AnimatedOutlet />,
-				children: [
-					{
-						index: true,
-						element: <ForgotPasswordPage />,
-					},
-				],
-			},
-			{
-				path: '/resetpassword',
-				element: <AnimatedOutlet />,
-				children: [
-					{
-						index: true,
-						element: <ResetPasswordPage />,
-					},
-				],
+				element: (
+					<RequireAuth>
+						<AnimatedOutlet />
+					</RequireAuth>
+				),
+				children: [],
 			},
 		],
 	},

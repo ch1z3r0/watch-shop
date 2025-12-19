@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { auth } from '../components/firebase';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { consumeRedirectPath } from '../auth/authRedirect';
 
 const useSignUpWithEmailAndPassword = () => {
 	const [error, setError] = useState(null);
@@ -27,7 +28,7 @@ const useSignUpWithEmailAndPassword = () => {
 				console.log('User signed in:', user.email);
 				console.log('Username signed in:', username);
 				if (result.user) {
-					navigate('/');
+					navigate(consumeRedirectPath('/'), { replace: true });
 					console.log(result.user);
 				}
 			} catch (error) {

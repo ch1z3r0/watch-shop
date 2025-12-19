@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import { auth, githubProvider } from '../components/firebase';
 import { GithubAuthProvider, signInWithPopup } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
+import { consumeRedirectPath } from '../auth/authRedirect';
 
 const useGithubSignIn = () => {
 	const [user, setUser] = useState(null);
@@ -21,7 +22,7 @@ const useGithubSignIn = () => {
 			console.log('Welcome,', result.user.displayName + '!');
 			console.log('Signed In with:', result.user.email + '!');
 			if (result.user) {
-				navigate('/');
+				navigate(consumeRedirectPath('/'), { replace: true });
 			}
 		} catch (error) {
 			setError(error);

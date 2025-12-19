@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../components/firebase';
 import { useNavigate } from 'react-router-dom';
+import { consumeRedirectPath } from '../auth/authRedirect';
 
 const useGoogleSignInPopup = () => {
 	const [user, setUser] = useState(null);
@@ -22,7 +23,7 @@ const useGoogleSignInPopup = () => {
 			console.log('Welcome,', result.user.displayName + '!');
 			// console.log('Google Access Token:', token);
 			if (result.user) {
-				navigate('/');
+				navigate(consumeRedirectPath('/'), { replace: true });
 			}
 		} catch (error) {
 			setError(error);

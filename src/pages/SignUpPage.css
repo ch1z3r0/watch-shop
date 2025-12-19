@@ -1,6 +1,5 @@
 .signup-form {
 	flex: 1;
-	width: 50%;
 	height: 100%;
 	background-color: #fff;
 	display: flex;
@@ -9,7 +8,6 @@
 	color: #000;
 	padding-top: 2rem;
 	padding-bottom: 3rem;
-	/* z-index: 2; */
 }
 
 .signup-form > h1,
