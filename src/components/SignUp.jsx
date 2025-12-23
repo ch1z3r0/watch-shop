@@ -79,99 +79,119 @@ const SignUp = () => {
 	};
 
 	return (
-		<div className='signup-form'>
-			<h1>Sign Up</h1>
-			<span>Let's Start Your Wonderful Journey With TrackMate</span>
-			<form onSubmit={handleSubmit}>
-				<ul>
-					<label htmlFor='username'>Username</label>
-					<li>
-						<input
-							type='text'
-							id='username'
-							value={username}
-							onChange={(e) => {
-								setUsername(e.target.value);
-							}}
-							required
-						/>
-					</li>
-					<label htmlFor='email'>Email</label>
-					<li>
-						<input
-							type='email'
-							id='email'
-							value={email}
-							onChange={(e) => {
-								setEmail(e.target.value);
-							}}
-							required
-						/>
-					</li>
-					<label htmlFor='password'>Password</label>
-					<li>
-						<input
-							type='password'
-							id='password'
-							value={password}
-							onChange={(e) => {
-								setPassword(e.target.value);
-							}}
-							required
-						/>
-					</li>
-					<label htmlFor='confirm-password'>Confirm Password</label>
-					<li>
-						<input
-							type='password'
-							id='confirm-password'
-							value={confirmPassword}
-							onChange={(e) => setConfirmPassword(e.target.value)}
-							required
-						/>
-					</li>
-					<li>
-						<input
-							type='checkbox'
-							name='terms'
-							id='terms'
-							checked={acceptedTerms}
-							onChange={(e) => {
-								setAcceptedTerms(e.target.checked);
-							}}
-						/>
-						<span>
-							&nbsp; By checking in the box, you accept our
-							<span> Terms & Conditions </span>
-							and
-							<span> Privacy Policy</span>
-						</span>
-					</li>
-					{(localError || emailError) && (
-						<li>
-							<span style={{ color: 'red' }}>{localError || emailError}</span>
+		<div className='signin-form'>
+			<div className='signin-main'>
+				<div>
+					<h1>Sign Up</h1>
+					<span>Let's Start Your Wonderful Journey With TrackMate</span>
+				</div>
+				<form onSubmit={handleSubmit}>
+					<ul className='signin-fields'>
+						<li className='field'>
+							<input
+								type='text'
+								id='username'
+								value={username}
+								onChange={(e) => {
+									setUsername(e.target.value);
+								}}
+								required
+								placeholder=' '
+							/>
+							<label htmlFor='username'>Username</label>
 						</li>
-					)}
+						<li className='field'>
+							<input
+								type='email'
+								id='email'
+								value={email}
+								onChange={(e) => {
+									setEmail(e.target.value);
+								}}
+								required
+								placeholder=' '
+							/>
+							<label htmlFor='email'>Email</label>
+						</li>
+						<li className='field'>
+							<input
+								type='password'
+								id='password'
+								value={password}
+								onChange={(e) => {
+									setPassword(e.target.value);
+								}}
+								required
+								placeholder=' '
+							/>
+							<label htmlFor='password'>Password</label>
+						</li>
+						<li className='field'>
+							<input
+								type='password'
+								id='confirm-password'
+								value={confirmPassword}
+								onChange={(e) => setConfirmPassword(e.target.value)}
+								required
+								placeholder=' '
+							/>
+							<label htmlFor='confirm-password'>Confirm Password</label>
+						</li>
+						<li>
+							<input
+								type='checkbox'
+								name='terms'
+								id='terms'
+								checked={acceptedTerms}
+								onChange={(e) => {
+									setAcceptedTerms(e.target.checked);
+								}}
+							/>
+							<span>
+								&nbsp; By checking in the box, you accept our
+								<span> Terms & Conditions </span>
+								and
+								<span> Privacy Policy</span>
+							</span>
+						</li>
+						{(localError || emailError) && (
+							<li>
+								<span style={{ color: 'red' }}>{localError || emailError}</span>
+							</li>
+						)}
 
-					<button type='submit' disabled={emailIsLoading}>
-						{emailIsLoading ? 'Signing Up...' : 'Sign Up'}
-					</button>
-				</ul>
-			</form>
-			<div className='signup-with'>
-				<hr />
-				<p>Or Sign Up With</p>
-				<hr />
-			</div>
-			<div className='signup-with-icons'>
-				<img src={googleIcon} alt='Google Icon' onClick={handleGoogleSignIn} />
-				<img
-					src={facebookIcon}
-					alt='Facebook Icon'
-					onClick={handleFacebookSignIn}
-				/>
-				<img src={githubIcon} alt='Github Icon' onClick={handleGithubSignIn} />
-				{/* <img src={xTwitterIcon} alt='X Twitter Icon' /> */}
+						<button
+							type='submit'
+							disabled={emailIsLoading}
+							className='signin-button'
+						>
+							{emailIsLoading ? 'Signing Up...' : 'Sign Up'}
+						</button>
+					</ul>
+				</form>
+				<div className='signin-with'>
+					<hr />
+					<p>Or Sign Up With</p>
+					<hr />
+				</div>
+				<div className='signin-with-icons'>
+					<img
+						src={googleIcon}
+						alt='Google Icon'
+						onClick={handleGoogleSignIn}
+					/>
+					<img
+						src={facebookIcon}
+						alt='Facebook Icon'
+						onClick={handleFacebookSignIn}
+					/>
+					<img
+						src={githubIcon}
+						alt='Github Icon'
+						onClick={handleGithubSignIn}
+					/>
+					{/* <img src={xTwitterIcon} alt='X Twitter Icon' /> */}
+				</div>
 			</div>
 			<div className='no-account'>
 				<span>Already Have Account?</span>

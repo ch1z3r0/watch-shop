@@ -14,31 +14,41 @@ const ForgotPassword = () => {
 	};
 
 	return (
-		<div className='forgot-password signin-form'>
-			<h1>Forgot Password</h1>
-			<span>Enter the email address associated with your account.</span>
-			<form onSubmit={handleSubmit}>
-				<ul>
-					<li>
-						<input
-							type='email'
-							value={email}
-							placeholder='Email'
-							onChange={(e) => {
-								setEmail(e.target.value);
-							}}
-							required
-						/>
-					</li>
-					<li>
-						<button type='submit' disabled={isLoading}>
-							{isLoading ? 'Sending...' : 'Send Reset Link'}
-						</button>
-					</li>
-					{error && <p style={{ color: 'red' }}>{error}</p>}
-					{success && <p style={{ color: 'green' }}>Reset email sent!</p>}
-				</ul>
-			</form>
+		<div className='signin-form'>
+			<div className='signin-main'>
+				<div>
+					<h1>Forgot Password</h1>
+					<span>Enter the email address associated with your account.</span>
+				</div>
+				<form onSubmit={handleSubmit}>
+					<ul className='signin-fields'>
+						<li className='field'>
+							<input
+								id='email'
+								type='email'
+								value={email}
+								placeholder=' '
+								onChange={(e) => {
+									setEmail(e.target.value);
+								}}
+								required
+							/>
+							<label htmlFor='email'>Email</label>
+						</li>
+						<li>
+							<button
+								type='submit'
+								disabled={isLoading}
+								className='signin-button'
+							>
+								{isLoading ? 'Sending...' : 'Send Reset Link'}
+							</button>
+						</li>
+						{error && <p style={{ color: 'red' }}>{error}</p>}
+						{success && <p style={{ color: 'green' }}>Reset email sent!</p>}
+					</ul>
+				</form>
+			</div>
 			<div className='no-account'>
 				<span>Remembered Password?</span>
 				<span>

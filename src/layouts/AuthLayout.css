@@ -52,3 +52,19 @@
 	width: 100%;
 	object-fit: contain;
 }
+
+@media (max-width: 1440px) {
+	.image-panel {
+		display: none;
+	}
+
+	.form-panel {
+		width: 100% !important;
+		transform: none !important;
+		max-width: 540px;
+	}
+	.auth-layout-container {
+		max-width: 540px;
+		justify-self: center;
+	}
+}

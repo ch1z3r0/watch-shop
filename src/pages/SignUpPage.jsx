@@ -2,7 +2,6 @@ import SignUp from '../components/SignUp';
 
 // import signup_banner from '../assets/images/watch2.svg?url';
 import { ASSETS } from '../utils/assets';
-import './SignUpPage.css';
 import AuthLayout from '../layouts/AuthLayout';
 
 const SignUpPage = () => {

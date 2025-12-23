@@ -64,60 +64,82 @@ const SignIn = () => {
 
 	return (
 		<div className='signin-form'>
-			<h1>Sign In</h1>
-			<span>Welcome! Please enter your information!</span>
-			<form onSubmit={handleSubmit}>
-				<ul>
-					<label>Email</label>
-					<li>
-						<input
-							type='email'
-							value={email}
-							onChange={(e) => {
-								setEmail(e.target.value);
-							}}
-							required
-						/>
-					</li>
-					<label>Password</label>
-					<li>
-						<input
-							type='password'
-							value={password}
-							onChange={(e) => {
-								setPassword(e.target.value);
-							}}
-							required
-						/>
-					</li>
-					{(localError || emailError) && (
-						<li>
-							<span style={{ color: 'red' }}>{localError || emailError}</span>
+			<div className='signin-main'>
+				<div>
+					<h1>Sign In</h1>
+					<span>Welcome! Please enter your information!</span>
+				</div>
+				<form onSubmit={handleSubmit}>
+					<ul>
+						<li className='field'>
+							<input
+								id='email'
+								type='email'
+								value={email}
+								onChange={(e) => {
+									setEmail(e.target.value);
+								}}
+								required
+								placeholder=' '
+								// autoComplete='email'
+							/>
+							<label htmlFor='email'>Email</label>
 						</li>
-					)}
-				</ul>
-				<span>
-					<Link to='/forgotpassword'>Forgot Password?</Link>
-				</span>
-				{/* <p>Forgot Password?</p> */}
-				<button type='submit' disabled={emailIsLoading}>
-					{emailIsLoading ? 'Signing In...' : 'Sign In'}
-				</button>
-			</form>
-			<div className='signin-with'>
-				<hr />
-				<p>Or Sign In With</p>
-				<hr />
-			</div>
-			<div className='signin-with-icons'>
-				<img src={googleIcon} alt='Google Icon' onClick={handleGoogleSignIn} />
-				<img
-					src={facebookIcon}
-					alt='Facebook Icon'
-					onClick={handleFacebookSignIn}
-				/>
-				<img src={githubIcon} alt='Github Icon' onClick={handleGithubSignIn} />
-				{/* <img src={xTwitterIcon} alt='X Twitter Icon' /> */}
+						<li className='field'>
+							<input
+								id='password'
+								type='password'
+								value={password}
+								onChange={(e) => {
+									setPassword(e.target.value);
+								}}
+								required
+								placeholder=' '
+								autoComplete='off'
+							/>
+							<label htmlFor='password'>Password</label>
+						</li>
+						{(localError || emailError) && (
+							<li>
+								<span style={{ color: 'red' }}>{localError || emailError}</span>
+							</li>
+						)}
+					</ul>
+					<span>
+						<Link to='/forgotpassword'>Forgot Password?</Link>
+					</span>
+					{/* <p>Forgot Password?</p> */}
+					<button
+						type='submit'
+						disabled={emailIsLoading}
+						className='signin-button'
+					>
+						{emailIsLoading ? 'Signing In...' : 'Sign In'}
+					</button>
+				</form>
+				<div className='signin-with'>
+					<hr />
+					<p>Or Sign In With</p>
+					<hr />
+				</div>
+				<div className='signin-with-icons'>
+					<img
+						src={googleIcon}
+						alt='Google Icon'
+						onClick={handleGoogleSignIn}
+					/>
+					<img
+						src={facebookIcon}
+						alt='Facebook Icon'
+						onClick={handleFacebookSignIn}
+					/>
+					<img
+						src={githubIcon}
+						alt='Github Icon'
+						onClick={handleGithubSignIn}
+					/>
+					{/* <img src={xTwitterIcon} alt='X Twitter Icon' /> */}
+				</div>
 			</div>
 			<div className='no-account'>
 				<span>Don't Have Account?</span>
