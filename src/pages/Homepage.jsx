@@ -11,6 +11,7 @@ import Banner from '../components/Banner/Banner';
 import Slider from '../components/Slider/Slider';
 import { useAuth } from '../auth/AuthProvider';
 import FullScreenLoader from '../components/FullScreenLoader';
+import Customization from '../components/Customization/Customization';
 
 const Homepage = () => {
 	const { homepageBg } = ASSETS;
@@ -33,6 +34,7 @@ const Homepage = () => {
 			<Commercial />
 			<h1>Slider Section</h1>
 			<Slider />
+			<Customization />
 		</div>
 	);
 };

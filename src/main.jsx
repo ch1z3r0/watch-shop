@@ -19,6 +19,13 @@ import { AuthProvider } from './auth/AuthProvider.jsx';
 		font-display:swap;
 		}
 		@font-face{
+		font-family:"SamsungOne700";
+		src: url("${ASSETS.samsungOne700}") format("truetype");
+		font-weight:700;
+		font-style:normal;
+		font-display:swap;
+		}
+		@font-face{
 			font-family:"SamsungSharpSans";
 			src: url("${ASSETS.samsungSharpSansBold}") format("truetype");
 		font-weight:700;

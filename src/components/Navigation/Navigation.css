@@ -4,8 +4,10 @@
 	fill: white;
 }
 .brand {
+	font-family: 'Playfair Display';
+	font-style: italic;
 	font-size: 2.5rem;
-	font-weight: 700;
+	font-weight: 600;
 	padding-left: 1rem;
 }
 

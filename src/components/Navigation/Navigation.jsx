@@ -14,8 +14,8 @@ const Navigation = () => {
 	return (
 		<div className='navbar'>
 			<div>
-				<img className='watch-logo' src={watchLogo} alt='Watch Logo' />
-				<span className='brand'>WATCH</span>
+				{/* <img className='watch-logo' src={watchLogo} alt='Watch Logo' /> */}
+				<span className='brand'>CHIRON's</span>
 			</div>
 			<ul>
 				<li>Home</li>

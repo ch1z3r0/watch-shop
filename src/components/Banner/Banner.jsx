@@ -22,7 +22,7 @@ const Banner = () => {
 				<div className='galaxy-ai-wrap'>
 					<img src={galaxyAiText} alt='Galaxy AI' />
 				</div>
-				<p className='banner-description'>
+				<p className='description'>
 					Save up to $300+ on AI-powered adventuring. Plus, get an exclusive $50
 					credit
 				</p>
