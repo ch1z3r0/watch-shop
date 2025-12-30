@@ -10,6 +10,26 @@
 	padding-bottom: 3rem;
 	gap: 2rem;
 }
+
+.back-browse {
+	align-self: flex-start;
+	margin-left: 5%;
+	margin-top: 2%;
+}
+
+.back-browse a {
+	display: flex;
+	align-items: center;
+	font-size: 1.2rem;
+	text-decoration: none;
+	color: #111;
+}
+.back-browse img {
+	height: 24px;
+	width: 24px;
+	margin-right: 5px;
+}
+
 .signin-main {
 	flex: 1;
 	width: 100%;

@@ -10,7 +10,8 @@ import useGithubSignIn from '../hooks/useGithubSignIn';
 import useFacebookSignIn from '../hooks/useFacebookSignIn';
 
 const SignIn = () => {
-	const { facebookIcon, googleIcon, xTwitterIcon, githubIcon } = ASSETS;
+	const { facebookIcon, googleIcon, xTwitterIcon, githubIcon, arrowLeft } =
+		ASSETS;
 
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
@@ -64,6 +65,12 @@ const SignIn = () => {
 
 	return (
 		<div className='signin-form'>
+			<div className='back-browse'>
+				<Link to='/'>
+					<img src={arrowLeft} alt='Arrow Left' />
+					Back to browsing
+				</Link>
+			</div>
 			<div className='signin-main'>
 				<div>
 					<h1>Sign In</h1>

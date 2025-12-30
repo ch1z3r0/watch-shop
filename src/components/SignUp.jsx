@@ -1,7 +1,3 @@
-// import facebook_icon from '../assets/icons/facebook-icon.svg';
-// import google_icon from '../assets/icons/google-icon.svg';
-// import github_icon from '../assets/icons/github-icon.svg';
-// import x_twitter_icon from '../assets/icons/x-twitter-icon.svg';
 import { useState } from 'react';
 import useSignUpWithEmailAndPassword from '../hooks/useSignUpWithEmailAndPassword';
 import { ASSETS } from '../utils/assets';
@@ -11,7 +7,8 @@ import useGithubSignIn from '../hooks/useGithubSignIn';
 import useFacebookSignIn from '../hooks/useFacebookSignIn';
 
 const SignUp = () => {
-	const { facebookIcon, googleIcon, githubIcon, xTwitterIcon } = ASSETS;
+	const { facebookIcon, googleIcon, githubIcon, xTwitterIcon, arrowLeft } =
+		ASSETS;
 
 	const [username, setUsername] = useState('');
 	const [email, setEmail] = useState('');
@@ -81,6 +78,12 @@ const SignUp = () => {
 	return (
 		<div className='signin-form'>
 			<div className='signin-main'>
+				<div className='back-browse'>
+					<Link to='/'>
+						<img src={arrowLeft} alt='Arrow Left' />
+						Back to browsing
+					</Link>
+				</div>
 				<div>
 					<h1>Sign Up</h1>
 					<span>Let's Start Your Wonderful Journey With TrackMate</span>
