@@ -24,6 +24,34 @@ export const ASSETS = {
 	galaxyWatchUltraTitle: cdn.image('galaxy-watch-ultra-2025-logo-pc.png'),
 	galaxyWatchUltraTitleMo: cdn.image('galaxy-watch-ultra-2025-logo-mo.png'),
 	galaxyAiText: cdn.image('galaxy-watch-ultra-2025-kv-ai-text.png'),
+	galaxyWatchUltraMarine01: cdn.image(
+		'galaxy-watch-ultra-2025-marine01-pc.png',
+	),
+	galaxyWatchUltraMarine02: cdn.image(
+		'galaxy-watch-ultra-2025-marine02-pc.webp',
+	),
+	galaxyWatchUltraMarine03: cdn.image(
+		'galaxy-watch-ultra-2025-marine03-pc.jpg',
+	),
+	galaxyWatchUltraMarine04: cdn.image(
+		'galaxy-watch-ultra-2025-marine04-pc.webp',
+	),
+	galaxyWatchUltraMarine05: cdn.image(
+		'galaxy-watch-ultra-2025-marine05-pc.webp',
+	),
+	galaxyWatchUltraTrail01: cdn.image('galaxy-watch-ultra-2025-trail01-pc.png'),
+	galaxyWatchUltraTrail02: cdn.image('galaxy-watch-ultra-2025-trail02-pc.jpg'),
+	galaxyWatchUltraTrail03: cdn.image('galaxy-watch-ultra-2025-trail03-pc.jpg'),
+	galaxyWatchUltraTrail04: cdn.image('galaxy-watch-ultra-2025-trail04-pc.webp'),
+	galaxyWatchUlPeakForm01: cdn.image(
+		'galaxy-watch-ultra-2025-peakform01-pc.jpg',
+	),
+	galaxyWatchUlPeakForm02: cdn.image(
+		'galaxy-watch-ultra-2025-peakform02-pc.webp',
+	),
+	galaxyWatchUlPeakForm03: cdn.image(
+		'galaxy-watch-ultra-2025-peakform03-pc.jpg',
+	),
 
 	//Videos
 	commercialVideo: cdn.video('commercial.mp4'),

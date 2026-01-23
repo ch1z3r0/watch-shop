@@ -26,7 +26,7 @@ const Banner = () => {
 					Save up to $300+ on AI-powered adventuring. Plus, get an exclusive $50
 					credit
 				</p>
-				<div className='banner-button-wrap'>
+				<div className='buy-button-wrap'>
 					<div className='buy-button'>
 						<a href='https://www.samsung.com/us/watches/galaxy-watch-ultra-2025/buy/galaxy-watch-ultra-47mm-titanium-gray-sku-sm-l705uza1xaa/'>
 							<span>Buy Now</span>

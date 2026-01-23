@@ -38,6 +38,48 @@
 	margin: 0 auto;
 }
 
+.cus-content {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+}
+.cus-tab {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	align-items: center;
+}
+.cus-tab-list {
+	display: flex;
+	justify-content: center;
+	margin: 5.5555555556vw 0;
+	border-radius: 2.9166666667vw;
+	background-color: #262525;
+}
+.cus-tab-list button {
+	text-decoration: none;
+	/* overflow: visible; */
+	border-radius: 2.9166666667vw;
+}
+.cus-tab-list button.is-active {
+	opacity: 1;
+	background-color: #fff;
+}
+.cus-tab-list button.is-active span {
+	color: #000;
+}
+.cus-tab-list button span {
+	min-width: 8.3333333333vw;
+	min-height: 3.4722222222vw;
+	display: inline-flex;
+	justify-content: center;
+	padding: 0.9027777778vw 1.1111111111vw;
+	font-size: 1.3888888889vw;
+	text-align: center;
+	color: #fff;
+}
+
 @media (min-width: 1440px) {
 	.cus-wrapper {
 		width: 1200px;
@@ -48,6 +90,19 @@
 	}
 	.cus-text .description {
 		font-size: 20px !important;
+	}
+	.cus-tab-list {
+		border-radius: 42px;
+		margin: 80px 0;
+	}
+	.cus-tab-list button {
+		border-radius: 42px;
+	}
+	.cus-tab-list button span {
+		min-height: 50px;
+		min-width: 120px;
+		font-size: 20px;
+		padding: 13px 16px;
 	}
 }
 
