@@ -27,31 +27,19 @@ export const ASSETS = {
 	galaxyWatchUltraMarine01: cdn.image(
 		'galaxy-watch-ultra-2025-marine01-pc.png',
 	),
-	galaxyWatchUltraMarine02: cdn.image(
-		'galaxy-watch-ultra-2025-marine02-pc.webp',
+	galaxyWatchUltraMarine02: cdn.image('galaxy-watch-ultra-marine02-pc.webp'),
+	galaxyWatchUltraMarine03: cdn.image('galaxy-watch-ultra-marine03-pc.jpg'),
+	galaxyWatchUltraMarine04: cdn.image('galaxy-watch-ultra-marine04-pc.webp'),
+	galaxyWatchUltraMarine05: cdn.image('galaxy-watch-ultra-marine05-pc.webp'),
+	galaxyWatchUltraTrail01: cdn.image('galaxy-watch-ultra-trail01-pc.png'),
+	galaxyWatchUltraTrail02: cdn.image('galaxy-watch-ultra-trail02-pc.jpg'),
+	galaxyWatchUltraTrail03: cdn.image('galaxy-watch-ultra-trail03-pc.jpg'),
+	galaxyWatchUltraTrail04: cdn.image('galaxy-watch-ultra-trail04-pc.webp'),
+	galaxyWatchUltraPeakForm01: cdn.image('galaxy-watch-ultra-peakform01-pc.jpg'),
+	galaxyWatchUltraPeakForm02: cdn.image(
+		'galaxy-watch-ultra-peakform02-pc.webp',
 	),
-	galaxyWatchUltraMarine03: cdn.image(
-		'galaxy-watch-ultra-2025-marine03-pc.jpg',
-	),
-	galaxyWatchUltraMarine04: cdn.image(
-		'galaxy-watch-ultra-2025-marine04-pc.webp',
-	),
-	galaxyWatchUltraMarine05: cdn.image(
-		'galaxy-watch-ultra-2025-marine05-pc.webp',
-	),
-	galaxyWatchUltraTrail01: cdn.image('galaxy-watch-ultra-2025-trail01-pc.png'),
-	galaxyWatchUltraTrail02: cdn.image('galaxy-watch-ultra-2025-trail02-pc.jpg'),
-	galaxyWatchUltraTrail03: cdn.image('galaxy-watch-ultra-2025-trail03-pc.jpg'),
-	galaxyWatchUltraTrail04: cdn.image('galaxy-watch-ultra-2025-trail04-pc.webp'),
-	galaxyWatchUlPeakForm01: cdn.image(
-		'galaxy-watch-ultra-2025-peakform01-pc.jpg',
-	),
-	galaxyWatchUlPeakForm02: cdn.image(
-		'galaxy-watch-ultra-2025-peakform02-pc.webp',
-	),
-	galaxyWatchUlPeakForm03: cdn.image(
-		'galaxy-watch-ultra-2025-peakform03-pc.jpg',
-	),
+	galaxyWatchUltraPeakForm03: cdn.image('galaxy-watch-ultra-peakform03-pc.jpg'),
 
 	//Videos
 	commercialVideo: cdn.video('commercial.mp4'),
