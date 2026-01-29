@@ -12,20 +12,18 @@
 .controls {
 	position: absolute;
 	width: auto;
-	left: 85%;
-	top: 87%;
+	right: 2.5vw;
+	bottom: 5vh;
 	overflow: visible;
 }
 
 .controls > button {
 	margin-right: 0.7vw;
-	padding: 1rem;
+	padding: 1vw;
 	border: 0;
 	background-color: rgba(255, 255, 255, 0.5);
 	border-radius: 50%;
-	/* display: inline-flex;
-	justify-content: center;
-	align-items: center; */
+	display: inline-flex;
 }
 .controls > button:hover {
 	box-shadow: 0 0 1vw 0.1vw rgb(189, 173, 173);
@@ -34,4 +32,28 @@
 .controls > button > img {
 	width: 2vw;
 	height: 2vw;
+}
+
+@media screen and (max-width: 1200px) {
+	.controls {
+		bottom: 3vh;
+	}
+	.controls > button {
+		padding: 12px;
+	}
+}
+
+@media screen and (max-width: 768px) {
+	.controls button img {
+		width: 15.31px;
+		height: 15.31px;
+	}
+	.controls {
+		bottom: 2vh;
+	}
+}
+@media screen and (max-width: 534px) {
+	.controls {
+		bottom: 1vh;
+	}
 }
