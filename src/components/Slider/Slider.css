@@ -102,7 +102,9 @@
 	-webkit-transition-property: -webkit-transform;
 	transition-property: -webkit-transform;
 	transition-property: transform;
-	transition-property: transform, -webkit-transform;
+	transition-property:
+		transform,
+		-webkit-transform;
 	-webkit-box-sizing: content-box;
 	box-sizing: content-box;
 	/* -webkit-transform: translate3d(31.54vw, 0px, 0px);
@@ -368,5 +370,27 @@
 	.video-controller-playing {
 		height: 34px;
 		width: 34px;
+	}
+}
+
+@media screen and (max-width: 1200px) {
+	.carousel-navigation-arrow {
+		scale: 1.5;
+	}
+}
+@media screen and (max-width: 768px) {
+	.carousel-item .video-container .video-controller {
+		scale: 1.25;
+	}
+	.carousel-navigation-arrow {
+		scale: 2;
+	}
+}
+@media screen and (max-width: 534px) {
+	.carousel-item .video-container .video-controller {
+		scale: 1.5;
+	}
+	.carousel-navigation-arrow {
+		scale: 3;
 	}
 }
