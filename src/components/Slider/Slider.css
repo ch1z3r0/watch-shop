@@ -374,7 +374,7 @@
 }
 
 @media screen and (max-width: 1200px) {
-	.carousel-navigation-arrow {
+	.carousel-navigation-wrap .carousel-navigation-arrow {
 		scale: 1.5;
 	}
 }
@@ -382,7 +382,7 @@
 	.carousel-item .video-container .video-controller {
 		scale: 1.25;
 	}
-	.carousel-navigation-arrow {
+	.carousel-navigation-wrap .carousel-navigation-arrow {
 		scale: 2;
 	}
 }
@@ -390,7 +390,7 @@
 	.carousel-item .video-container .video-controller {
 		scale: 1.5;
 	}
-	.carousel-navigation-arrow {
+	.carousel-navigation-wrap .carousel-navigation-arrow {
 		scale: 3;
 	}
 }

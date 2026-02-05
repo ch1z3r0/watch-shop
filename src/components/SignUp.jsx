@@ -86,7 +86,7 @@ const SignUp = () => {
 				</div>
 				<div>
 					<h1>Sign Up</h1>
-					<span>Let's Start Your Wonderful Journey With TrackMate</span>
+					<span>Let's Start Your Wonderful Journey With TrackMate!</span>
 				</div>
 				<form onSubmit={handleSubmit}>
 					<ul className='signin-fields'>

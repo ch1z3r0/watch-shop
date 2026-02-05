@@ -18,7 +18,10 @@ const Navigation = () => {
 	return (
 		<div className='navbar'>
 			<div className='brand-wrapper'>
-				<span className='brand'>CHIRON's</span>
+				<span className='brand'>
+					<Link to='/'>CHIRON's</Link>
+					{/* <a href='/'>CHIRON's</a> */}
+				</span>
 			</div>
 			<div className='nav-items-wrapper'>
 				{/* <img className='watch-logo' src={watchLogo} alt='Watch Logo' /> */}

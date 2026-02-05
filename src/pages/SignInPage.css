@@ -47,11 +47,19 @@
 .signin-main div:first-of-type {
 	margin-bottom: 1rem;
 }
+
+.signin-main div:first-of-type {
+	text-align: center;
+}
+.signin-main div:nth-of-type(2) {
+	text-align: center;
+}
 .signin-main > form {
 	display: flex;
 	flex-direction: column;
 	width: 60%;
 	gap: 1.5rem;
+	min-width: 320px;
 }
 
 .signin-main > form > ul {
@@ -61,6 +69,7 @@
 	flex-direction: column;
 	gap: 2rem;
 	margin: 0;
+	min-width: 320px;
 }
 
 .field {
@@ -76,7 +85,10 @@
 	outline: none;
 	background: #fff;
 	font-size: 14px;
-	transition: border-color 150ms ease, box-shadow 150ms ease;
+	transition:
+		border-color 150ms ease,
+		box-shadow 150ms ease;
+	color: #000;
 }
 
 .field:focus-within input {
@@ -180,4 +192,8 @@
 
 .signin-fields {
 	list-style: none;
+}
+
+#terms {
+	color-scheme: white;
 }
