@@ -14,6 +14,7 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import { PublicOnly } from './auth/PublicOnly';
 import RequireAuth from './auth/RequireAuth';
+import Shop from './pages/Shop';
 
 const AnimatedOutlet = () => {
 	const location = useLocation();
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
 			{
 				index: true,
 				element: <Homepage />,
+			},
+			{
+				path: '/shop',
+				element: <Shop />,
 			},
 
 			//public only

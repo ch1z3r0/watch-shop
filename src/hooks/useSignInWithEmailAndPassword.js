@@ -18,7 +18,9 @@ const useSignInWithEmailAndPassword = () => {
 				const user = result.user;
 				console.log('User signed in:', user.email);
 				if (result.user) {
-					navigate(consumeRedirectPath('/'), { replace: true });
+					const next = consumeRedirectPath('/');
+					console.log('CONSUMED:', next);
+					navigate(next, { replace: true });
 					console.log(result.user);
 				}
 			} catch (error) {
@@ -29,7 +31,7 @@ const useSignInWithEmailAndPassword = () => {
 				setIsLoading(false);
 			}
 		},
-		[auth]
+		[navigate],
 	);
 
 	return { signIn, isLoading, error };

@@ -6,7 +6,10 @@ export const PublicOnly = ({ children }) => {
 	const { user, isLoading } = useAuth();
 
 	if (isLoading) return <FullScreenLoader message='Checking your session...' />;
-	if (user) return <Navigate to='/' replace />;
+	if (user) {
+		const next = consumeRedirectPath('/');
+		return <Navigate to={next} replace />;
+	}
 
 	return children ?? <Outlet />;
 };

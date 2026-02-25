@@ -70,3 +70,10 @@
 		justify-self: center;
 	}
 }
+
+@media (min-width: 1441px) {
+	.auth-layout-container {
+		width: 75vw;
+		justify-self: center;
+	}
+}
