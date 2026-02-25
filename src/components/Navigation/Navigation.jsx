@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 // import watch_logo from '../../assets/icons/watch-logo.svg';
 import { ASSETS } from '../../utils/assets';
 
@@ -8,11 +8,12 @@ import { useAuth } from '../../auth/AuthProvider';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase';
 import { useState } from 'react';
-import { ul } from 'framer-motion/client';
+import { saveRedirectPath } from '../../auth/authRedirect';
 
 const Navigation = () => {
 	const { watchLogo } = ASSETS;
 	const { user, isLoading, isAdmin } = useAuth();
+	const location = useLocation();
 
 	const [moreOpen, setMoreOpen] = useState(false);
 	return (
@@ -26,15 +27,33 @@ const Navigation = () => {
 			<div className='nav-items-wrapper'>
 				{/* <img className='watch-logo' src={watchLogo} alt='Watch Logo' /> */}
 				<ul className='nav-items'>
-					<li>Home</li>
-					<li>Shop</li>
-					<li>Cart</li>
-					<li className='hideSm'>About Us</li>
+					<li>
+						<Link to='/'>Home</Link>
+					</li>
+					<li>
+						<Link to='/shop'>Shop</Link>
+					</li>
+					<li>
+						<Link to='/shop'>Cart</Link>
+					</li>
+					<li className='hideSm'>
+						<Link to='/shop'>About Us</Link>
+					</li>
 					<li className='hideSm'>
 						{user ? (
 							<button onClick={() => signOut(auth)}>Sign Out</button>
 						) : (
-							<Link className='navbar-items' to='signin'>
+							<Link
+								className='navbar-items'
+								to='/signin'
+								onClick={() => {
+									saveRedirectPath(location);
+									console.log(
+										'SAVED:',
+										sessionStorage.getItem('redirectAfterLogin'),
+									);
+								}}
+							>
 								Sign In
 							</Link>
 						)}
@@ -55,12 +74,24 @@ const Navigation = () => {
 						</button>
 						{moreOpen && (
 							<ul className='dropdown'>
-								<li>About Us</li>
+								<li>
+									<Link to='/shop'>About Us</Link>
+								</li>
 								<li>
 									{user ? (
 										<button onClick={() => signOut(auth)}>Sign Out</button>
 									) : (
-										<Link className='navbar-items' to='signin'>
+										<Link
+											className='navbar-items'
+											to='/signin'
+											onClick={() => {
+												saveRedirectPath(location);
+												console.log(
+													'SAVED:',
+													sessionStorage.getItem('redirectAfterLogin'),
+												);
+											}}
+										>
 											Sign In
 										</Link>
 									)}

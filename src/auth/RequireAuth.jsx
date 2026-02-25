@@ -11,6 +11,7 @@ const RequireAuth = ({ children }) => {
 
 	if (!user) {
 		saveRedirectPath(location);
+		console.log('SAVED:', sessionStorage.getItem('redirectAfterLogin'));
 		return <Navigate to='/signin' replace />;
 	}
 

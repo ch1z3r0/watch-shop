@@ -13,6 +13,7 @@ export const ASSETS = {
 	unmute: cdn.icon('volume-solid.svg'),
 	watchLogo: cdn.icon('watch-logo.svg'),
 	arrowLeft: cdn.icon('arrow-left.svg'),
+	star: cdn.icon('star.svg'),
 
 	//IMAGES
 	signInBanner: cdn.image('watch1.svg'),
