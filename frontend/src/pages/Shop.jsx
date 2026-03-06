@@ -16,9 +16,8 @@ const tabs = [
 const Shop = () => {
 	// const { star } = ASSETS;
 	const { user, isLoading } = useAuth();
-	if (isLoading) return <FullScreenLoader message='Checking your session...' />;
-
 	const [activeTab, setActiveTab] = useState('New & Featured');
+	if (isLoading) return <FullScreenLoader message='Checking your session...' />;
 
 	return (
 		<div className='shop'>
