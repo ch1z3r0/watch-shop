@@ -1,0 +1,29 @@
+{
+	"name": "watch-shop",
+	"private": true,
+	"version": "1.0.0",
+	"main": "index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"dev": "concurrently \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\"",
+		"frontend": "npm --prefix frontend run dev",
+		"backend": "npm --prefix backend run dev",
+		"build": "npm --prefix frontend run build",
+		"start": "npm --prefix backend run start"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/ch1z3r0/watch-shop.git"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/ch1z3r0/watch-shop/issues"
+	},
+	"homepage": "https://github.com/ch1z3r0/watch-shop#readme",
+	"description": "",
+	"devDependencies": {
+		"concurrently": "^9.2.1"
+	}
+}
