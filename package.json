@@ -25,6 +25,7 @@
 	"homepage": "https://github.com/ch1z3r0/watch-shop#readme",
 	"description": "",
 	"devDependencies": {
+		"@tailwindcss/vite": "^4.2.1",
 		"concurrently": "^9.2.1"
 	}
 }
