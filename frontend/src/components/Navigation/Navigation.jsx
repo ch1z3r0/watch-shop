@@ -60,7 +60,10 @@ const Navigation = () => {
 					</li>
 					{isAdmin && (
 						<li className='hideSm'>
-							<Link className='navbar-items'>Admin</Link>
+							{/* <Link className='navbar-items'>Admin</Link> */}
+							<a href='http://localhost:5174' className='navbar-items'>
+								Admin
+							</a>
 						</li>
 					)}
 					<li className='moreWrap'>
@@ -98,7 +101,10 @@ const Navigation = () => {
 								</li>
 								{isAdmin && (
 									<li>
-										<Link className='navbar-items'>Admin</Link>
+										{/* <Link className='navbar-items'>Admin</Link> */}
+										<a href='http://localhost:5174' className='navbar-items'>
+											Admin
+										</a>
 									</li>
 								)}
 							</ul>

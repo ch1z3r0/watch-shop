@@ -5,7 +5,7 @@
 	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"dev": "concurrently \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\" \"npm --prefix admin run dev\"",
+		"dev": "concurrently \"npm --prefix backend run dev\" \"npm --prefix frontend run dev -- --host\" \"npm --prefix admin run dev -- --host\"",
 		"frontend": "npm --prefix frontend run dev",
 		"backend": "npm --prefix backend run dev",
 		"admin": "npm --prefix admin run dev",
