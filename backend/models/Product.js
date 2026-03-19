@@ -67,7 +67,7 @@ const productSchema = new mongoose.Schema(
 		slug: {
 			type: String,
 			required: [true, 'Product slug is required'],
-			unique: true,
+			unique: [true, 'Product slug already exists'],
 			trim: true,
 			lowercase: true,
 		},

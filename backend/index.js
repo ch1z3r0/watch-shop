@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 import brandRoutes from './routes/brandRoutes.route.js';
 import categoryRoutes from './routes/categoryRoutes.route.js';
+import productRoutes from './routes/productRoutes.route.js';
 
 dotenv.config();
 connectDB();
@@ -17,6 +18,7 @@ app.get('/', (req, res) => {
 });
 app.use('/api/brands', brandRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use('/api/products', productRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () =>
