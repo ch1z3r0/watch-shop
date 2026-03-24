@@ -167,3 +167,181 @@ export const deleteProduct = async (req, res) => {
 		});
 	}
 };
+
+//For variants
+//Add variant
+export const addVariant = async (req, res) => {
+	try {
+		const {
+			color,
+			size,
+			stock,
+			price,
+			mode,
+			images,
+			featured,
+			case: watchCase,
+		} = req.body;
+		const product = await Product.findOne({ productId: req.params.productId });
+		if (!product) {
+			return res.status(404).json({
+				message: 'Product not found',
+			});
+		}
+
+		//duplicate color and size in the same product
+		const duplicateVariant = product.variants.find(
+			(v) =>
+				v.color.toLowerCase() === color.toLowerCase() &&
+				Number(v.size) === size &&
+				String(v.case || '')
+					.trim()
+					.toLowerCase() ===
+					String(watchCase || '')
+						.trim()
+						.toLowerCase(),
+		);
+
+		if (duplicateVariant) {
+			return res.status(400).json({
+				message: `A Variant with color "${color}" and size "${size}" already exists.`,
+			});
+		}
+		const nextNumber = await getNextSequence('variant');
+		const variantId = formatCode('V', nextNumber);
+
+		const newVariant = {
+			variantId,
+			color,
+			size,
+			stock,
+			price,
+			mode,
+			images,
+			featured: featured ?? false,
+			case: watchCase ?? '',
+		};
+		product.variants.push(newVariant);
+		await product.save();
+		return res.status(201).json({
+			message: 'Variant added successfully',
+			product,
+		});
+	} catch (error) {
+		res.status(500).json({
+			message: 'Failed to add variant',
+			error: error.message,
+		});
+	}
+};
+
+//Update variant
+export const updateVariant = async (req, res) => {
+	try {
+		const { productId, variantId } = req.params;
+		const {
+			color,
+			size,
+			stock,
+			price,
+			mode,
+			images,
+			featured,
+			case: watchCase,
+		} = req.body;
+
+		const product = await Product.findOne({ productId });
+		if (!product) {
+			return res.status(404).json({
+				message: 'Product not found',
+			});
+		}
+
+		const variant = product.variants.find((v) => v.variantId === variantId);
+
+		if (!variant) {
+			return res.status(404).json({ message: 'Variant not found' });
+		}
+
+		//duplicate color and size in the same product
+		const duplicateVariant = product.variants.find(
+			(v) =>
+				v.color.toLowerCase() === color.toLowerCase() &&
+				Number(v.size) === size &&
+				String(v.case || '')
+					.trim()
+					.toLowerCase() ===
+					String(watchCase || '')
+						.trim()
+						.toLowerCase(),
+		);
+
+		if (duplicateVariant) {
+			return res.status(400).json({
+				message: `A Variant with color "${color}", size "${size}" and "${watchCase}" already exists.`,
+			});
+		}
+
+		if (color != undefined) variant.color = color;
+		if (size != undefined) variant.size = size;
+		if (stock != undefined) variant.stock = Number(stock);
+		if (price != undefined) variant.price = Number(price);
+		if (mode != undefined) variant.mode = Array.isArray(mode) ? mode : [];
+		if (images != undefined)
+			variant.images = Array.isArray(images) ? images : [];
+		if (featured != undefined) variant.featured = featured;
+
+		await product.save();
+		return res.status(200).json({
+			message: 'Variant updated successfully',
+			product,
+		});
+	} catch (error) {
+		res.status(500).json({
+			message: 'Failed to update variant',
+			error: error.message,
+		});
+	}
+};
+
+//Delete variant
+export const deleteVariant = async (req, res) => {
+	try {
+		const { productId, variantId } = req.params;
+
+		const product = await Product.findOne({ productId });
+		if (!product) {
+			res.status(404).json({
+				message: 'Product not found',
+			});
+		}
+
+		const variant = product.variants.find((v) => v.variantId === variantId);
+		if (!variant) {
+			res.status(404).json({
+				message: 'Variant not found',
+			});
+		}
+
+		if (product.variants.length === 1) {
+			res.status(400).json({
+				message: 'Product must have at least 1 variant',
+			});
+		}
+
+		product.variants = product.variants.filter(
+			(v) => v.variantId !== variantId,
+		);
+
+		await product.save();
+		res.status(200).json({
+			message: 'Variant deleted successfully',
+			product,
+		});
+	} catch (error) {
+		res.status(500).json({
+			message: 'Failed to delete variant',
+			error: error.message,
+		});
+	}
+};
