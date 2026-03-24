@@ -44,9 +44,14 @@ const variantSchema = new mongoose.Schema(
 			type: Boolean,
 			default: false,
 		},
+		case: {
+			type: String,
+			trim: true,
+			default: false,
+		},
 	},
 	{
-		_id: true,
+		_id: false,
 	},
 );
 
