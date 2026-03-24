@@ -102,6 +102,47 @@ export const createProduct = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
 	try {
+		const { name, slug, brandId, categoryId } = req.body;
+		const product = await Product.findOne({
+			productId: req.params.productId,
+		});
+		if (!product) {
+			res.status(404).json({ message: 'Product not found' });
+		}
+
+		//Check for duplicate slug
+		if (slug !== undefined && slug !== product.slug) {
+			const existingSlug = await Product.findOne({
+				slug,
+				productId: { $ne: req.params.productId },
+			});
+			if (existingSlug) {
+				return res.status(400).json({
+					message: 'Slug already exists',
+				});
+			}
+		}
+
+		//Check for brand
+		const brand = await Brand.findOne({ brandId: req.params.brandId });
+		if (brandId !== undefined && !brand) {
+			res.status(404).json({ message: 'Brand not found' });
+		}
+
+		//Check for category
+		const category = await Category.findOne({ brandId: req.params.brandId });
+		if (categoryId !== undefined && !category) {
+			res.status(404).json({ message: 'Category not found' });
+		}
+
+		// update only provided fields
+		if (name !== undefined) product.name = name;
+		if (slug !== undefined) product.slug = slug;
+		if (brandId !== undefined) product.brandId = brandId;
+		if (categoryId !== undefined) product.categoryId = categoryId;
+
+		const updateProduct = await product.save();
+		res.status(200).json({});
 	} catch (error) {
 		res.status(500).json({
 			message: 'Failed to update product',
@@ -112,6 +153,13 @@ export const updateProduct = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
 	try {
+		const deleteProduct = await Product.findOneAndDelete({
+			productId: req.params.productId,
+		});
+		if (!deleteProduct) {
+			res.status(404).json({ message: 'Product not found' });
+		}
+		res.status(200).json(deleteProduct);
 	} catch (error) {
 		res.status(500).json({
 			message: 'Failed to delete product',
