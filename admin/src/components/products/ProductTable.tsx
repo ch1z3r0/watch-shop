@@ -4,9 +4,9 @@ import {
 	TableCell,
 	TableHeader,
 	TableRow,
-} from '../../ui/table';
+} from '../ui/table';
 
-import Badge from '../../ui/badge/Badge';
+import Badge from '../ui/badge/Badge';
 
 interface Order {
 	id: number;
@@ -109,7 +109,7 @@ const tableData: Order[] = [
 	},
 ];
 
-export default function BasicTableOne() {
+export default function ProductTable() {
 	return (
 		<div className='overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]'>
 			<div className='max-w-full overflow-x-auto'>
@@ -121,31 +121,37 @@ export default function BasicTableOne() {
 								isHeader
 								className='px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400'
 							>
-								User
+								Product Name
 							</TableCell>
 							<TableCell
 								isHeader
 								className='px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400'
 							>
-								Project Name
+								Brand
 							</TableCell>
 							<TableCell
 								isHeader
 								className='px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400'
 							>
-								Team
+								Category
 							</TableCell>
 							<TableCell
 								isHeader
 								className='px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400'
 							>
-								Status
+								Variants
 							</TableCell>
 							<TableCell
 								isHeader
 								className='px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400'
 							>
-								Budget
+								Stock
+							</TableCell>
+							<TableCell
+								isHeader
+								className='px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400'
+							>
+								Price Range
 							</TableCell>
 						</TableRow>
 					</TableHeader>
@@ -211,6 +217,12 @@ export default function BasicTableOne() {
 								</TableCell>
 								<TableCell className='px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400'>
 									{order.budget}
+								</TableCell>
+								<TableCell className='px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400'>
+									{order.budget} - {order.budget}
+								</TableCell>
+								<TableCell className='px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400'>
+									[View Variant]
 								</TableCell>
 							</TableRow>
 						))}
