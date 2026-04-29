@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Product, Variant } from '../types/product';
-import { getProducts } from '../api/productApi';
+import { getProducts, deleteProduct } from '../api/productApi';
 import { Brand } from '../types/brand';
 import { getBrands } from '../api/brandApi';
 import { Category } from '../types/category';
@@ -64,7 +64,12 @@ const useProducts = () => {
 		}, {});
 	}, [categories]);
 
-	return { brandMap, categoryMap, products, isLoading, error };
+	const removeProduct = async (productId: string) => {
+		await deleteProduct(productId);
+		setProducts((prev) => prev.filter((p) => p.productId !== productId));
+	};
+
+	return { brandMap, categoryMap, products, isLoading, error, removeProduct };
 };
 
 export default useProducts;
