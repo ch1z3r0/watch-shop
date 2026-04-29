@@ -1,10 +1,27 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Product } from '../types/product';
+import { Product, Variant } from '../types/product';
 import { getProducts } from '../api/productApi';
 import { Brand } from '../types/brand';
 import { getBrands } from '../api/brandApi';
 import { Category } from '../types/category';
 import { getCategories } from '../api/categoryApi';
+
+export const getTotalStock = (variants: Variant[]): number =>
+	variants.reduce((sum, v) => sum + v.stock, 0);
+
+export const getPriceRange = (variants: Variant[]): string => {
+	if (!variants || variants.length === 0) return '—';
+	const prices = variants.map((v) => v.price);
+	const min = Math.min(...prices);
+	const max = Math.max(...prices);
+	const fmt = (n: number) =>
+		new Intl.NumberFormat('en-US', {
+			style: 'currency',
+			currency: 'USD',
+			maximumFractionDigits: 0,
+		}).format(n);
+	return min === max ? fmt(min) : `${fmt(min)} – ${fmt(max)}`;
+};
 
 const useProducts = () => {
 	const [products, setProducts] = useState<Product[]>([]);

@@ -7,7 +7,10 @@ import {
 } from '../ui/table';
 
 import Badge from '../ui/badge/Badge';
-import useProducts from '../../hooks/useProducts';
+import useProducts, {
+	getTotalStock,
+	getPriceRange,
+} from '../../hooks/useProducts';
 
 export default function ProductTable() {
 	const { products, isLoading, error, brandMap, categoryMap } = useProducts();
@@ -63,21 +66,10 @@ export default function ProductTable() {
 							<TableRow key={product.productId}>
 								<TableCell className='px-5 py-4 sm:px-6 text-start'>
 									<div className='flex items-center gap-3'>
-										{/* <div className='w-10 h-10 overflow-hidden rounded-full'>
-											<img
-												width={40}
-												height={40}
-												// src={product.user.image}
-												alt={product.name}
-											/>
-										</div> */}
 										<div>
 											<span className='block font-medium text-gray-800 text-theme-sm dark:text-white/90'>
 												{product.name}
 											</span>
-											{/* <span className='block text-gray-500 text-theme-xs dark:text-gray-400'>
-												{product.role}
-											</span> */}
 										</div>
 									</div>
 								</TableCell>
@@ -90,47 +82,25 @@ export default function ProductTable() {
 								<TableCell className='px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400'>
 									{product.variants?.length || 0}
 								</TableCell>
-								{/* <TableCell className='px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400'>
-									<div className='flex -space-x-2'>
-										{product.team.images.map((teamImage, index) => (
-											<div
-												key={index}
-												className='w-6 h-6 overflow-hidden border-2 border-white rounded-full dark:border-gray-900'
-											>
-												<img
-													width={24}
-													height={24}
-													src={teamImage}
-													alt={`Team member ${index + 1}`}
-													className='w-full size-6'
-												/>
-											</div>
-										))}
-									</div>
-								</TableCell> */}
-								{/* <TableCell className='px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400'>
-									<Badge
-										size='sm'
-										color={
-											product.status === 'Active'
-												? 'success'
-												: product.status === 'Pending'
+								<TableCell className='px-4 py-3 text-start text-theme-sm'>
+									{(() => {
+										const total = getTotalStock(product.variants ?? []);
+										const color =
+											total === 0
+												? 'error'
+												: total < 10
 													? 'warning'
-													: 'error'
-										}
-									>
-										{product.status}
-									</Badge>
+													: 'success';
+										return (
+											<Badge size='sm' color={color}>
+												{total} units
+											</Badge>
+										);
+									})()}
 								</TableCell>
-								<TableCell className='px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400'>
-									{product.budget}
+								<TableCell className='px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400'>
+									{getPriceRange(product.variants ?? [])}
 								</TableCell>
-								<TableCell className='px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400'>
-									{product.budget} - {product.budget}
-								</TableCell>
-								<TableCell className='px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400'>
-									[View Variant]
-								</TableCell> */}
 							</TableRow>
 						))}
 					</TableBody>
