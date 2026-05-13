@@ -47,7 +47,7 @@ const variantSchema = new mongoose.Schema(
 		case: {
 			type: String,
 			trim: true,
-			default: false,
+			default: '',
 		},
 	},
 	{

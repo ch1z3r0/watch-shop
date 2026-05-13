@@ -266,6 +266,7 @@ export const updateVariant = async (req, res) => {
 		//duplicate color and size in the same product
 		const duplicateVariant = product.variants.find(
 			(v) =>
+				v.variantId !== variantId &&
 				v.color.toLowerCase() === color.toLowerCase() &&
 				Number(v.size) === size &&
 				String(v.case || '')
@@ -290,6 +291,7 @@ export const updateVariant = async (req, res) => {
 		if (images != undefined)
 			variant.images = Array.isArray(images) ? images : [];
 		if (featured != undefined) variant.featured = featured;
+		if (watchCase != undefined) variant.case = watchCase;
 
 		await product.save();
 		return res.status(200).json({

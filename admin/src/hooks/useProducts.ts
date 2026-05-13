@@ -1,10 +1,20 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Product, Variant } from '../types/product';
-import { getProducts, deleteProduct } from '../api/productApi';
+import {
+	getProducts,
+	deleteProduct,
+	createProduct,
+	updateProduct,
+	addVariant,
+	updateVariant,
+	deleteVariant,
+} from '../api/productApi';
 import { Brand } from '../types/brand';
 import { getBrands } from '../api/brandApi';
 import { Category } from '../types/category';
 import { getCategories } from '../api/categoryApi';
+
+// ─── Helper functions ─────────────────────────────────────────────────────────
 
 export const getTotalStock = (variants: Variant[]): number =>
 	variants.reduce((sum, v) => sum + v.stock, 0);
@@ -22,6 +32,8 @@ export const getPriceRange = (variants: Variant[]): string => {
 		}).format(n);
 	return min === max ? fmt(min) : `${fmt(min)} – ${fmt(max)}`;
 };
+
+// ─── Hook ─────────────────────────────────────────────────────────────────────
 
 const useProducts = () => {
 	const [products, setProducts] = useState<Product[]>([]);
@@ -68,8 +80,78 @@ const useProducts = () => {
 		await deleteProduct(productId);
 		setProducts((prev) => prev.filter((p) => p.productId !== productId));
 	};
+	// Replaces one product in state with the updated version returned by the backend
+	const syncProduct = (updated: Product) =>
+		setProducts((prev) =>
+			prev.map((p) => (p.productId === updated.productId ? updated : p)),
+		);
+	// ─── Product Methods ─────────────────────────────────────────────────────────────────────
 
-	return { brandMap, categoryMap, products, isLoading, error, removeProduct };
+	const addProduct = async (payload: {
+		name: string;
+		slug: string;
+		brandId: string;
+		categoryId: string;
+		variants: Omit<Variant, 'variantId'>[];
+	}) => {
+		const createdProduct = await createProduct(payload);
+		setProducts((prev) => [createdProduct, ...prev]);
+	};
+
+	const editProduct = async (
+		productId: string,
+		payload: {
+			name: string;
+			slug: string;
+			brandId: string;
+			categoryId: string;
+		},
+	) => {
+		await updateProduct(productId, payload);
+		setProducts((prev) =>
+			prev.map((p) => (p.productId === productId ? { ...p, ...payload } : p)),
+		);
+	};
+
+	// ─── Variant Methods ─────────────────────────────────────────────────────────────────────
+
+	const createVariant = async (
+		productId: string,
+		payload: Omit<Variant, 'variantId'>,
+	) => {
+		const updated = await addVariant(productId, payload);
+		syncProduct(updated);
+	};
+
+	const editVariant = async (
+		productId: string,
+		variantId: string,
+		payload: Omit<Variant, 'variantId'>,
+	) => {
+		const updated = await updateVariant(productId, variantId, payload);
+		syncProduct(updated);
+	};
+
+	const removeVariant = async (productId: string, variantId: string) => {
+		const updated = await deleteVariant(productId, variantId);
+		syncProduct(updated);
+	};
+
+	return {
+		brandMap,
+		categoryMap,
+		brands,
+		categories,
+		products,
+		isLoading,
+		error,
+		removeProduct,
+		addProduct,
+		editProduct,
+		createVariant,
+		editVariant,
+		removeVariant,
+	};
 };
 
 export default useProducts;

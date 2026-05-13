@@ -15,7 +15,9 @@ import useProducts, {
 	getTotalStock,
 	getPriceRange,
 } from '../../hooks/useProducts';
-import { Product } from '../../types/product';
+import { Product, Variant } from '../../types/product';
+import ProductFormModal from './ProductFormModal';
+import VariantManagerModal from './VariantManagerModal';
 
 const COLUMNS = [
 	'Product Name',
@@ -104,12 +106,75 @@ const TrashIcon = () => (
 		/>
 	</svg>
 );
+const LayersIcon = () => (
+	<svg width='16' height='16' viewBox='0 0 24 24' fill='none'>
+		<polygon
+			points='12 2 2 7 12 12 22 7 12 2'
+			stroke='currentColor'
+			strokeWidth='2'
+			strokeLinecap='round'
+			strokeLinejoin='round'
+		/>
+		<polyline
+			points='2 17 12 22 22 17'
+			stroke='currentColor'
+			strokeWidth='2'
+			strokeLinecap='round'
+			strokeLinejoin='round'
+		/>
+		<polyline
+			points='2 12 12 17 22 12'
+			stroke='currentColor'
+			strokeWidth='2'
+			strokeLinecap='round'
+			strokeLinejoin='round'
+		/>
+	</svg>
+);
 
 export default function ProductTable() {
-	const { products, isLoading, error, brandMap, categoryMap, removeProduct } =
-		useProducts();
+	const {
+		products,
+		isLoading,
+		error,
+		brandMap,
+		brands,
+		categories,
+		categoryMap,
+		removeProduct,
+		addProduct,
+		editProduct,
+		createVariant,
+		editVariant,
+		removeVariant,
+	} = useProducts();
+
+	const [formTarget, setFormTarget] = useState<Product | null | undefined>(
+		undefined,
+	);
+	// undefined = modal closed, null = add mode, Product = edit mode
+	const isFormOpen = formTarget !== undefined;
+
 	const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
 	const [isDeleting, setIsDeleting] = useState(false);
+
+	const [variantTarget, setVariantTarget] = useState<Product | null>(null);
+
+	const handleSave = async (
+		payload: {
+			name: string;
+			slug: string;
+			brandId: string;
+			categoryId: string;
+		},
+		variant?: Omit<Variant, 'variantId'>,
+	) => {
+		if (formTarget) {
+			await editProduct(formTarget.productId, payload);
+		} else {
+			await addProduct({ ...payload, variants: [variant!] });
+		}
+	};
 
 	const handleDeleteConfirm = async () => {
 		if (!deleteTarget) return;
@@ -121,6 +186,11 @@ export default function ProductTable() {
 			setDeleteTarget(null);
 		}
 	};
+
+	// Keep variantTarget in sync — variants change in products state after edits
+	const syncedVariantTarget = variantTarget
+		? (products.find((p) => p.productId === variantTarget.productId) ?? null)
+		: null;
 	if (error) {
 		return (
 			<Alert variant='error' title='Failed to load products' message={error} />
@@ -128,6 +198,12 @@ export default function ProductTable() {
 	}
 	return (
 		<>
+			{/* Toolbar */}
+			<div className='flex justify-end mb-4'>
+				<Button size='sm' onClick={() => setFormTarget(null)}>
+					+ Add Product
+				</Button>
+			</div>
 			<div className='overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]'>
 				<div className='max-w-full overflow-x-auto'>
 					<Table>
@@ -190,9 +266,7 @@ export default function ProductTable() {
 											<TableCell className='px-4 py-3 text-start'>
 												<div className='flex items-center gap-2'>
 													<button
-														onClick={() => {
-															/* edit handler — coming in step 4 */
-														}}
+														onClick={() => setFormTarget(product)}
 														className='p-1.5 rounded-lg text-gray-500 hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-500/10 transition-colors'
 														title='Edit product'
 													>
@@ -205,6 +279,13 @@ export default function ProductTable() {
 													>
 														<TrashIcon />
 													</button>
+													<button
+														onClick={() => setVariantTarget(product)}
+														className='p-1.5 rounded-lg text-gray-500 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-colors'
+														title='Manage variants'
+													>
+														<LayersIcon />
+													</button>
 												</div>
 											</TableCell>
 										</TableRow>
@@ -213,7 +294,23 @@ export default function ProductTable() {
 					</Table>
 				</div>
 			</div>
-
+			{/* Add / Edit Modal */}
+			<ProductFormModal
+				isOpen={isFormOpen}
+				onClose={() => setFormTarget(undefined)}
+				onSave={handleSave}
+				product={formTarget ?? null}
+				brands={brands}
+				categories={categories}
+			/>
+			<VariantManagerModal
+				isOpen={!!variantTarget}
+				onClose={() => setVariantTarget(null)}
+				product={syncedVariantTarget}
+				onCreateVariant={createVariant}
+				onEditVariant={editVariant}
+				onRemoveVariant={removeVariant}
+			/>
 			{/* Delete Confirmation Modal */}
 			<Modal
 				isOpen={!!deleteTarget}
