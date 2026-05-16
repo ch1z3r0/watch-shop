@@ -7,6 +7,7 @@ import Select from '../form/Select';
 import { Product, Variant } from '../../types/product';
 import { Brand } from '../../types/brand';
 import { Category } from '../../types/category';
+import ImageUploader from './ImageUploader';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -390,53 +391,14 @@ export default function ProductFormModal({
 							</div>
 
 							{/* ── Images ── */}
-							<div className='flex flex-col gap-2 col-span-2'>
-								<div className='flex items-center justify-between'>
-									<Label>Images</Label>
-									<button
-										type='button'
-										onClick={addImageField}
-										className='text-xs text-brand-500 hover:text-brand-600 font-medium'
-									>
-										+ Add URL
-									</button>
-								</div>
-								{variant.images.length === 0 && (
-									<p className='text-xs text-gray-400 dark:text-gray-500'>
-										No images added yet. Click "+ Add URL" to add one.
-									</p>
-								)}
-								{variant.images.map((img, index) => (
-									<div key={index} className='flex items-center gap-2'>
-										<div className='flex-1'>
-											<Input
-												placeholder='https://example.com/image.jpg'
-												value={img}
-												onChange={(e) => updateImage(index, e.target.value)}
-											/>
-										</div>
-										<button
-											type='button'
-											onClick={() => removeImage(index)}
-											className='p-2 text-gray-400 hover:text-error-500 transition-colors flex-shrink-0'
-											title='Remove image'
-										>
-											<svg
-												width='14'
-												height='14'
-												viewBox='0 0 24 24'
-												fill='none'
-											>
-												<path
-													d='M18 6L6 18M6 6l12 12'
-													stroke='currentColor'
-													strokeWidth='2'
-													strokeLinecap='round'
-												/>
-											</svg>
-										</button>
-									</div>
-								))}
+							<div className='col-span-2'>
+								<Label>Images</Label>
+								<ImageUploader
+									images={variant.images}
+									onChange={(urls) =>
+										setVariant((v) => ({ ...v, images: urls }))
+									}
+								/>
 							</div>
 
 							{/* ── Featured ── */}

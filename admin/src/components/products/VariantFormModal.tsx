@@ -4,6 +4,7 @@ import Button from '../ui/button/Button';
 import Input from '../form/input/InputField';
 import Label from '../form/Label';
 import { Variant } from '../../types/product';
+import ImageUploader from './ImageUploader';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -233,50 +234,13 @@ export default function VariantFormModal({
 				</div>
 
 				{/* ── Images ── */}
-				<div className='flex flex-col gap-2'>
-					<div className='flex items-center justify-between'>
-						<Label>Images</Label>
-						<button
-							type='button'
-							onClick={addImageField}
-							className='text-xs text-brand-500 hover:text-brand-600 font-medium'
-						>
-							+ Add URL
-						</button>
-					</div>
-					{draft.images.length === 0 && (
-						<p className='text-xs text-gray-400 dark:text-gray-500'>
-							No images added yet. Click "+ Add URL" to add one.
-						</p>
-					)}
-					{draft.images.map((img, index) => (
-						<div key={index} className='flex items-center gap-2'>
-							<div className='flex-1'>
-								<Input
-									placeholder='https://example.com/image.jpg'
-									value={img}
-									onChange={(e) => updateImage(index, e.target.value)}
-								/>
-							</div>
-							<button
-								type='button'
-								onClick={() => removeImage(index)}
-								className='p-2 text-gray-400 hover:text-error-500 transition-colors flex-shrink-0'
-								title='Remove image'
-							>
-								<svg width='14' height='14' viewBox='0 0 24 24' fill='none'>
-									<path
-										d='M18 6L6 18M6 6l12 12'
-										stroke='currentColor'
-										strokeWidth='2'
-										strokeLinecap='round'
-									/>
-								</svg>
-							</button>
-						</div>
-					))}
+				<div>
+					<Label>Images</Label>
+					<ImageUploader
+						images={draft.images}
+						onChange={(urls) => setDraft((prev) => ({ ...prev, images: urls }))}
+					/>
 				</div>
-
 				{/* ── Featured ── */}
 				<div className='flex items-center gap-3'>
 					<input
