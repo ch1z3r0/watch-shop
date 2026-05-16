@@ -28,6 +28,9 @@ type VariantDraft = {
 	stock: string;
 	price: string;
 	case: string;
+	mode: string; // comma-separated input → split into string[] on submit
+	images: string[]; // dynamic list of URL strings
+	featured: boolean;
 };
 
 const emptyVariant: VariantDraft = {
@@ -36,6 +39,9 @@ const emptyVariant: VariantDraft = {
 	stock: '',
 	price: '',
 	case: '',
+	mode: '',
+	images: [],
+	featured: false,
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -72,6 +78,9 @@ export default function ProductFormModal({
 	// UI state
 	const [isSaving, setIsSaving] = useState(false);
 	const [errors, setErrors] = useState<Record<string, string>>({});
+	const set =
+		(key: keyof VariantDraft) => (e: React.ChangeEvent<HTMLInputElement>) =>
+			setVariant((prev) => ({ ...prev, [key]: e.target.value }));
 
 	// Populate fields when modal opens
 	useEffect(() => {
@@ -96,6 +105,24 @@ export default function ProductFormModal({
 	useEffect(() => {
 		if (!slugManuallyEdited) setSlug(toSlug(name));
 	}, [name, slugManuallyEdited]);
+
+	// ─── Image helpers ────────────────────────────────────────────────────────
+
+	const addImageField = () =>
+		setVariant((prev) => ({ ...prev, images: [...prev.images, ''] }));
+
+	const updateImage = (index: number, value: string) =>
+		setVariant((prev) => {
+			const updated = [...prev.images];
+			updated[index] = value;
+			return { ...prev, images: updated };
+		});
+
+	const removeImage = (index: number) =>
+		setVariant((prev) => ({
+			...prev,
+			images: prev.images.filter((_, i) => i !== index),
+		}));
 
 	// ─── Validation ───────────────────────────────────────────────────────────
 
@@ -153,9 +180,14 @@ export default function ProductFormModal({
 					stock: Number(variant.stock),
 					price: Number(variant.price),
 					case: variant.case.trim(),
-					mode: [],
-					images: [],
-					featured: false,
+					mode: variant.mode
+						? variant.mode
+								.split(',')
+								.map((m) => m.trim())
+								.filter(Boolean)
+						: [],
+					images: variant.images.map((url) => url.trim()).filter(Boolean),
+					featured: variant.featured,
 				};
 				await onSave(productPayload, variantPayload);
 			}
@@ -178,7 +210,7 @@ export default function ProductFormModal({
 			className='max-w-xl w-full m-4 p-6'
 			showCloseButton={false}
 		>
-			<div className='flex flex-col gap-5'>
+			<div className='flex flex-col gap-5 max-h-[80vh] overflow-y-auto pr-1'>
 				{/* Header */}
 				<div>
 					<h4 className='text-lg font-semibold text-gray-800 dark:text-white/90'>
@@ -291,9 +323,7 @@ export default function ProductFormModal({
 									id='var-case'
 									placeholder='e.g. Titanium'
 									value={variant.case}
-									onChange={(e) =>
-										setVariant((v) => ({ ...v, case: e.target.value }))
-									}
+									onChange={set('case')}
 								/>
 							</div>
 
@@ -332,7 +362,7 @@ export default function ProductFormModal({
 							</div>
 
 							{/* Stock */}
-							<div className='col-span-2'>
+							<div>
 								<Label htmlFor='var-stock'>Stock</Label>
 								<Input
 									id='var-stock'
@@ -346,6 +376,92 @@ export default function ProductFormModal({
 									hint={errors.variantStock}
 									min='0'
 								/>
+							</div>
+							{/* ── Mode ── */}
+							<div>
+								<Label htmlFor='v-mode'>Modes</Label>
+								<Input
+									id='v-mode'
+									placeholder='e.g. GPS, LTE, WiFi'
+									value={variant.mode}
+									onChange={set('mode')}
+									hint='Separate multiple modes with a comma'
+								/>
+							</div>
+
+							{/* ── Images ── */}
+							<div className='flex flex-col gap-2 col-span-2'>
+								<div className='flex items-center justify-between'>
+									<Label>Images</Label>
+									<button
+										type='button'
+										onClick={addImageField}
+										className='text-xs text-brand-500 hover:text-brand-600 font-medium'
+									>
+										+ Add URL
+									</button>
+								</div>
+								{variant.images.length === 0 && (
+									<p className='text-xs text-gray-400 dark:text-gray-500'>
+										No images added yet. Click "+ Add URL" to add one.
+									</p>
+								)}
+								{variant.images.map((img, index) => (
+									<div key={index} className='flex items-center gap-2'>
+										<div className='flex-1'>
+											<Input
+												placeholder='https://example.com/image.jpg'
+												value={img}
+												onChange={(e) => updateImage(index, e.target.value)}
+											/>
+										</div>
+										<button
+											type='button'
+											onClick={() => removeImage(index)}
+											className='p-2 text-gray-400 hover:text-error-500 transition-colors flex-shrink-0'
+											title='Remove image'
+										>
+											<svg
+												width='14'
+												height='14'
+												viewBox='0 0 24 24'
+												fill='none'
+											>
+												<path
+													d='M18 6L6 18M6 6l12 12'
+													stroke='currentColor'
+													strokeWidth='2'
+													strokeLinecap='round'
+												/>
+											</svg>
+										</button>
+									</div>
+								))}
+							</div>
+
+							{/* ── Featured ── */}
+							<div className='flex items-center gap-3 col-span-2'>
+								<input
+									id='v-featured'
+									type='checkbox'
+									checked={variant.featured}
+									onChange={(e) =>
+										setVariant((prev) => ({
+											...prev,
+											featured: e.target.checked,
+										}))
+									}
+									className='w-4 h-4 rounded border-gray-300 text-brand-500 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-700 cursor-pointer'
+								/>
+								<label
+									htmlFor='v-featured'
+									className='text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer'
+								>
+									Featured variant
+								</label>
+								<span className='text-xs text-gray-400 dark:text-gray-500'>
+									Shown as the default on the product page
+								</span>
 							</div>
 						</div>
 					</div>

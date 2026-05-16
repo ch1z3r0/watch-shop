@@ -74,6 +74,7 @@ export const createProduct = async (req, res) => {
 				size: variant.size,
 				stock: variant.stock,
 				price: variant.price,
+				case: variant.case,
 				mode: variant.mode || [],
 				images: variant.images || [],
 				featured: variant.featured ?? false,
@@ -107,7 +108,7 @@ export const updateProduct = async (req, res) => {
 			productId: req.params.productId,
 		});
 		if (!product) {
-			res.status(404).json({ message: 'Product not found' });
+			return res.status(404).json({ message: 'Product not found' });
 		}
 
 		//Check for duplicate slug
@@ -124,13 +125,13 @@ export const updateProduct = async (req, res) => {
 		}
 
 		//Check for brand
-		const brand = await Brand.findOne({ brandId: req.params.brandId });
+		const brand = await Brand.findOne({ brandId: brandId });
 		if (brandId !== undefined && !brand) {
 			res.status(404).json({ message: 'Brand not found' });
 		}
 
 		//Check for category
-		const category = await Category.findOne({ brandId: req.params.brandId });
+		const category = await Category.findOne({ categoryId: categoryId });
 		if (categoryId !== undefined && !category) {
 			res.status(404).json({ message: 'Category not found' });
 		}
