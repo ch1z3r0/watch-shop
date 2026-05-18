@@ -32,6 +32,19 @@ export const getPriceRange = (variants: Variant[]): string => {
 		}).format(n);
 	return min === max ? fmt(min) : `${fmt(min)} – ${fmt(max)}`;
 };
+// --- Search, Filters, Sort types -------------------------------------------
+export interface Filters {
+	brandId: string;
+	categoryId: string;
+	stock: 'all' | 'instock' | 'lowstock' | 'outofstock';
+}
+
+type SortColumn = 'name' | 'stock' | 'price';
+type SortDirection = 'asc' | 'desc';
+export interface Sort {
+	column: SortColumn;
+	direction: SortDirection;
+}
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────
 
@@ -41,6 +54,14 @@ const useProducts = () => {
 	const [categories, setCategories] = useState<Category[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState('');
+
+	const [searchQuery, setSearchQuery] = useState('');
+	const [filters, setFilters] = useState<Filters>({
+		brandId: '',
+		categoryId: '',
+		stock: 'all',
+	});
+	const [sort, setSort] = useState<Sort>({ column: 'name', direction: 'asc' });
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -75,6 +96,67 @@ const useProducts = () => {
 			return acc;
 		}, {});
 	}, [categories]);
+
+	const filteredProducts = useMemo(() => {
+		let result = [...products];
+
+		// --- Search ---------------------------------------------------------------
+		if (searchQuery.trim()) {
+			const q = searchQuery.toLowerCase().trim();
+			result = result.filter((p) => {
+				const brandName = brandMap[p.brandId]?.toLowerCase() ?? '';
+				const categoryName = categoryMap[p.categoryId]?.toLowerCase() ?? '';
+				const variantFields = p.variants
+					.flatMap((v) => [v.color, v.case, ...v.mode])
+					.join(' ')
+					.toLowerCase();
+				return (
+					p.name.toLowerCase().includes(q) ||
+					brandName.includes(q) ||
+					categoryName.includes(q) ||
+					variantFields.includes(q)
+				);
+			});
+		}
+
+		// --- Filters ---------------------------------------------------------------
+		if (filters.brandId) {
+			result = result.filter((p) => p.brandId === filters.brandId);
+		}
+		if (filters.categoryId) {
+			result = result.filter((p) => p.categoryId === filters.categoryId);
+		}
+		if (filters.stock !== 'all') {
+			result = result.filter((p) => {
+				const total = getTotalStock(p.variants ?? []);
+				if (filters.stock === 'outofstock') return total === 0;
+				if (filters.stock === 'lowstock') return total > 0 && total < 10;
+				if (filters.stock === 'instock') return total >= 10;
+				return true;
+			});
+		}
+
+		// --- Sort --------------------------------------------------------------------
+		result.sort((a, b) => {
+			let valA: number | string = 0;
+			let valB: number | string = 0;
+
+			if (sort.column === 'name') {
+				valA = a.name.toLowerCase();
+				valB = b.name.toLowerCase();
+			} else if (sort.column === 'stock') {
+				valA = getTotalStock(a.variants ?? []);
+				valB = getTotalStock(b.variants ?? []);
+			} else if (sort.column === 'price') {
+				valA = Math.min(...(a.variants ?? []).map((v) => v.price));
+				valB = Math.min(...(b.variants ?? []).map((v) => v.price));
+			}
+			if (valA < valB) return sort.direction === 'asc' ? -1 : 1;
+			if (valA > valB) return sort.direction === 'asc' ? 1 : -1;
+			return 0;
+		});
+		return result;
+	}, [products, searchQuery, filters, sort, brandMap, categoryMap]);
 
 	const removeProduct = async (productId: string) => {
 		await deleteProduct(productId);
@@ -145,6 +227,13 @@ const useProducts = () => {
 		products,
 		isLoading,
 		error,
+		filteredProducts,
+		filters,
+		setFilters,
+		sort,
+		setSort,
+		searchQuery,
+		setSearchQuery,
 		removeProduct,
 		addProduct,
 		editProduct,

@@ -18,22 +18,23 @@ import useProducts, {
 import { Product, Variant } from '../../types/product';
 import ProductFormModal from './ProductFormModal';
 import VariantManagerModal from './VariantManagerModal';
+import type { Filters } from '../../hooks/useProducts';
 
 const COLUMNS = [
-	'Product Name',
-	'Brand',
-	'Category',
-	'Variants',
-	'Stock',
-	'Price Range',
-	'Actions',
+	{ label: 'Product Name', key: 'name', sortable: true },
+	{ label: 'Brand', key: 'brand', sortable: false },
+	{ label: 'Category', key: 'category', sortable: false },
+	{ label: 'Variants', key: 'variants', sortable: false },
+	{ label: 'Stock', key: 'stock', sortable: true },
+	{ label: 'Price Range', key: 'price', sortable: true },
+	{ label: 'Actions', key: 'actions', sortable: false },
 ];
 
 function SkeletonRow() {
 	return (
 		<TableRow>
 			{COLUMNS.map((col) => (
-				<TableCell key={col} className='px-4 py-3'>
+				<TableCell key={col.key} className='px-4 py-3'>
 					<div className='h-4 rounded bg-gray-100 dark:bg-white/[0.05] animate-pulse' />
 				</TableCell>
 			))}
@@ -147,7 +148,24 @@ export default function ProductTable() {
 		createVariant,
 		editVariant,
 		removeVariant,
+		filteredProducts,
+		searchQuery,
+		setSearchQuery,
+		filters,
+		setFilters,
+		sort,
+		setSort,
 	} = useProducts();
+
+	const toggleSort = (key: string) => {
+		if (!['name', 'stock', 'price'].includes(key)) return;
+		const column = key as 'name' | 'stock' | 'price';
+		setSort((prev) => ({
+			column,
+			direction:
+				prev.column === column && prev.direction === 'asc' ? 'desc' : 'asc',
+		}));
+	};
 
 	const [formTarget, setFormTarget] = useState<Product | null | undefined>(
 		undefined,
@@ -199,10 +217,85 @@ export default function ProductTable() {
 	return (
 		<>
 			{/* Toolbar */}
-			<div className='flex justify-end mb-4'>
-				<Button size='sm' onClick={() => setFormTarget(null)}>
-					+ Add Product
-				</Button>
+			<div className='flex flex-col gap-3 mb-4'>
+				{/* Search + Add button */}
+				<div className='flex items-center gap-3'>
+					<input
+						type='text'
+						placeholder='Search by name, brand, category, color, case, mode...'
+						value={searchQuery}
+						onChange={(e) => setSearchQuery(e.target.value)}
+						className='flex-1 px-4 py-2.5 rounded-lg border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] text-sm text-gray-700 dark:text-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500'
+					/>
+					<Button size='sm' onClick={() => setFormTarget(null)}>
+						+ Add Product
+					</Button>
+				</div>
+
+				{/* Filters */}
+				<div className='flex items-center gap-3'>
+					<select
+						value={filters.brandId}
+						onChange={(e) =>
+							setFilters((prev) => ({ ...prev, brandId: e.target.value }))
+						}
+						className='px-3 py-2 rounded-lg border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500'
+					>
+						<option value=''>All Brands</option>
+						{brands.map((b) => (
+							<option key={b.brandId} value={b.brandId}>
+								{b.name}
+							</option>
+						))}
+					</select>
+
+					<select
+						value={filters.categoryId}
+						onChange={(e) =>
+							setFilters((prev) => ({ ...prev, categoryId: e.target.value }))
+						}
+						className='px-3 py-2 rounded-lg border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500'
+					>
+						<option value=''>All Categories</option>
+						{categories.map((c) => (
+							<option key={c.categoryId} value={c.categoryId}>
+								{c.name}
+							</option>
+						))}
+					</select>
+
+					<select
+						value={filters.stock}
+						onChange={(e) =>
+							setFilters((prev) => ({
+								...prev,
+								stock: e.target.value as Filters['stock'],
+							}))
+						}
+						className='px-3 py-2 rounded-lg border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500'
+					>
+						<option value='all'>All Stock</option>
+						<option value='instock'>In Stock</option>
+						<option value='lowstock'>Low Stock</option>
+						<option value='outofstock'>Out of Stock</option>
+					</select>
+
+					{/* Clear filters button — only shows when something is active */}
+					{(searchQuery ||
+						filters.brandId ||
+						filters.categoryId ||
+						filters.stock !== 'all') && (
+						<button
+							onClick={() => {
+								setSearchQuery('');
+								setFilters({ brandId: '', categoryId: '', stock: 'all' });
+							}}
+							className='text-xs text-gray-400 hover:text-error-500 transition-colors'
+						>
+							Clear all
+						</button>
+					)}
+				</div>
 			</div>
 			<div className='overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]'>
 				<div className='max-w-full overflow-x-auto'>
@@ -212,11 +305,25 @@ export default function ProductTable() {
 							<TableRow>
 								{COLUMNS.map((col) => (
 									<TableCell
-										key={col}
+										key={col.key}
 										isHeader
 										className='px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400'
 									>
-										{col}
+										<div
+											className={`flex items-center gap-1 ${col.sortable ? 'cursor-pointer select-none hover:text-gray-700 dark:hover:text-gray-300' : ''}`}
+											onClick={() => col.sortable && toggleSort(col.key)}
+										>
+											{col.label}
+											{col.sortable && (
+												<span className='text-gray-300 dark:text-gray-600'>
+													{sort.column === col.key
+														? sort.direction === 'asc'
+															? '↑'
+															: '↓'
+														: '↕'}
+												</span>
+											)}
+										</div>
 									</TableCell>
 								))}
 							</TableRow>
@@ -228,7 +335,7 @@ export default function ProductTable() {
 								? Array.from({ length: 5 }).map((_, i) => (
 										<SkeletonRow key={i} />
 									))
-								: products.map((product) => (
+								: filteredProducts.map((product) => (
 										<TableRow key={product.productId}>
 											<TableCell className='px-5 py-4 sm:px-6 text-start'>
 												<span className='block font-medium text-gray-800 text-theme-sm dark:text-white/90'>
@@ -290,6 +397,16 @@ export default function ProductTable() {
 											</TableCell>
 										</TableRow>
 									))}
+							{!isLoading && filteredProducts.length === 0 && (
+								<tr>
+									<td
+										colSpan={COLUMNS.length}
+										className='px-5 py-8 text-center text-gray-400 text-sm'
+									>
+										No products found
+									</td>
+								</tr>
+							)}
 						</TableBody>
 					</Table>
 				</div>
