@@ -74,8 +74,8 @@ export const createProduct = async (req, res) => {
 				size: variant.size,
 				stock: variant.stock,
 				price: variant.price,
-				case: variant.case,
-				mode: variant.mode || [],
+				case: variant.case?.toLowerCase() ?? '',
+				mode: (variant.mode || []).map((m) => m.toLowerCase()),
 				images: variant.images || [],
 				featured: variant.featured ?? false,
 			});
@@ -213,14 +213,14 @@ export const addVariant = async (req, res) => {
 
 		const newVariant = {
 			variantId,
-			color,
+			color: color?.toLowerCase() ?? '',
 			size,
 			stock,
 			price,
-			mode,
+			mode: (mode || []).map((m) => m.toLowerCase()),
 			images,
 			featured: featured ?? false,
-			case: watchCase ?? '',
+			case: watchCase?.toLowerCase() ?? '',
 		};
 		product.variants.push(newVariant);
 		await product.save();
@@ -284,15 +284,18 @@ export const updateVariant = async (req, res) => {
 			});
 		}
 
-		if (color != undefined) variant.color = color;
+		if (color != undefined) variant.color = color?.toLowerCase();
 		if (size != undefined) variant.size = size;
 		if (stock != undefined) variant.stock = Number(stock);
 		if (price != undefined) variant.price = Number(price);
-		if (mode != undefined) variant.mode = Array.isArray(mode) ? mode : [];
+		if (mode != undefined)
+			variant.mode = Array.isArray(mode)
+				? mode.map((m) => m.toLowerCase())
+				: [];
 		if (images != undefined)
 			variant.images = Array.isArray(images) ? images : [];
 		if (featured != undefined) variant.featured = featured;
-		if (watchCase != undefined) variant.case = watchCase;
+		if (watchCase != undefined) variant.case = watchCase.toLowerCase();
 
 		await product.save();
 		return res.status(200).json({

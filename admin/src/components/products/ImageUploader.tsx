@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { uploadImage } from '../../api/uploadApi';
+import { deleteImage, uploadImage } from '../../api/uploadApi';
 
 interface ImageUploaderProps {
 	images: string[];
@@ -72,7 +72,15 @@ export default function ImageUploader({
 		}
 	};
 
-	const removeImage = (index: number) => {
+	const removeImage = async (index: number) => {
+		const confirmed = window.confirm(
+			'Are you sure you want to remove this image? It will be removed permanently!',
+		);
+		if (!confirmed) return;
+		const url = images[index];
+		try {
+			await deleteImage(url);
+		} catch (error) {}
 		onChange(images.filter((_, i) => i !== index));
 	};
 

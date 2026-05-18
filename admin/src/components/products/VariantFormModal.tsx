@@ -74,24 +74,6 @@ export default function VariantFormModal({
 		setErrors({});
 	}, [isOpen, variant]);
 
-	// ─── Image helpers ────────────────────────────────────────────────────────
-
-	const addImageField = () =>
-		setDraft((prev) => ({ ...prev, images: [...prev.images, ''] }));
-
-	const updateImage = (index: number, value: string) =>
-		setDraft((prev) => {
-			const updated = [...prev.images];
-			updated[index] = value;
-			return { ...prev, images: updated };
-		});
-
-	const removeImage = (index: number) =>
-		setDraft((prev) => ({
-			...prev,
-			images: prev.images.filter((_, i) => i !== index),
-		}));
-
 	// ─── Validation ───────────────────────────────────────────────────────────
 
 	const validate = () => {

@@ -107,24 +107,6 @@ export default function ProductFormModal({
 		if (!slugManuallyEdited) setSlug(toSlug(name));
 	}, [name, slugManuallyEdited]);
 
-	// ─── Image helpers ────────────────────────────────────────────────────────
-
-	const addImageField = () =>
-		setVariant((prev) => ({ ...prev, images: [...prev.images, ''] }));
-
-	const updateImage = (index: number, value: string) =>
-		setVariant((prev) => {
-			const updated = [...prev.images];
-			updated[index] = value;
-			return { ...prev, images: updated };
-		});
-
-	const removeImage = (index: number) =>
-		setVariant((prev) => ({
-			...prev,
-			images: prev.images.filter((_, i) => i !== index),
-		}));
-
 	// ─── Validation ───────────────────────────────────────────────────────────
 
 	const validate = () => {

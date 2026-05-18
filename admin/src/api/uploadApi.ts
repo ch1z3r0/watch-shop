@@ -8,3 +8,8 @@ export const uploadImage = async (file: File): Promise<string> => {
 
 	return res.data.url;
 };
+
+export const deleteImage = async (url: string): Promise<void> => {
+	const key = new URL(url).pathname.slice(1);
+	await api.delete('/api/upload', { data: { key } });
+};
