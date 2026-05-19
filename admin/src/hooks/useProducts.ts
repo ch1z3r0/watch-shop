@@ -39,7 +39,7 @@ export interface Filters {
 	stock: 'all' | 'instock' | 'lowstock' | 'outofstock';
 }
 
-type SortColumn = 'name' | 'stock' | 'price';
+type SortColumn = 'name' | 'stock' | 'price' | 'createdAt' | 'updatedAt';
 type SortDirection = 'asc' | 'desc';
 export interface Sort {
 	column: SortColumn;
@@ -150,6 +150,12 @@ const useProducts = () => {
 			} else if (sort.column === 'price') {
 				valA = Math.min(...(a.variants ?? []).map((v) => v.price));
 				valB = Math.min(...(b.variants ?? []).map((v) => v.price));
+			} else if (sort.column === 'createdAt') {
+				valA = new Date(a.createdAt).getDate();
+				valB = new Date(b.createdAt).getDate();
+			} else if (sort.column === 'updatedAt') {
+				valA = new Date(a.updatedAt).getTime();
+				valB = new Date(b.updatedAt).getTime();
 			}
 			if (valA < valB) return sort.direction === 'asc' ? -1 : 1;
 			if (valA > valB) return sort.direction === 'asc' ? 1 : -1;

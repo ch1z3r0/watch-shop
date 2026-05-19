@@ -17,4 +17,6 @@ export interface Product {
 	brandId: string;
 	categoryId: string;
 	variants: Variant[];
+	createdAt: string;
+	updatedAt: string;
 }

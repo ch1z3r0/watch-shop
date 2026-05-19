@@ -27,6 +27,8 @@ const COLUMNS = [
 	{ label: 'Variants', key: 'variants', sortable: false },
 	{ label: 'Stock', key: 'stock', sortable: true },
 	{ label: 'Price Range', key: 'price', sortable: true },
+	{ label: 'Added Date', key: 'createdAt', sortable: true },
+	{ label: 'Last Updated', key: 'updatedAt', sortable: true },
 	{ label: 'Actions', key: 'actions', sortable: false },
 ];
 
@@ -158,8 +160,14 @@ export default function ProductTable() {
 	} = useProducts();
 
 	const toggleSort = (key: string) => {
-		if (!['name', 'stock', 'price'].includes(key)) return;
-		const column = key as 'name' | 'stock' | 'price';
+		if (!['name', 'stock', 'price', 'createdAt', 'updatedAt'].includes(key))
+			return;
+		const column = key as
+			| 'name'
+			| 'stock'
+			| 'price'
+			| 'createdAt'
+			| 'updatedAt';
 		setSort((prev) => ({
 			column,
 			direction:
@@ -315,7 +323,7 @@ export default function ProductTable() {
 										>
 											{col.label}
 											{col.sortable && (
-												<span className='text-gray-300 dark:text-gray-600'>
+												<span className='text-gray-300 dark:text-gray-600 pointer-events-none'>
 													{sort.column === col.key
 														? sort.direction === 'asc'
 															? '↑'
@@ -369,6 +377,12 @@ export default function ProductTable() {
 											</TableCell>
 											<TableCell className='px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400'>
 												{getPriceRange(product.variants ?? [])}
+											</TableCell>
+											<TableCell className='px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400'>
+												{new Date(product.createdAt).toLocaleDateString()}
+											</TableCell>
+											<TableCell className='px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400'>
+												{new Date(product.updatedAt).toLocaleDateString()}
 											</TableCell>
 											<TableCell className='px-4 py-3 text-start'>
 												<div className='flex items-center gap-2'>
