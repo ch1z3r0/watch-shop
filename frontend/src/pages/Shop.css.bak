@@ -1,0 +1,43 @@
+.shop-title {
+	font-family: SamsungSharpSans;
+	font-size: 36px;
+}
+.shop-wrapper {
+	width: 100%;
+}
+.shop-content {
+	padding: 0 15% 0 15%;
+}
+.shop-tab-list {
+	display: flex;
+	flex-direction: row;
+}
+.shop-tab-list button {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	width: 160px;
+}
+.shop-tab-list button:hover {
+	background-color: #978f8f;
+}
+.shop-tab-list button:hover .tab-icon {
+	transform: scale(1.15);
+}
+.shop-tab-list button:hover span {
+	transition: ease-in-out 150ms;
+}
+.shop-tab-list button span {
+	/* color: #fff; */
+	color: #706e6e;
+}
+.shop-tab-list button:hover span {
+	color: #fff;
+}
+.shop-tab-list button .tab-icon {
+	color: #706e6e;
+	font-size: 48px;
+}
+.shop-tab-list button.is-active span {
+	color: #fff;
+}
