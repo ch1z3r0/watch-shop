@@ -4,7 +4,27 @@ import formatCode from '../utils/formatCode.js';
 
 export const getAllBrands = async (req, res) => {
 	try {
-		const brands = await Brand.find().sort({ createdAt: -1 });
+		const brands = await Brand.aggregate([
+			{
+				$lookup: {
+					from: 'products',
+					localField: 'brandId',
+					foreignField: 'brandId',
+					as: 'matchedProducts',
+				},
+			},
+			{
+				$addFields: {
+					productCount: { $size: '$matchedProducts' },
+				},
+			},
+			{
+				$project: { matchedProducts: 0 },
+			},
+			{
+				$sort: { createdAt: -1 },
+			},
+		]);
 		res.status(200).json(brands);
 	} catch (error) {
 		res.status(500).json({
@@ -13,6 +33,7 @@ export const getAllBrands = async (req, res) => {
 		});
 	}
 };
+
 export const getBrandsById = async (req, res) => {
 	try {
 		const brand = await Brand.findOne({ brandId: req.params.brandId });

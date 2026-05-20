@@ -19,6 +19,8 @@ import AppLayout from './layout/AppLayout';
 import { ScrollToTop } from './components/common/ScrollToTop';
 import Home from './pages/Dashboard/Home';
 import Products from './pages/Products';
+import Categories from './pages/Categories';
+import Brands from './pages/Brands';
 
 export default function App() {
 	return (
@@ -32,6 +34,8 @@ export default function App() {
 
 						{/* Others Page */}
 						<Route path='/products' element={<Products />} />
+						<Route path='/categories' element={<Categories />} />
+						<Route path='/brands' element={<Brands />} />
 						<Route path='/profile' element={<UserProfiles />} />
 						<Route path='/calendar' element={<Calendar />} />
 						<Route path='/blank' element={<Blank />} />
