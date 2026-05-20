@@ -12,7 +12,7 @@ import {
 
 // --- Search, Sort types -------------------------------------------
 
-type SortColumn = 'name' | 'createdAt' | 'updatedAt';
+type SortColumn = 'name' | 'productCount' | 'createdAt' | 'updatedAt';
 type SortDirection = 'asc' | 'desc';
 export interface Sort {
 	column: SortColumn;
@@ -63,6 +63,9 @@ const useBrands = () => {
 			if (sort.column === 'name') {
 				valA = a.name.toLowerCase();
 				valB = b.name.toLowerCase();
+			} else if (sort.column === 'productCount') {
+				valA = a.productCount;
+				valB = b.productCount;
 			} else if (sort.column === 'createdAt') {
 				valA = new Date(a.createdAt).getTime();
 				valB = new Date(b.createdAt).getTime();

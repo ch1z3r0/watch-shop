@@ -5,7 +5,27 @@ import formatCode from '../utils/formatCode.js';
 
 export const getAllCategories = async (req, res) => {
 	try {
-		const categories = await Category.find().sort({ createdAt: -1 });
+		const categories = await Category.aggregate([
+			{
+				$lookup: {
+					from: 'products', // MongoDB collection name
+					localField: 'categoryId', // Category's own categoryId field
+					foreignField: 'categoryId', // Product's categoryId field
+					as: 'matchedProducts', // temp array, just used to count
+				},
+			},
+			{
+				$addFields: {
+					productCount: { $size: '$matchedProducts' }, // count array
+				},
+			},
+			{
+				$project: { matchedProducts: 0 }, // remove temp array from res
+			},
+			{
+				$sort: { createdAt: -1 },
+			},
+		]);
 		res.status(200).json(categories);
 	} catch (error) {
 		res.status(500).json({

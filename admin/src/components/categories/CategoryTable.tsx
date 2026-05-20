@@ -15,6 +15,7 @@ import CategoryFormModal from './CategoryFormModal';
 
 const COLUMNS = [
 	{ label: 'Category Name', key: 'name', sortable: true },
+	{ label: 'Product Count', key: 'productCount', sortable: true },
 	{ label: 'Added Date', key: 'createdAt', sortable: true },
 	{ label: 'Last Updated', key: 'updatedAt', sortable: true },
 	{ label: 'Actions', key: 'actions', sortable: false },
@@ -97,31 +98,6 @@ const TrashIcon = () => (
 		/>
 	</svg>
 );
-const LayersIcon = () => (
-	<svg width='16' height='16' viewBox='0 0 24 24' fill='none'>
-		<polygon
-			points='12 2 2 7 12 12 22 7 12 2'
-			stroke='currentColor'
-			strokeWidth='2'
-			strokeLinecap='round'
-			strokeLinejoin='round'
-		/>
-		<polyline
-			points='2 17 12 22 22 17'
-			stroke='currentColor'
-			strokeWidth='2'
-			strokeLinecap='round'
-			strokeLinejoin='round'
-		/>
-		<polyline
-			points='2 12 12 17 22 12'
-			stroke='currentColor'
-			strokeWidth='2'
-			strokeLinecap='round'
-			strokeLinejoin='round'
-		/>
-	</svg>
-);
 
 export default function CategoryTable() {
 	const {
@@ -138,8 +114,9 @@ export default function CategoryTable() {
 		editCategory,
 	} = useCategories();
 	const toggleSort = (key: string) => {
-		if (!['name', 'createdAt', 'updatedAt'].includes(key)) return;
-		const column = key as 'name' | 'createdAt' | 'updatedAt';
+		if (!['name', 'productCount', 'createdAt', 'updatedAt'].includes(key))
+			return;
+		const column = key as 'name' | 'productCount' | 'createdAt' | 'updatedAt';
 		setSort((prev) => ({
 			column,
 			direction:
@@ -236,6 +213,11 @@ export default function CategoryTable() {
 											<TableCell className='px-5 py-4 sm:px-6 text-start'>
 												<span className='block font-medium text-gray-800 text-theme-sm dark:text-white/90'>
 													{category.name}
+												</span>
+											</TableCell>
+											<TableCell className='px-4 py-3 text-start text-theme-sm'>
+												<span className='inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-50 text-brand-600 dark:bg-brand-500/10 dark:text-brand-400'>
+													{category.productCount}
 												</span>
 											</TableCell>
 											<TableCell className='px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400'>
