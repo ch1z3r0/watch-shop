@@ -7,24 +7,14 @@ import {
 	TableRow,
 } from '../ui/table';
 
-import Badge from '../ui/badge/Badge';
-import Alert from '../ui/alert/Alert';
 import Button from '../ui/button/Button';
 import { Modal } from '../ui/modal';
-import useProducts, {
-	getTotalStock,
-	getPriceRange,
-} from '../../hooks/useProducts';
-import { Product, Variant } from '../../types/product';
-import type { Filters } from '../../hooks/useProducts';
+import { Brand } from '../../types/brand';
+import useBrands from '../../hooks/useBrands';
+import BrandFormModal from './BrandFormModal';
 
 const COLUMNS = [
-	{ label: 'Product Name', key: 'name', sortable: true },
-	{ label: 'Brand', key: 'brand', sortable: false },
-	{ label: 'Category', key: 'category', sortable: false },
-	{ label: 'Variants', key: 'variants', sortable: false },
-	{ label: 'Stock', key: 'stock', sortable: true },
-	{ label: 'Price Range', key: 'price', sortable: true },
+	{ label: 'Brand Name', key: 'name', sortable: true },
 	{ label: 'Added Date', key: 'createdAt', sortable: true },
 	{ label: 'Last Updated', key: 'updatedAt', sortable: true },
 	{ label: 'Actions', key: 'actions', sortable: false },
@@ -135,37 +125,21 @@ const LayersIcon = () => (
 
 export default function BrandTable() {
 	const {
-		products,
 		isLoading,
 		error,
-		brandMap,
+		filteredBrands,
 		brands,
-		categories,
-		categoryMap,
-		removeProduct,
-		addProduct,
-		editProduct,
-		createVariant,
-		editVariant,
-		removeVariant,
-		filteredProducts,
-		searchQuery,
-		setSearchQuery,
-		filters,
-		setFilters,
 		sort,
 		setSort,
-	} = useProducts();
-
+		searchQuery,
+		setSearchQuery,
+		removeBrand,
+		addBrand,
+		editBrand,
+	} = useBrands();
 	const toggleSort = (key: string) => {
-		if (!['name', 'stock', 'price', 'createdAt', 'updatedAt'].includes(key))
-			return;
-		const column = key as
-			| 'name'
-			| 'stock'
-			| 'price'
-			| 'createdAt'
-			| 'updatedAt';
+		if (!['name', 'createdAt', 'updatedAt'].includes(key)) return;
+		const column = key as 'name' | 'createdAt' | 'updatedAt';
 		setSort((prev) => ({
 			column,
 			direction:
@@ -173,30 +147,20 @@ export default function BrandTable() {
 		}));
 	};
 
-	const [formTarget, setFormTarget] = useState<Product | null | undefined>(
+	const [formTarget, setFormTarget] = useState<Brand | null | undefined>(
 		undefined,
 	);
 	// undefined = modal closed, null = add mode, Product = edit mode
 	const isFormOpen = formTarget !== undefined;
 
-	const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
+	const [deleteTarget, setDeleteTarget] = useState<Brand | null>(null);
 	const [isDeleting, setIsDeleting] = useState(false);
 
-	const [variantTarget, setVariantTarget] = useState<Product | null>(null);
-
-	const handleSave = async (
-		payload: {
-			name: string;
-			slug: string;
-			brandId: string;
-			categoryId: string;
-		},
-		variant?: Omit<Variant, 'variantId'>,
-	) => {
+	const handleSave = async (payload: { name: string; slug: string }) => {
 		if (formTarget) {
-			await editProduct(formTarget.productId, payload);
+			await editBrand(formTarget.brandId, payload);
 		} else {
-			await addProduct({ ...payload, variants: [variant!] });
+			await addBrand({ ...payload });
 		}
 	};
 
@@ -204,22 +168,13 @@ export default function BrandTable() {
 		if (!deleteTarget) return;
 		setIsDeleting(true);
 		try {
-			await removeProduct(deleteTarget.productId);
+			await removeBrand(deleteTarget.brandId);
 		} finally {
 			setIsDeleting(false);
 			setDeleteTarget(null);
 		}
 	};
 
-	// Keep variantTarget in sync — variants change in products state after edits
-	const syncedVariantTarget = variantTarget
-		? (products.find((p) => p.productId === variantTarget.productId) ?? null)
-		: null;
-	if (error) {
-		return (
-			<Alert variant='error' title='Failed to load products' message={error} />
-		);
-	}
 	return (
 		<>
 			{/* Toolbar */}
@@ -228,79 +183,14 @@ export default function BrandTable() {
 				<div className='flex items-center gap-3'>
 					<input
 						type='text'
-						placeholder='Search by name, brand, category, color, case, mode...'
+						placeholder='Search by name'
 						value={searchQuery}
 						onChange={(e) => setSearchQuery(e.target.value)}
 						className='flex-1 px-4 py-2.5 rounded-lg border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] text-sm text-gray-700 dark:text-gray-300 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-500'
 					/>
 					<Button size='sm' onClick={() => setFormTarget(null)}>
-						+ Add Product
+						+ Add Brand
 					</Button>
-				</div>
-
-				{/* Filters */}
-				<div className='flex items-center gap-3'>
-					<select
-						value={filters.brandId}
-						onChange={(e) =>
-							setFilters((prev) => ({ ...prev, brandId: e.target.value }))
-						}
-						className='px-3 py-2 rounded-lg border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500'
-					>
-						<option value=''>All Brands</option>
-						{brands.map((b) => (
-							<option key={b.brandId} value={b.brandId}>
-								{b.name}
-							</option>
-						))}
-					</select>
-
-					<select
-						value={filters.categoryId}
-						onChange={(e) =>
-							setFilters((prev) => ({ ...prev, categoryId: e.target.value }))
-						}
-						className='px-3 py-2 rounded-lg border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500'
-					>
-						<option value=''>All Categories</option>
-						{categories.map((c) => (
-							<option key={c.categoryId} value={c.categoryId}>
-								{c.name}
-							</option>
-						))}
-					</select>
-
-					<select
-						value={filters.stock}
-						onChange={(e) =>
-							setFilters((prev) => ({
-								...prev,
-								stock: e.target.value as Filters['stock'],
-							}))
-						}
-						className='px-3 py-2 rounded-lg border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-white/[0.03] text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500'
-					>
-						<option value='all'>All Stock</option>
-						<option value='instock'>In Stock</option>
-						<option value='lowstock'>Low Stock</option>
-						<option value='outofstock'>Out of Stock</option>
-					</select>
-
-					{/* Clear filters button — only shows when something is active */}
-					{(searchQuery ||
-						filters.brandId ||
-						filters.categoryId ||
-						filters.stock !== 'all') && (
-						<button
-							onClick={() => {
-								setSearchQuery('');
-								setFilters({ brandId: '', categoryId: '', stock: 'all' });
-							}}
-							className='text-xs text-gray-400 hover:text-error-500 transition-colors'
-						>
-							Clear all
-						</button>
-					)}
 				</div>
 			</div>
 			<div className='overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]'>
@@ -341,81 +231,46 @@ export default function BrandTable() {
 								? Array.from({ length: 5 }).map((_, i) => (
 										<SkeletonRow key={i} />
 									))
-								: filteredProducts.map((product) => (
-										<TableRow key={product.productId}>
+								: filteredBrands.map((brand) => (
+										<TableRow key={brand.brandId}>
 											<TableCell className='px-5 py-4 sm:px-6 text-start'>
 												<span className='block font-medium text-gray-800 text-theme-sm dark:text-white/90'>
-													{product.name}
+													{brand.name}
 												</span>
 											</TableCell>
 											<TableCell className='px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400'>
-												{brandMap[product.brandId] || product.brandId}
+												{new Date(brand.createdAt).toLocaleDateString()}
 											</TableCell>
 											<TableCell className='px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400'>
-												{categoryMap[product.categoryId] || product.categoryId}
-											</TableCell>
-											<TableCell className='px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400'>
-												{product.variants?.length || 0}
-											</TableCell>
-											<TableCell className='px-4 py-3 text-start text-theme-sm'>
-												{(() => {
-													const total = getTotalStock(product.variants ?? []);
-													const color =
-														total === 0
-															? 'error'
-															: total < 10
-																? 'warning'
-																: 'success';
-													return (
-														<Badge size='sm' color={color}>
-															{total} units
-														</Badge>
-													);
-												})()}
-											</TableCell>
-											<TableCell className='px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400'>
-												{getPriceRange(product.variants ?? [])}
-											</TableCell>
-											<TableCell className='px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400'>
-												{new Date(product.createdAt).toLocaleDateString()}
-											</TableCell>
-											<TableCell className='px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400'>
-												{new Date(product.updatedAt).toLocaleDateString()}
+												{new Date(brand.updatedAt).toLocaleDateString()}
 											</TableCell>
 											<TableCell className='px-4 py-3 text-start'>
 												<div className='flex items-center gap-2'>
 													<button
-														onClick={() => setFormTarget(product)}
+														onClick={() => setFormTarget(brand)}
 														className='p-1.5 rounded-lg text-gray-500 hover:text-brand-500 hover:bg-brand-50 dark:hover:bg-brand-500/10 transition-colors'
 														title='Edit product'
 													>
 														<EditIcon />
 													</button>
 													<button
-														onClick={() => setDeleteTarget(product)}
+														onClick={() => setDeleteTarget(brand)}
 														className='p-1.5 rounded-lg text-gray-500 hover:text-error-500 hover:bg-error-50 dark:hover:bg-error-500/10 transition-colors'
 														title='Delete product'
 													>
 														<TrashIcon />
 													</button>
-													<button
-														onClick={() => setVariantTarget(product)}
-														className='p-1.5 rounded-lg text-gray-500 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 transition-colors'
-														title='Manage variants'
-													>
-														<LayersIcon />
-													</button>
 												</div>
 											</TableCell>
 										</TableRow>
 									))}
-							{!isLoading && filteredProducts.length === 0 && (
+							{!isLoading && filteredBrands.length === 0 && (
 								<tr>
 									<td
 										colSpan={COLUMNS.length}
 										className='px-5 py-8 text-center text-gray-400 text-sm'
 									>
-										No products found
+										No brands found
 									</td>
 								</tr>
 							)}
@@ -423,23 +278,14 @@ export default function BrandTable() {
 					</Table>
 				</div>
 			</div>
-			Add / Edit Modal
-			{/* <ProductFormModal
+			{/* Add / Edit Modal */}
+			<BrandFormModal
 				isOpen={isFormOpen}
 				onClose={() => setFormTarget(undefined)}
 				onSave={handleSave}
-				product={formTarget ?? null}
-				brands={brands}
-				categories={categories}
+				brand={formTarget ?? null}
 			/>
-			<VariantManagerModal
-				isOpen={!!variantTarget}
-				onClose={() => setVariantTarget(null)}
-				product={syncedVariantTarget}
-				onCreateVariant={createVariant}
-				onEditVariant={editVariant}
-				onRemoveVariant={removeVariant}
-			/> */}
+
 			{/* Delete Confirmation Modal */}
 			<Modal
 				isOpen={!!deleteTarget}
@@ -450,7 +296,7 @@ export default function BrandTable() {
 				<div className='flex flex-col gap-4'>
 					<div>
 						<h4 className='text-lg font-semibold text-gray-800 dark:text-white/90 mb-1'>
-							Delete Product
+							Delete Brand
 						</h4>
 						<p className='text-sm text-gray-500 dark:text-gray-400'>
 							Are you sure you want to delete{' '}
