@@ -193,7 +193,7 @@ export default function ProductFormModal({
 			className='max-w-xl w-full m-4 p-6'
 			showCloseButton={false}
 		>
-			<div className='flex flex-col gap-5 max-h-[80vh] overflow-y-auto pr-1'>
+			<div className='flex flex-col gap-5 max-h-[80vh] overflow-y-auto no-scrollbar pr-1'>
 				{/* Header */}
 				<div>
 					<h4 className='text-lg font-semibold text-gray-800 dark:text-white/90'>

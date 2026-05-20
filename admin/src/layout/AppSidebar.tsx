@@ -7,6 +7,7 @@ import {
 	BoxIcon,
 	CalenderIcon,
 	ChevronDownIcon,
+	CubesIcon,
 	GridIcon,
 	HorizontaLDots,
 	ListIcon,
@@ -14,6 +15,7 @@ import {
 	PieChartIcon,
 	PlugInIcon,
 	TableIcon,
+	TagsIcon,
 	UserCircleIcon,
 } from '../icons';
 import { useSidebar } from '../context/SidebarContext';
@@ -36,6 +38,16 @@ const navItems: NavItem[] = [
 		icon: <BoxIcon />,
 		name: 'Products',
 		path: '/products',
+	},
+	{
+		icon: <CubesIcon />,
+		name: 'Categories',
+		path: '/categories',
+	},
+	{
+		icon: <TagsIcon />,
+		name: 'Brands',
+		path: '/brands',
 	},
 	{
 		icon: <CalenderIcon />,
