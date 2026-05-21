@@ -2,8 +2,6 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
 export const login = async (req, res) => {
-	console.log('HASH FROM ENV:', process.env.ADMIN_PASSWORD_HASH); //
-	console.log('REQ BODY:', req.body);
 	const { email, password } = req.body;
 
 	//Check Email
