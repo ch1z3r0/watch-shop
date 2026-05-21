@@ -2,6 +2,8 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 
 export const login = async (req, res) => {
+	console.log('HASH FROM ENV:', process.env.ADMIN_PASSWORD_HASH); //
+	console.log('REQ BODY:', req.body);
 	const { email, password } = req.body;
 
 	//Check Email
@@ -10,7 +12,10 @@ export const login = async (req, res) => {
 	}
 
 	//Check Password
-	const isMatch = await bcrypt.compare(password, process.env.ADMIN_PASSWORD);
+	const isMatch = await bcrypt.compare(
+		password,
+		process.env.ADMIN_PASSWORD_HASH,
+	);
 	if (!isMatch) {
 		return res.status(401).json({ message: 'Invalid Credentials.' });
 	}

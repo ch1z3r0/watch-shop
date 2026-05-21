@@ -21,6 +21,7 @@ import Home from './pages/Dashboard/Home';
 import Products from './pages/Products';
 import Categories from './pages/Categories';
 import Brands from './pages/Brands';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
 
 export default function App() {
 	return (
@@ -29,7 +30,13 @@ export default function App() {
 				<ScrollToTop />
 				<Routes>
 					{/* Dashboard Layout */}
-					<Route element={<AppLayout />}>
+					<Route
+						element={
+							<ProtectedRoute>
+								<AppLayout />
+							</ProtectedRoute>
+						}
+					>
 						<Route index path='/' element={<Home />} />
 
 						{/* Others Page */}
