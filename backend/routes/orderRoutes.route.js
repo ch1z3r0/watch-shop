@@ -19,7 +19,7 @@ router.get('/:orderId', getOrdersById);
 router.post('/', createOrder);
 
 //Update Brand
-router.put('/:orderId', updateOrder);
+router.patch('/:orderId', updateOrder);
 
 //Delete Brand
 router.delete('/:orderId', deleteOrder);
