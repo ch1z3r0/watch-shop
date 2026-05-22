@@ -44,7 +44,7 @@ export const createOrder = async (req, res) => {
 		} = req.body;
 
 		const nextOrderNumber = await getNextSequence('order');
-		const orderId = formatCode('ORD', nextProductNumber);
+		const orderId = formatCode('ORD', nextOrderNumber);
 
 		const newOrder = await Order.create({
 			orderId,
