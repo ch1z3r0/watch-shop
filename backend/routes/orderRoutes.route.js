@@ -3,7 +3,7 @@ import {
 	createOrder,
 	deleteOrder,
 	getAllOrders,
-	getOrdersById,
+	getOrderById,
 	updateOrder,
 } from '../controllers/order.controller.js';
 
@@ -13,7 +13,7 @@ const router = express.Router();
 router.get('/', getAllOrders);
 
 //Get one brand by id
-router.get('/:orderId', getOrdersById);
+router.get('/:orderId', getOrderById);
 
 //Create brand
 router.post('/', createOrder);

@@ -32,7 +32,7 @@ const useCategories = () => {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const [categoryData] = await Promise.all([getCategories()]);
+				const categoryData = await getCategories();
 				setCategories(categoryData);
 			} catch (error) {
 				console.error(error);
