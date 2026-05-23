@@ -5,6 +5,10 @@ import Input from '../form/input/InputField';
 import Label from '../form/Label';
 import Select from '../form/Select';
 import { Order, OrderItem, OrderStatus } from '../../types/order';
+import { Product, Variant } from '../../types/product';
+import { getProducts } from '../../api/productApi';
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface Props {
 	isOpen: boolean;
@@ -17,6 +21,12 @@ interface Props {
 	order?: Order | null;
 }
 
+// Extends OrderItem with UI-only tracking fields
+interface OrderItemDraft extends OrderItem {
+	_selectedProductId: string;
+	_selectedVariantId: string;
+}
+
 const STATUS_OPTIONS: { value: OrderStatus; label: string }[] = [
 	{ value: 'Pending', label: 'Pending' },
 	{ value: 'Processing', label: 'Processing' },
@@ -25,7 +35,9 @@ const STATUS_OPTIONS: { value: OrderStatus; label: string }[] = [
 	{ value: 'Cancelled', label: 'Cancelled' },
 ];
 
-const emptyItem: OrderItem = {
+const emptyItemDraft: OrderItemDraft = {
+	_selectedProductId: '',
+	_selectedVariantId: '',
 	productId: '',
 	variantId: '',
 	productName: '',
@@ -37,6 +49,8 @@ const emptyItem: OrderItem = {
 	price: 0,
 	quantity: 1,
 };
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 export default function OrderFormModal({
 	isOpen,
@@ -55,13 +69,38 @@ export default function OrderFormModal({
 	const [status, setStatus] = useState<OrderStatus>('Pending');
 
 	// Items
-	const [items, setItems] = useState<OrderItem[]>([{ ...emptyItem }]);
+	const [items, setItems] = useState<OrderItemDraft[]>([{ ...emptyItemDraft }]);
+
+	// Products data
+	const [products, setProducts] = useState<Product[]>([]);
+	const [isLoadingProducts, setIsLoadingProducts] = useState(false);
 
 	// UI state
 	const [isSaving, setIsSaving] = useState(false);
 	const [errors, setErrors] = useState<Record<string, string>>({});
 
-	// Populate fields when modal opens
+	// ─── Fetch products when modal opens ──────────────────────────────────────
+
+	useEffect(() => {
+		if (!isOpen) return;
+
+		const fetchProducts = async () => {
+			setIsLoadingProducts(true);
+			try {
+				const data = await getProducts();
+				setProducts(data);
+			} catch (err) {
+				console.error('Failed to fetch products', err);
+			} finally {
+				setIsLoadingProducts(false);
+			}
+		};
+
+		fetchProducts();
+	}, [isOpen]);
+
+	// ─── Populate fields when modal opens ─────────────────────────────────────
+
 	useEffect(() => {
 		if (!isOpen) return;
 		if (order) {
@@ -71,7 +110,14 @@ export default function OrderFormModal({
 			setPhone(order.phone);
 			setNotes(order.notes);
 			setStatus(order.status);
-			setItems(order.items);
+			// In edit mode, wrap existing items with empty draft fields
+			setItems(
+				order.items.map((item) => ({
+					...item,
+					_selectedProductId: item.productId,
+					_selectedVariantId: item.variantId,
+				})),
+			);
 		} else {
 			setCustomerName('');
 			setCustomerEmail('');
@@ -79,16 +125,67 @@ export default function OrderFormModal({
 			setPhone('');
 			setNotes('');
 			setStatus('Pending');
-			setItems([{ ...emptyItem }]);
+			setItems([{ ...emptyItemDraft }]);
 		}
 		setErrors({});
 	}, [isOpen, order]);
 
 	// ─── Item Helpers ─────────────────────────────────────────────────────────
 
+	// When admin picks a product, reset the item and store the product info
+	const handleProductSelect = (index: number, productId: string) => {
+		const product = products.find((p) => p.productId === productId);
+		if (!product) return;
+
+		setItems((prev) =>
+			prev.map((item, i) =>
+				i === index
+					? {
+							...emptyItemDraft,
+							_selectedProductId: productId,
+							_selectedVariantId: '',
+							productId: product.productId,
+							productName: product.name,
+						}
+					: item,
+			),
+		);
+	};
+
+	// When admin picks a variant, auto-fill all variant fields
+	const handleVariantSelect = (index: number, variantId: string) => {
+		const item = items[index];
+		const product = products.find(
+			(p) => p.productId === item._selectedProductId,
+		);
+		if (!product) return;
+
+		const variant = product.variants.find((v) => v.variantId === variantId);
+		if (!variant) return;
+
+		setItems((prev) =>
+			prev.map((itm, i) =>
+				i === index
+					? {
+							...itm,
+							_selectedVariantId: variantId,
+							variantId: variant.variantId,
+							variantColor: variant.color,
+							size: variant.size,
+							case: variant.case,
+							mode: variant.mode,
+							image: variant.images,
+							price: variant.price,
+							// keep quantity as is
+						}
+					: itm,
+			),
+		);
+	};
+
 	const updateItem = (
 		index: number,
-		field: keyof OrderItem,
+		field: keyof OrderItemDraft,
 		value: unknown,
 	) => {
 		setItems((prev) =>
@@ -96,7 +193,7 @@ export default function OrderFormModal({
 		);
 	};
 
-	const addItem = () => setItems((prev) => [...prev, { ...emptyItem }]);
+	const addItem = () => setItems((prev) => [...prev, { ...emptyItemDraft }]);
 
 	const removeItem = (index: number) =>
 		setItems((prev) => prev.filter((_, i) => i !== index));
@@ -119,9 +216,8 @@ export default function OrderFormModal({
 		if (!phone.trim()) e.phone = 'Phone is required';
 		if (items.length === 0) e.items = 'At least one item is required';
 		items.forEach((item, i) => {
-			if (!item.productName.trim())
-				e[`item_${i}_name`] = 'Product name is required';
-			if (item.price <= 0) e[`item_${i}_price`] = 'Valid price is required';
+			if (!item.productId) e[`item_${i}_product`] = 'Select a product';
+			if (!item.variantId) e[`item_${i}_variant`] = 'Select a variant';
 			if (item.quantity <= 0) e[`item_${i}_qty`] = 'Valid quantity is required';
 		});
 		setErrors(e);
@@ -134,6 +230,11 @@ export default function OrderFormModal({
 		if (!validate()) return;
 		setIsSaving(true);
 		try {
+			// Strip the UI-only draft fields before sending to backend
+			const cleanItems: OrderItem[] = items.map(
+				({ _selectedProductId, _selectedVariantId, ...rest }) => rest,
+			);
+
 			await onSave({
 				customerName: customerName.trim(),
 				customerEmail: customerEmail.trim(),
@@ -141,7 +242,7 @@ export default function OrderFormModal({
 				phone: phone.trim(),
 				notes: notes.trim(),
 				status,
-				items,
+				items: cleanItems,
 				totalAmount,
 			});
 			onClose();
@@ -262,123 +363,151 @@ export default function OrderFormModal({
 					)}
 
 					<div className='flex flex-col gap-4'>
-						{items.map((item, index) => (
-							<div
-								key={index}
-								className='p-4 rounded-xl border border-gray-100 dark:border-white/[0.05] bg-gray-50 dark:bg-white/[0.02] flex flex-col gap-3'
-							>
-								{/* Item header */}
-								<div className='flex items-center justify-between'>
-									<p className='text-xs font-medium text-gray-500 dark:text-gray-400'>
-										Item {index + 1}
-									</p>
-									{items.length > 1 && (
-										<button
-											onClick={() => removeItem(index)}
-											className='text-xs text-error-500 hover:text-error-600'
-										>
-											Remove
-										</button>
+						{items.map((item, index) => {
+							// Get variants for the selected product
+							const selectedProduct = products.find(
+								(p) => p.productId === item._selectedProductId,
+							);
+							const variantOptions =
+								selectedProduct?.variants.map((v) => ({
+									value: v.variantId,
+									label: `${v.color} — ${v.size}mm — $${v.price}`,
+								})) ?? [];
+
+							return (
+								<div
+									key={index}
+									className='p-4 rounded-xl border border-gray-100 dark:border-white/[0.05] bg-gray-50 dark:bg-white/[0.02] flex flex-col gap-3'
+								>
+									{/* Item header */}
+									<div className='flex items-center justify-between'>
+										<p className='text-xs font-medium text-gray-500 dark:text-gray-400'>
+											Item {index + 1}
+										</p>
+										{items.length > 1 && (
+											<button
+												onClick={() => removeItem(index)}
+												className='text-xs text-error-500 hover:text-error-600'
+											>
+												Remove
+											</button>
+										)}
+									</div>
+
+									{/* Product Select */}
+									<div>
+										<Label>Product</Label>
+										{isLoadingProducts ? (
+											<div className='h-10 rounded-lg bg-gray-100 dark:bg-white/[0.05] animate-pulse' />
+										) : (
+											<Select
+												options={products.map((p) => ({
+													value: p.productId,
+													label: p.name,
+												}))}
+												placeholder='Select a product'
+												defaultValue={item._selectedProductId}
+												onChange={(val) => handleProductSelect(index, val)}
+											/>
+										)}
+										{errors[`item_${index}_product`] && (
+											<p className='mt-1 text-xs text-error-500'>
+												{errors[`item_${index}_product`]}
+											</p>
+										)}
+									</div>
+
+									{/* Variant Select — only shows after product is picked */}
+									{item._selectedProductId && (
+										<div>
+											<Label>Variant</Label>
+											<Select
+												key={item._selectedProductId}
+												options={variantOptions}
+												placeholder='Select a variant'
+												defaultValue={item._selectedVariantId}
+												onChange={(val) => handleVariantSelect(index, val)}
+											/>
+											{errors[`item_${index}_variant`] && (
+												<p className='mt-1 text-xs text-error-500'>
+													{errors[`item_${index}_variant`]}
+												</p>
+											)}
+										</div>
+									)}
+
+									{/* Auto-filled details — shows after variant is picked */}
+									{item._selectedVariantId && (
+										<div className='grid grid-cols-2 gap-3 pt-2 border-t border-gray-100 dark:border-white/[0.05]'>
+											<div>
+												<p className='text-xs text-gray-400 mb-0.5'>Color</p>
+												<p className='text-sm text-gray-700 dark:text-gray-300'>
+													{item.variantColor}
+												</p>
+											</div>
+											<div>
+												<p className='text-xs text-gray-400 mb-0.5'>Size</p>
+												<p className='text-sm text-gray-700 dark:text-gray-300'>
+													{item.size}mm
+												</p>
+											</div>
+											<div>
+												<p className='text-xs text-gray-400 mb-0.5'>
+													Case Material
+												</p>
+												<p className='text-sm text-gray-700 dark:text-gray-300'>
+													{item.case || '—'}
+												</p>
+											</div>
+											<div>
+												<p className='text-xs text-gray-400 mb-0.5'>Price</p>
+												<p className='text-sm text-gray-700 dark:text-gray-300'>
+													${item.price}
+												</p>
+											</div>
+											{item.mode.length > 0 && (
+												<div className='col-span-2'>
+													<p className='text-xs text-gray-400 mb-0.5'>Modes</p>
+													<p className='text-sm text-gray-700 dark:text-gray-300'>
+														{item.mode.join(', ')}
+													</p>
+												</div>
+											)}
+
+											{/* Quantity */}
+											<div>
+												<Label>Quantity</Label>
+												<Input
+													type='number'
+													placeholder='e.g. 1'
+													value={item.quantity || ''}
+													onChange={(e) =>
+														updateItem(
+															index,
+															'quantity',
+															Number(e.target.value),
+														)
+													}
+													error={!!errors[`item_${index}_qty`]}
+													hint={errors[`item_${index}_qty`]}
+													min='1'
+												/>
+											</div>
+
+											{/* Subtotal */}
+											<div className='flex items-end'>
+												<p className='text-sm text-gray-500 dark:text-gray-400'>
+													Subtotal:{' '}
+													<span className='font-medium text-gray-800 dark:text-white/90'>
+														${(item.price * item.quantity).toFixed(2)}
+													</span>
+												</p>
+											</div>
+										</div>
 									)}
 								</div>
-
-								<div className='grid grid-cols-2 gap-3'>
-									{/* Product Name */}
-									<div className='col-span-2'>
-										<Label>Product Name</Label>
-										<Input
-											placeholder='e.g. Galaxy Watch Ultra'
-											value={item.productName}
-											onChange={(e) =>
-												updateItem(index, 'productName', e.target.value)
-											}
-											error={!!errors[`item_${index}_name`]}
-											hint={errors[`item_${index}_name`]}
-										/>
-									</div>
-
-									{/* Color */}
-									<div>
-										<Label>Color</Label>
-										<Input
-											placeholder='e.g. Midnight Black'
-											value={item.variantColor}
-											onChange={(e) =>
-												updateItem(index, 'variantColor', e.target.value)
-											}
-										/>
-									</div>
-
-									{/* Case */}
-									<div>
-										<Label>Case Material</Label>
-										<Input
-											placeholder='e.g. Titanium'
-											value={item.case}
-											onChange={(e) =>
-												updateItem(index, 'case', e.target.value)
-											}
-										/>
-									</div>
-
-									{/* Size */}
-									<div>
-										<Label>Size (mm)</Label>
-										<Input
-											type='number'
-											placeholder='e.g. 44'
-											value={item.size || ''}
-											onChange={(e) =>
-												updateItem(index, 'size', Number(e.target.value))
-											}
-											min='0'
-										/>
-									</div>
-
-									{/* Price */}
-									<div>
-										<Label>Price ($)</Label>
-										<Input
-											type='number'
-											placeholder='e.g. 299'
-											value={item.price || ''}
-											onChange={(e) =>
-												updateItem(index, 'price', Number(e.target.value))
-											}
-											error={!!errors[`item_${index}_price`]}
-											hint={errors[`item_${index}_price`]}
-											min='0'
-										/>
-									</div>
-
-									{/* Quantity */}
-									<div>
-										<Label>Quantity</Label>
-										<Input
-											type='number'
-											placeholder='e.g. 1'
-											value={item.quantity || ''}
-											onChange={(e) =>
-												updateItem(index, 'quantity', Number(e.target.value))
-											}
-											error={!!errors[`item_${index}_qty`]}
-											hint={errors[`item_${index}_qty`]}
-											min='1'
-										/>
-									</div>
-
-									{/* Subtotal */}
-									<div className='flex items-end'>
-										<p className='text-sm text-gray-500 dark:text-gray-400'>
-											Subtotal:{' '}
-											<span className='font-medium text-gray-800 dark:text-white/90'>
-												${(item.price * item.quantity).toFixed(2)}
-											</span>
-										</p>
-									</div>
-								</div>
-							</div>
-						))}
+							);
+						})}
 					</div>
 				</div>
 

@@ -24,7 +24,7 @@ export interface Sort {
 
 export interface OrderFilters {
 	searchQuery: string;
-	statusFilter: OrderStatus | 'all';
+	statusFilter: OrderStatus | 'All';
 	sort: Sort;
 }
 

@@ -20,7 +20,8 @@ const COLUMNS = [
 	{ label: 'Items', key: 'items', sortable: false },
 	{ label: 'Total', key: 'totalAmount', sortable: true },
 	{ label: 'Status', key: 'status', sortable: true },
-	{ label: 'Date', key: 'createdAt', sortable: true },
+	{ label: 'Added', key: 'createdAt', sortable: true },
+	{ label: 'Updated', key: 'updatedAt', sortable: true },
 	{ label: 'Actions', key: 'actions', sortable: false },
 ];
 
@@ -180,7 +181,7 @@ export default function OrderTable() {
 			status?: OrderStatus;
 		},
 	) => {
-		if (formTarget) {
+		if (formTarget != null) {
 			await editOrder(formTarget.orderId, payload);
 		} else {
 			await addOrder(payload);
