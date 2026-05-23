@@ -24,7 +24,7 @@ export interface Sort {
 
 export interface OrderFilters {
 	searchQuery: string;
-	statusFilter: OrderFilters | 'all';
+	statusFilter: OrderStatus | 'all';
 	sort: Sort;
 }
 
@@ -52,9 +52,8 @@ const useOrders = () => {
 			} finally {
 				setIsLoading(false);
 			}
-
-			fetchData();
 		};
+		fetchData();
 	}, []);
 
 	const filteredOrders = useMemo(() => {
@@ -137,6 +136,8 @@ const useOrders = () => {
 		removeOrder,
 		error,
 		isLoading,
+		statusFilter,
+		setStatusFilter,
 		sort,
 		setSort,
 		searchQuery,
