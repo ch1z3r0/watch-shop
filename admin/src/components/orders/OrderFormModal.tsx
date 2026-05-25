@@ -220,7 +220,7 @@ export default function OrderFormModal({
 			if (!item.variantId) e[`item_${i}_variant`] = 'Select a variant';
 			if (item.quantity <= 0) {
 				e[`item_${i}_qty`] = 'Valid quantity is required';
-			} else {
+			} else if (!isEditMode) {
 				const selectedProduct = products.find(
 					(p) => p.productId === item.productId,
 				);
@@ -512,11 +512,16 @@ export default function OrderFormModal({
 													error={!!errors[`item_${index}_qty`]}
 													hint={errors[`item_${index}_qty`]}
 													min='1'
-													max={selectedProduct?.variants
-														.find(
-															(v) => v.variantId === item._selectedVariantId,
-														)
-														?.stock?.toString()}
+													max={
+														!isEditMode
+															? selectedProduct?.variants
+																	.find(
+																		(v) =>
+																			v.variantId === item._selectedVariantId,
+																	)
+																	?.stock?.toString()
+															: undefined
+													}
 												/>
 											</div>
 

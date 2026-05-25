@@ -20,7 +20,7 @@ export const getOrderById = async (req, res) => {
 	try {
 		const order = await Order.findOne({ orderId: req.params.orderId });
 		if (!order) {
-			res.status(404).json({ message: 'Order not found' });
+			return res.status(404).json({ message: 'Order not found' });
 		}
 		res.status(200).json(order);
 	} catch (error) {
@@ -116,6 +116,53 @@ export const updateOrder = async (req, res) => {
 			return res.status(404).json({ message: 'Order not found' });
 		}
 
+		// --- Restore stock for old items ---------------------------------------------------
+		if (items !== undefined) {
+			for (const oldItem of order.items) {
+				const product = await Product.findOne({ productId: oldItem.productId });
+				if (product) {
+					const variant = product.variants.find(
+						(v) => v.variantId === oldItem.variantId,
+					);
+					if (variant) {
+						variant.stock += oldItem.quantity;
+						await product.save();
+					}
+				}
+			}
+		}
+
+		// --- Check and decrement stock for new items---------------------------------------------------
+		if (items !== undefined) {
+			for (const item of items) {
+				const product = await Product.findOne({ productId: item.productId });
+				console.log('FOUND PRODUCT:', product);
+
+				if (!product) {
+					return res.status(404).json({ message: 'Product not found!' });
+				}
+
+				const variant = product.variants.find((v) => {
+					return v.variantId === item.variantId;
+				});
+				if (!variant) {
+					return res.status(404).json({
+						message: `Variant not found for product: ${item.productName}`,
+					});
+				}
+
+				if (variant.stock < item.quantity) {
+					return res.status(400).json({
+						message: `Not enough stock for ${item.productName} (${item.variantColor}). Available: ${variant.stock}, Requested: ${item.quantity}`,
+					});
+				}
+
+				// --- Stock decrement ---------------------------------------------------------
+				variant.stock -= item.quantity;
+				await product.save();
+			}
+		}
+
 		// update only provided fields
 		if (customerName !== undefined) order.customerName = customerName;
 		if (customerEmail !== undefined) order.customerEmail = customerEmail;
@@ -143,7 +190,7 @@ export const deleteOrder = async (req, res) => {
 			orderId: req.params.orderId,
 		});
 		if (!deletedOrder) {
-			res.status(404).json({ message: 'Order not found' });
+			return res.status(404).json({ message: 'Order not found' });
 		}
 		res.status(200).json(deletedOrder);
 	} catch (error) {
