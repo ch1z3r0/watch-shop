@@ -74,6 +74,7 @@ export const updateOrder = async (req, res) => {
 			shippingAddress,
 			phone,
 			items,
+			status,
 			totalAmount,
 			notes,
 		} = req.body;
@@ -90,6 +91,7 @@ export const updateOrder = async (req, res) => {
 		if (shippingAddress !== undefined) order.shippingAddress = shippingAddress;
 		if (phone !== undefined) order.phone = phone;
 		if (items !== undefined) order.items = items;
+		if (status !== undefined) order.status = status;
 		if (totalAmount !== undefined) order.totalAmount = totalAmount;
 		if (notes !== undefined) order.notes = notes;
 

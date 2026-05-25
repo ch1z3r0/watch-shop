@@ -307,9 +307,13 @@ export default function OrderTable() {
 												<StatusBadge status={order.status} />
 											</TableCell>
 
-											{/* Date */}
+											{/* Added Date */}
 											<TableCell className='px-4 py-3 text-start text-theme-sm text-gray-500 dark:text-gray-400'>
 												{new Date(order.createdAt).toLocaleDateString()}
+											</TableCell>
+											{/* Updated Date */}
+											<TableCell className='px-4 py-3 text-start text-theme-sm text-gray-500 dark:text-gray-400'>
+												{new Date(order.updatedAt).toLocaleDateString()}
 											</TableCell>
 
 											{/* Actions */}
