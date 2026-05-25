@@ -512,11 +512,11 @@ export default function OrderFormModal({
 													error={!!errors[`item_${index}_qty`]}
 													hint={errors[`item_${index}_qty`]}
 													min='1'
-													max={
-														selectedProduct?.variants.find(
+													max={selectedProduct?.variants
+														.find(
 															(v) => v.variantId === item._selectedVariantId,
-														)?.stock ?? undefined
-													}
+														)
+														?.stock?.toString()}
 												/>
 											</div>
 

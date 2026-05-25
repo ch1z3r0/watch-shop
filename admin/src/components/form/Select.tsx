@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 interface Option {
 	value: string;
 	label: string;
-	disabled: boolean;
+	disabled?: boolean;
 }
 
 interface SelectProps {

@@ -31,18 +31,51 @@ export default function StatusDropdown({ orderId, status, onUpdate }: Props) {
 	const [isOpen, setIsOpen] = useState(false);
 	const [isSaving, setIsSaving] = useState(false);
 	const [current, setCurrent] = useState<OrderStatus>(status);
-	const ref = useRef<HTMLDivElement>(null);
+	const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 });
+	const buttonRef = useRef<HTMLButtonElement>(null);
+	const dropdownRef = useRef<HTMLDivElement>(null);
 
-	// Close dropdown when clicking outside
+	// Close when clicking outside
 	useEffect(() => {
 		const handleClickOutside = (e: MouseEvent) => {
-			if (ref.current && !ref.current.contains(e.target as Node)) {
+			if (
+				buttonRef.current &&
+				!buttonRef.current.contains(e.target as Node) &&
+				dropdownRef.current &&
+				!dropdownRef.current.contains(e.target as Node)
+			) {
 				setIsOpen(false);
 			}
 		};
 		document.addEventListener('mousedown', handleClickOutside);
 		return () => document.removeEventListener('mousedown', handleClickOutside);
 	}, []);
+	useEffect(() => {
+		setCurrent(status);
+	}, [status]);
+
+	// Calculate position when opening
+	const handleOpen = () => {
+		if (isSaving) return;
+		if (!isOpen && buttonRef.current) {
+			const rect = buttonRef.current.getBoundingClientRect();
+			const dropdownHeight = 170; // approximate height of dropdown
+			const spaceBelow = window.innerHeight - rect.bottom;
+			const spaceAbove = rect.top;
+
+			// If not enough space below but enough above, flip upward
+			const top =
+				spaceBelow < dropdownHeight && spaceAbove > dropdownHeight
+					? rect.top - dropdownHeight - 4 //  open upward
+					: rect.bottom + 4; //  open downward
+
+			setDropdownPos({
+				top,
+				left: rect.left,
+			});
+		}
+		setIsOpen((prev) => !prev);
+	};
 
 	const handleSelect = async (newStatus: OrderStatus) => {
 		if (newStatus === current) {
@@ -53,7 +86,7 @@ export default function StatusDropdown({ orderId, status, onUpdate }: Props) {
 		setIsOpen(false);
 		try {
 			await onUpdate(orderId, newStatus);
-			setCurrent(newStatus); // update local state on success
+			setCurrent(newStatus);
 		} catch (err) {
 			console.error('Failed to update status', err);
 		} finally {
@@ -62,10 +95,11 @@ export default function StatusDropdown({ orderId, status, onUpdate }: Props) {
 	};
 
 	return (
-		<div ref={ref} className='relative inline-block'>
+		<div className='relative inline-block'>
 			{/* Trigger badge */}
 			<button
-				onClick={() => !isSaving && setIsOpen((prev) => !prev)}
+				ref={buttonRef}
+				onClick={handleOpen}
 				disabled={isSaving}
 				className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium transition-opacity ${statusStyles[current]} ${isSaving ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:opacity-80'}`}
 			>
@@ -89,9 +123,13 @@ export default function StatusDropdown({ orderId, status, onUpdate }: Props) {
 				)}
 			</button>
 
-			{/* Dropdown */}
+			{/* Dropdown — fixed position to escape overflow containers */}
 			{isOpen && (
-				<div className='fixed z-50 min-w-[140px] rounded-xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-gray-dark shadow-lg py-1'>
+				<div
+					ref={dropdownRef}
+					style={{ top: dropdownPos.top, left: dropdownPos.left }}
+					className='fixed z-50 min-w-[140px] rounded-xl border border-gray-200 dark:border-white/[0.08] bg-white dark:bg-gray-dark shadow-lg py-1'
+				>
 					{STATUS_OPTIONS.map((option) => (
 						<button
 							key={option}
@@ -102,7 +140,6 @@ export default function StatusDropdown({ orderId, status, onUpdate }: Props) {
 									: 'text-gray-700 dark:text-gray-300'
 							}`}
 						>
-							{/* Colored dot */}
 							<span
 								className={`w-2 h-2 rounded-full flex-shrink-0 ${
 									option === 'Pending'
@@ -117,7 +154,6 @@ export default function StatusDropdown({ orderId, status, onUpdate }: Props) {
 								}`}
 							/>
 							{option}
-							{/* Checkmark for current */}
 							{option === current && (
 								<svg
 									className='ml-auto'

@@ -33,6 +33,8 @@ export const getOrderById = async (req, res) => {
 
 // --- Create Order -----------------------------------------------------------------------
 export const createOrder = async (req, res) => {
+	console.log('CREATE ORDER HIT');
+	console.log('BODY:', req.body);
 	try {
 		const {
 			customerName,
@@ -47,13 +49,14 @@ export const createOrder = async (req, res) => {
 		// --- Check and decrement stock ---------------------------------------------------
 		for (const item of items) {
 			const product = await Product.findOne({ productId: item.productId });
+			console.log('FOUND PRODUCT:', product);
 
 			if (!product) {
 				return res.status(404).json({ message: 'Product not found!' });
 			}
 
-			const variant = await product.variants.find((v) => {
-				v.variantId === item.variantId;
+			const variant = product.variants.find((v) => {
+				return v.variantId === item.variantId;
 			});
 			if (!variant) {
 				return res.status(404).json({
