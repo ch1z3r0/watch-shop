@@ -10,9 +10,9 @@ import Button from '../ui/button/Button';
 import { Modal } from '../ui/modal';
 import { Order, OrderStatus } from '../../types/order';
 import useOrders from '../../hooks/useOrders';
-import StatusBadge from './StatusBadge';
 import OrderDetailModal from './OrderDetailModal';
 import OrderFormModal from './OrderFormModal';
+import StatusDropdown from './StatusDropdown';
 
 const COLUMNS = [
 	{ label: 'Order ID', key: 'orderId', sortable: true },
@@ -157,7 +157,8 @@ export default function OrderTable() {
 			| 'customerName'
 			| 'totalAmount'
 			| 'status'
-			| 'createdAt';
+			| 'createdAt'
+			| 'updatedAt';
 		setSort((prev) => ({
 			column,
 			direction:
@@ -186,6 +187,10 @@ export default function OrderTable() {
 		} else {
 			await addOrder(payload);
 		}
+	};
+
+	const handleUpdateStatus = async (orderId: string, status: OrderStatus) => {
+		await editOrder(orderId, { status });
 	};
 
 	const handleDeleteConfirm = async () => {
@@ -304,7 +309,11 @@ export default function OrderTable() {
 
 											{/* Status */}
 											<TableCell className='px-4 py-3 text-start'>
-												<StatusBadge status={order.status} />
+												<StatusDropdown
+													orderId={order.orderId}
+													status={order.status}
+													onUpdate={handleUpdateStatus}
+												/>
 											</TableCell>
 
 											{/* Added Date */}

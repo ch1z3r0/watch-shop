@@ -371,7 +371,14 @@ export default function OrderFormModal({
 							const variantOptions =
 								selectedProduct?.variants.map((v) => ({
 									value: v.variantId,
-									label: `${v.color} — ${v.size}mm — $${v.price}`,
+									label: [
+										v.color,
+										`${v.size}mm`,
+										v.case ? v.case : null,
+										`$${v.price}`,
+									]
+										.filter(Boolean)
+										.join(' — '),
 								})) ?? [];
 
 							return (
