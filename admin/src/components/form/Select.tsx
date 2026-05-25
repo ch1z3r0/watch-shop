@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 interface Option {
 	value: string;
 	label: string;
+	disabled: boolean;
 }
 
 interface SelectProps {
@@ -56,7 +57,12 @@ const Select: React.FC<SelectProps> = ({
 				<option
 					key={option.value}
 					value={option.value}
-					className='text-gray-700 dark:bg-gray-900 dark:text-gray-400'
+					disabled={option.disabled}
+					className={`dark:bg-gray-900 ${
+						option.disabled
+							? 'text-gray-300 dark:text-gray-600'
+							: 'text-gray-700 dark:text-gray-400'
+					}`}
 				>
 					{option.label}
 				</option>

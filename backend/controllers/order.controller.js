@@ -1,4 +1,5 @@
 import Order from '../models/Order.js';
+import Product from '../models/Product.js';
 import getNextSequence from '../utils/getNextSequence.js';
 import formatCode from '../utils/formatCode.js';
 
@@ -43,6 +44,33 @@ export const createOrder = async (req, res) => {
 			notes,
 		} = req.body;
 
+		// --- Check and decrement stock ---------------------------------------------------
+		for (const item of items) {
+			const product = await Product.findOne({ productId: item.productId });
+
+			if (!product) {
+				return res.status(404).json({ message: 'Product not found!' });
+			}
+
+			const variant = await product.variants.find((v) => {
+				v.variantId === item.variantId;
+			});
+			if (!variant) {
+				return res.status(404).json({
+					message: `Variant not found for product: ${item.productName}`,
+				});
+			}
+
+			if (variant.stock < item.quantity) {
+				return res.status(400).json({
+					message: `Not enough stock for ${item.productName} (${item.variantColor}). Available: ${variant.stock}, Requested: ${item.quantity}`,
+				});
+			}
+
+			// --- Stock decrement ---------------------------------------------------------
+			variant.stock -= item.quantity;
+			await product.save();
+		}
 		const nextOrderNumber = await getNextSequence('order');
 		const orderId = formatCode('ORD', nextOrderNumber);
 

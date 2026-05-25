@@ -218,7 +218,19 @@ export default function OrderFormModal({
 		items.forEach((item, i) => {
 			if (!item.productId) e[`item_${i}_product`] = 'Select a product';
 			if (!item.variantId) e[`item_${i}_variant`] = 'Select a variant';
-			if (item.quantity <= 0) e[`item_${i}_qty`] = 'Valid quantity is required';
+			if (item.quantity <= 0) {
+				e[`item_${i}_qty`] = 'Valid quantity is required';
+			} else {
+				const selectedProduct = products.find(
+					(p) => p.productId === item.productId,
+				);
+				const variant = selectedProduct?.variants.find(
+					(v) => v.variantId === item.variantId,
+				);
+				if (variant && item.quantity > variant.stock) {
+					e[`item_${i}_qty`] = `Only ${variant.stock} in stock`;
+				}
+			}
 		});
 		setErrors(e);
 		return Object.keys(e).length === 0;
@@ -371,11 +383,13 @@ export default function OrderFormModal({
 							const variantOptions =
 								selectedProduct?.variants.map((v) => ({
 									value: v.variantId,
+									disabled: v.stock === 0,
 									label: [
 										v.color,
 										`${v.size}mm`,
 										v.case ? v.case : null,
 										`$${v.price}`,
+										v.stock === 0 ? 'Out of Stock' : `Stock: ${v.stock}`,
 									]
 										.filter(Boolean)
 										.join(' — '),
@@ -498,6 +512,11 @@ export default function OrderFormModal({
 													error={!!errors[`item_${index}_qty`]}
 													hint={errors[`item_${index}_qty`]}
 													min='1'
+													max={
+														selectedProduct?.variants.find(
+															(v) => v.variantId === item._selectedVariantId,
+														)?.stock ?? undefined
+													}
 												/>
 											</div>
 
