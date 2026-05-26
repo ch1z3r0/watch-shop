@@ -118,9 +118,9 @@ const useOrders = () => {
 		orderId: string,
 		payload: Partial<Omit<Order, 'orderId' | 'createdAt' | 'updatedAt'>>,
 	) => {
-		await updateOrder(orderId, payload);
+		const updatedOrder = await updateOrder(orderId, payload);
 		setOrders((prev) =>
-			prev.map((o) => (o.orderId === orderId ? { ...o, ...payload } : o)),
+			prev.map((o) => (o.orderId === orderId ? updatedOrder : o)),
 		);
 	};
 	const removeOrder = async (orderId: string) => {

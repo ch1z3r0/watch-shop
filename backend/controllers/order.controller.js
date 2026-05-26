@@ -3,6 +3,23 @@ import Product from '../models/Product.js';
 import getNextSequence from '../utils/getNextSequence.js';
 import formatCode from '../utils/formatCode.js';
 
+// --- Helpers -------------------------------------------------------------------------
+//Rollback restore
+const rollbackRestore = async (oldItems) => {
+	for (const oldItem of oldItems) {
+		const product = await Product.findOne({ productId: oldItem.productId });
+		if (product) {
+			const variant = product.variants.find(
+				(v) => v.variantId === oldItem.variantId,
+			);
+			if (variant) {
+				variant.stock -= oldItem.quantity; // undo the restore
+				await product.save();
+			}
+		}
+	}
+};
+
 // --- Get Order -----------------------------------------------------------------------
 export const getAllOrders = async (req, res) => {
 	try {
@@ -98,6 +115,7 @@ export const createOrder = async (req, res) => {
 
 // --- Update Order -----------------------------------------------------------------------
 export const updateOrder = async (req, res) => {
+	console.log('UPDATE ORDER HIT:', req.params.orderId);
 	try {
 		const {
 			customerName,
@@ -136,28 +154,36 @@ export const updateOrder = async (req, res) => {
 		if (items !== undefined) {
 			for (const item of items) {
 				const product = await Product.findOne({ productId: item.productId });
-				console.log('FOUND PRODUCT:', product);
 
 				if (!product) {
+					await rollbackRestore(order.items);
 					return res.status(404).json({ message: 'Product not found!' });
 				}
 
 				const variant = product.variants.find((v) => {
 					return v.variantId === item.variantId;
 				});
+
 				if (!variant) {
+					await rollbackRestore(order.items);
 					return res.status(404).json({
 						message: `Variant not found for product: ${item.productName}`,
 					});
 				}
 
 				if (variant.stock < item.quantity) {
+					await rollbackRestore(order.items);
 					return res.status(400).json({
 						message: `Not enough stock for ${item.productName} (${item.variantColor}). Available: ${variant.stock}, Requested: ${item.quantity}`,
 					});
 				}
-
-				// --- Stock decrement ---------------------------------------------------------
+			}
+			// --- Stock decrement ---------------------------------------------------------
+			for (const item of items) {
+				const product = await Product.findOne({ productId: item.productId });
+				const variant = product.variants.find(
+					(v) => v.variantId === item.variantId,
+				);
 				variant.stock -= item.quantity;
 				await product.save();
 			}
@@ -183,7 +209,7 @@ export const updateOrder = async (req, res) => {
 	}
 };
 
-// --- Update Order -----------------------------------------------------------------------
+// --- Delete Order -----------------------------------------------------------------------
 export const deleteOrder = async (req, res) => {
 	try {
 		const deletedOrder = await Order.findOneAndDelete({
