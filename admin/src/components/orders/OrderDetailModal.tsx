@@ -19,7 +19,7 @@ export default function OrderDetailModal({ isOpen, onClose, order }: Props) {
 			className='max-w-2xl w-full m-4 p-6'
 			showCloseButton={false}
 		>
-			<div className='flex flex-col gap-5 max-h-[80vh] overflow-y-auto scrollbar-none pr-1'>
+			<div className='flex flex-col gap-5 max-h-[80vh] overflow-y-auto no-scrollbar pr-1'>
 				{/* Header */}
 				<div className='flex items-start justify-between'>
 					<div>

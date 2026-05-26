@@ -259,8 +259,18 @@ export default function OrderFormModal({
 			});
 			onClose();
 		} catch (err: unknown) {
-			const message =
-				err instanceof Error ? err.message : 'Something went wrong';
+			let message = 'Something went wrong';
+
+			if (
+				typeof err === 'object' &&
+				err !== null &&
+				'response' in err &&
+				typeof (err as any).response?.data?.message === 'string'
+			) {
+				message = (err as any).response.data.message;
+			} else if (err instanceof Error) {
+				message = err.message;
+			}
 			setErrors((prev) => ({ ...prev, submit: message }));
 		} finally {
 			setIsSaving(false);

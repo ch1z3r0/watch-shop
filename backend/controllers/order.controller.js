@@ -212,13 +212,30 @@ export const updateOrder = async (req, res) => {
 // --- Delete Order -----------------------------------------------------------------------
 export const deleteOrder = async (req, res) => {
 	try {
-		const deletedOrder = await Order.findOneAndDelete({
+		const order = await Order.findOne({
 			orderId: req.params.orderId,
 		});
-		if (!deletedOrder) {
+		if (!order) {
 			return res.status(404).json({ message: 'Order not found' });
 		}
-		res.status(200).json(deletedOrder);
+
+		// Restore stock if order status is pending or processing
+		if (order.status === 'Pending' || order.status === 'Processing') {
+			for (const item of order.items) {
+				const product = await Product.findOne({ productId: item.productId });
+				if (product) {
+					const variant = product.variants.find(
+						(v) => (v.variantId = item.variantId),
+					);
+					if (variant) {
+						variant.stock += item.quantity;
+						await product.save();
+					}
+				}
+			}
+		}
+		await Order.findOneAndDelete({ orderId: req.params.orderId });
+		res.status(200).json(order);
 	} catch (error) {
 		res.status(500).json({
 			message: 'Failed to delete order',
