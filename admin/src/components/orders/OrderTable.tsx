@@ -149,6 +149,7 @@ export default function OrderTable() {
 				'totalAmount',
 				'status',
 				'createdAt',
+				'updatedAt',
 			].includes(key)
 		)
 			return;
