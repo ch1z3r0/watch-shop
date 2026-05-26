@@ -5,7 +5,7 @@ import Input from '../form/input/InputField';
 import Label from '../form/Label';
 import Select from '../form/Select';
 import { Order, OrderItem, OrderStatus } from '../../types/order';
-import { Product, Variant } from '../../types/product';
+import { Product } from '../../types/product';
 import { getProducts } from '../../api/productApi';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -372,12 +372,6 @@ export default function OrderFormModal({
 						<p className='text-sm font-medium text-gray-700 dark:text-gray-300'>
 							Order Items
 						</p>
-						<button
-							onClick={addItem}
-							className='text-xs text-brand-500 hover:text-brand-600 font-medium'
-						>
-							+ Add Item
-						</button>
 					</div>
 
 					{errors.items && (
@@ -546,6 +540,12 @@ export default function OrderFormModal({
 											</div>
 										</div>
 									)}
+									<button
+										onClick={addItem}
+										className='text-xs text-brand-500 hover:text-brand-600 font-medium text-right'
+									>
+										+ Add Item
+									</button>
 								</div>
 							);
 						})}
