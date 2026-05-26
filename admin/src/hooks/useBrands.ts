@@ -32,7 +32,7 @@ const useBrands = () => {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const [brandData] = await Promise.all([getBrands()]);
+				const brandData = await getBrands();
 				setBrands(brandData);
 			} catch (error) {
 				console.error(error);

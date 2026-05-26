@@ -50,6 +50,11 @@ const navItems: NavItem[] = [
 		path: '/brands',
 	},
 	{
+		icon: <ListIcon />,
+		name: 'Orders',
+		path: '/orders',
+	},
+	{
 		icon: <CalenderIcon />,
 		name: 'Calendar',
 		path: '/calendar',
