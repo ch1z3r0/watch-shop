@@ -5,6 +5,7 @@ import { Link, useLocation } from 'react-router';
 import {
 	BoxCubeIcon,
 	BoxIcon,
+	BoxSearch,
 	CalenderIcon,
 	ChevronDownIcon,
 	CubesIcon,
@@ -53,6 +54,11 @@ const navItems: NavItem[] = [
 		icon: <ListIcon />,
 		name: 'Orders',
 		path: '/orders',
+	},
+	{
+		icon: <BoxSearch />,
+		name: 'Restock',
+		path: '/restock',
 	},
 	{
 		icon: <CalenderIcon />,

@@ -57,8 +57,12 @@ import { ReactComponent as ErrorHexaIcon } from './info-hexa.svg?react';
 import { ReactComponent as CubesIcon } from './cubes-light.svg?react';
 import { ReactComponent as TagsIcon } from './tags-light-full.svg?react';
 import { ReactComponent as BoxArchiveIcon } from './box-archive.svg?react';
+import { ReactComponent as BoxSearch } from './box-arrow-down-magnifying-glass.svg?react';
+import { ReactComponent as ArrowRotateRight } from './arrow-rotate-right.svg?react';
 
 export {
+	ArrowRotateRight,
+	BoxSearch,
 	BoxArchiveIcon,
 	TagsIcon,
 	CubesIcon,

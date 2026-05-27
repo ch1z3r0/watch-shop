@@ -20,3 +20,8 @@ export interface Product {
 	createdAt: string;
 	updatedAt: string;
 }
+
+export interface FlatVariant extends Variant {
+	productId: string;
+	productName: string;
+}
