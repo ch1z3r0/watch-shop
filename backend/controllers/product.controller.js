@@ -351,3 +351,31 @@ export const deleteVariant = async (req, res) => {
 		});
 	}
 };
+
+// Restock Variant
+export const restockVariant = async (req, res) => {
+	try {
+		const { productId, variantId } = req.params;
+		const { quantity } = req.body;
+
+		if (!quantity || quantity <= 0) {
+			return res.status(400).json({ message: 'Invalid quantity' });
+		}
+		const product = await Product.findOne({ productId });
+		if (!product) {
+			return res.status(404).json({ message: 'Product not found' });
+		}
+		const variant = product.variants.find((v) => v.variantId === variantId);
+		if (!variant) {
+			return res.status(404).json({ message: 'Variant not found' });
+		}
+
+		variant.stock = Number(quantity) + Number(variant.stock);
+		const updatedStock = await product.save();
+		res.status(201).json(updatedStock);
+	} catch (error) {
+		res
+			.status(500)
+			.json({ message: 'Failed to restock variant.', error: error.message });
+	}
+};

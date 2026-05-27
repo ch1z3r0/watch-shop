@@ -3,7 +3,9 @@ import { Modal } from '../ui/modal';
 import Button from '../ui/button/Button';
 import Badge from '../ui/badge/Badge';
 import VariantFormModal from './VariantFormModal';
+import RestockModal from './RestockModal';
 import { Product, Variant } from '../../types/product';
+import { BoxArchiveIcon } from '../../icons';
 
 // ─── Icons ────────────────────────────────────────────────────────────────────
 
@@ -87,6 +89,11 @@ interface VariantManagerModalProps {
 		payload: Omit<Variant, 'variantId'>,
 	) => Promise<void>;
 	onRemoveVariant: (productId: string, variantId: string) => Promise<void>;
+	onRestockVariant: (
+		productId: string,
+		variantId: string,
+		quantity: number,
+	) => Promise<void>;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -98,6 +105,7 @@ export default function VariantManagerModal({
 	onCreateVariant,
 	onEditVariant,
 	onRemoveVariant,
+	onRestockVariant,
 }: VariantManagerModalProps) {
 	const [formTarget, setFormTarget] = useState<Variant | null | undefined>(
 		undefined,
@@ -107,6 +115,7 @@ export default function VariantManagerModal({
 
 	const [deleteTarget, setDeleteTarget] = useState<Variant | null>(null);
 	const [isDeleting, setIsDeleting] = useState(false);
+	const [restockTarget, setRestockTarget] = useState<Variant | null>(null);
 
 	if (!product) return null;
 
@@ -129,6 +138,16 @@ export default function VariantManagerModal({
 		} finally {
 			setIsDeleting(false);
 		}
+	};
+
+	const handleRestock = async (quantity: number) => {
+		if (!restockTarget || !product) return;
+		await onRestockVariant(
+			product.productId,
+			restockTarget.variantId,
+			quantity,
+		);
+		setRestockTarget(null);
 	};
 
 	const fmt = (n: number) =>
@@ -219,6 +238,13 @@ export default function VariantManagerModal({
 													<EditIcon />
 												</button>
 												<button
+													onClick={() => setRestockTarget(variant)}
+													className='p-1.5 rounded-lg text-gray-500 hover:text-success-500 hover:bg-success-50 dark:hover:bg-success-500/10 transition-colors'
+													title='Restock variant'
+												>
+													<BoxArchiveIcon />
+												</button>
+												<button
 													onClick={() => setDeleteTarget(variant)}
 													disabled={isLastVariant}
 													className='p-1.5 rounded-lg text-gray-500 hover:text-error-500 hover:bg-error-50 dark:hover:bg-error-500/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed'
@@ -246,6 +272,13 @@ export default function VariantManagerModal({
 				onClose={() => setFormTarget(undefined)}
 				onSave={handleSave}
 				variant={formTarget ?? null}
+			/>
+
+			<RestockModal
+				isOpen={!!restockTarget}
+				onClose={() => setRestockTarget(null)}
+				onRestock={handleRestock}
+				variant={restockTarget}
 			/>
 
 			{/* Delete Confirmation */}

@@ -56,8 +56,10 @@ import { ReactComponent as AlertHexaIcon } from './alert-hexa.svg?react';
 import { ReactComponent as ErrorHexaIcon } from './info-hexa.svg?react';
 import { ReactComponent as CubesIcon } from './cubes-light.svg?react';
 import { ReactComponent as TagsIcon } from './tags-light-full.svg?react';
+import { ReactComponent as BoxArchiveIcon } from './box-archive.svg?react';
 
 export {
+	BoxArchiveIcon,
 	TagsIcon,
 	CubesIcon,
 	ErrorHexaIcon,

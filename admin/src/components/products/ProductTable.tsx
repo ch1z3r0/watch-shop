@@ -157,6 +157,7 @@ export default function ProductTable() {
 		setFilters,
 		sort,
 		setSort,
+		restockProductVariant,
 	} = useProducts();
 
 	const toggleSort = (key: string) => {
@@ -441,6 +442,7 @@ export default function ProductTable() {
 				onCreateVariant={createVariant}
 				onEditVariant={editVariant}
 				onRemoveVariant={removeVariant}
+				onRestockVariant={restockProductVariant}
 			/>
 			{/* Delete Confirmation Modal */}
 			<Modal
