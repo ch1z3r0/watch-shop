@@ -79,7 +79,7 @@ export const createProduct = async (req, res) => {
 			});
 		}
 
-		const productId = generateUniqueId('product');
+		const productId = await generateUniqueId('product');
 
 		const newProduct = await Product.create({
 			productId,
@@ -205,7 +205,7 @@ export const addVariant = async (req, res) => {
 				message: `A Variant with color "${color}" and size "${size}" already exists.`,
 			});
 		}
-		const variantId = generateUniqueId('variant');
+		const variantId = await generateUniqueId('variant');
 
 		const newVariant = {
 			variantId,

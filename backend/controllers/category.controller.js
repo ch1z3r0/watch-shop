@@ -53,7 +53,7 @@ export const getCategoryById = async (req, res) => {
 export const createCategory = async (req, res) => {
 	try {
 		const { name, slug } = req.body;
-		const categoryId = generateUniqueId('category');
+		const categoryId = await generateUniqueId('category');
 		const createCategory = await Category.create({ categoryId, name, slug });
 		res.status(200).json(createCategory);
 	} catch (error) {

@@ -90,7 +90,7 @@ export const createOrder = async (req, res) => {
 			variant.stock -= item.quantity;
 			await product.save();
 		}
-		const orderId = generateUniqueId('order');
+		const orderId = await generateUniqueId('order');
 
 		const newOrder = await Order.create({
 			orderId,

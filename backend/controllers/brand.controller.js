@@ -53,7 +53,7 @@ export const getBrandsById = async (req, res) => {
 export const createBrand = async (req, res) => {
 	try {
 		const { name, slug } = req.body;
-		const brandId = generateUniqueId('brand');
+		const brandId = await generateUniqueId('brand');
 
 		const brand = await Brand.create({
 			brandId,
