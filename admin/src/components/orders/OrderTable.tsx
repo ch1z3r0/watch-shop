@@ -299,8 +299,13 @@ export default function OrderTable() {
 
 											{/* Items count */}
 											<TableCell className='px-4 py-3 text-start text-theme-sm text-gray-500 dark:text-gray-400'>
-												{order.items.length}{' '}
-												{order.items.length === 1 ? 'item' : 'items'}
+												{(() => {
+													const total = order.items.reduce(
+														(sum, item) => sum + item.quantity,
+														0,
+													);
+													return `${total} ${total === 1 ? 'item' : 'items'}`;
+												})()}
 											</TableCell>
 
 											{/* Total */}

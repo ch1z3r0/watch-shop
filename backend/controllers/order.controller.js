@@ -1,7 +1,6 @@
 import Order from '../models/Order.js';
 import Product from '../models/Product.js';
-import getNextSequence from '../utils/getNextSequence.js';
-import formatCode from '../utils/formatCode.js';
+import generateUniqueId from '../utils/generateUniqueId.js';
 
 // --- Helpers -------------------------------------------------------------------------
 //Rollback restore
@@ -91,8 +90,7 @@ export const createOrder = async (req, res) => {
 			variant.stock -= item.quantity;
 			await product.save();
 		}
-		const nextOrderNumber = await getNextSequence('order');
-		const orderId = formatCode('ORD', nextOrderNumber);
+		const orderId = await generateUniqueId('order');
 
 		const newOrder = await Order.create({
 			orderId,

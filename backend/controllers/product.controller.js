@@ -1,8 +1,7 @@
 import Product from '../models/Product.js';
 import Brand from '../models/Brand.js';
 import Category from '../models/Category.js';
-import getNextSequence from '../utils/getNextSequence.js';
-import formatCode from '../utils/formatCode.js';
+import generateUniqueId from '../utils/generateUniqueId.js';
 
 export const getAllProducts = async (req, res) => {
 	try {
@@ -65,8 +64,7 @@ export const createProduct = async (req, res) => {
 
 		const processedVariants = [];
 		for (const variant of variants) {
-			const nextVariantNumber = await getNextSequence('variant');
-			const variantId = formatCode('V', nextVariantNumber);
+			const variantId = await generateUniqueId('variant');
 
 			processedVariants.push({
 				variantId,
@@ -81,8 +79,7 @@ export const createProduct = async (req, res) => {
 			});
 		}
 
-		const nextProductNumber = await getNextSequence('product');
-		const productId = formatCode('P', nextProductNumber);
+		const productId = await generateUniqueId('product');
 
 		const newProduct = await Product.create({
 			productId,
@@ -208,8 +205,7 @@ export const addVariant = async (req, res) => {
 				message: `A Variant with color "${color}" and size "${size}" already exists.`,
 			});
 		}
-		const nextNumber = await getNextSequence('variant');
-		const variantId = formatCode('V', nextNumber);
+		const variantId = await generateUniqueId('variant');
 
 		const newVariant = {
 			variantId,
@@ -349,5 +345,33 @@ export const deleteVariant = async (req, res) => {
 			message: 'Failed to delete variant',
 			error: error.message,
 		});
+	}
+};
+
+// Restock Variant
+export const restockVariant = async (req, res) => {
+	try {
+		const { productId, variantId } = req.params;
+		const { quantity } = req.body;
+
+		if (!quantity || quantity <= 0) {
+			return res.status(400).json({ message: 'Invalid quantity' });
+		}
+		const product = await Product.findOne({ productId });
+		if (!product) {
+			return res.status(404).json({ message: 'Product not found' });
+		}
+		const variant = product.variants.find((v) => v.variantId === variantId);
+		if (!variant) {
+			return res.status(404).json({ message: 'Variant not found' });
+		}
+
+		variant.stock = Number(quantity) + Number(variant.stock);
+		const updatedStock = await product.save();
+		res.status(201).json(updatedStock);
+	} catch (error) {
+		res
+			.status(500)
+			.json({ message: 'Failed to restock variant.', error: error.message });
 	}
 };

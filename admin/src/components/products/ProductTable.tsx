@@ -69,7 +69,6 @@ const EditIcon = () => (
 		/>
 	</svg>
 );
-
 // Trash icon
 const TrashIcon = () => (
 	<svg
@@ -109,6 +108,7 @@ const TrashIcon = () => (
 		/>
 	</svg>
 );
+// Layer icon
 const LayersIcon = () => (
 	<svg width='16' height='16' viewBox='0 0 24 24' fill='none'>
 		<polygon
@@ -157,6 +157,7 @@ export default function ProductTable() {
 		setFilters,
 		sort,
 		setSort,
+		restockProductVariant,
 	} = useProducts();
 
 	const toggleSort = (key: string) => {
@@ -441,6 +442,7 @@ export default function ProductTable() {
 				onCreateVariant={createVariant}
 				onEditVariant={editVariant}
 				onRemoveVariant={removeVariant}
+				onRestockVariant={restockProductVariant}
 			/>
 			{/* Delete Confirmation Modal */}
 			<Modal

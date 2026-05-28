@@ -59,3 +59,15 @@ export const deleteVariant = async (
 	);
 	return res.data.product;
 };
+
+export const restockVariant = async (
+	productId: string,
+	variantId: string,
+	quantity: number,
+): Promise<Product> => {
+	const res = await api.patch(
+		`/api/products/${productId}/variants/${variantId}/restock`,
+		{ quantity },
+	);
+	return res.data;
+};

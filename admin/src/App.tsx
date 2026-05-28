@@ -23,6 +23,7 @@ import Categories from './pages/Categories';
 import Brands from './pages/Brands';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import Orders from './pages/Orders';
+import Restock from './pages/Restock';
 
 export default function App() {
 	return (
@@ -45,6 +46,7 @@ export default function App() {
 						<Route path='/categories' element={<Categories />} />
 						<Route path='/brands' element={<Brands />} />
 						<Route path='/orders' element={<Orders />} />
+						<Route path='/restock' element={<Restock />} />
 						<Route path='/profile' element={<UserProfiles />} />
 						<Route path='/calendar' element={<Calendar />} />
 						<Route path='/blank' element={<Blank />} />

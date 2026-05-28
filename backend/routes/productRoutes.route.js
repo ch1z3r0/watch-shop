@@ -8,6 +8,7 @@ import {
 	getProductById,
 	updateProduct,
 	updateVariant,
+	restockVariant,
 } from '../controllers/product.controller.js';
 
 const router = express.Router();
@@ -34,5 +35,7 @@ router.post('/:productId/variants/', addVariant);
 router.put('/:productId/variants/:variantId', updateVariant);
 //Delete variant
 router.delete('/:productId/variants/:variantId', deleteVariant);
+//Restock variant
+router.patch('/:productId/variants/:variantId/restock', restockVariant);
 
 export default router;

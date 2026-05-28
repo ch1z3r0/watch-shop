@@ -8,6 +8,7 @@ import {
 	addVariant,
 	updateVariant,
 	deleteVariant,
+	restockVariant,
 } from '../api/productApi';
 import { Brand } from '../types/brand';
 import { getBrands } from '../api/brandApi';
@@ -225,6 +226,15 @@ const useProducts = () => {
 		syncProduct(updated);
 	};
 
+	const restockProductVariant = async (
+		productId: string,
+		variantId: string,
+		quantity: number,
+	) => {
+		const updated = await restockVariant(productId, variantId, quantity);
+		syncProduct(updated);
+	};
+
 	return {
 		brandMap,
 		categoryMap,
@@ -246,6 +256,7 @@ const useProducts = () => {
 		createVariant,
 		editVariant,
 		removeVariant,
+		restockProductVariant,
 	};
 };
 
