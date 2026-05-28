@@ -1,18 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Product, Variant } from '../types/product';
+import { Product } from '../types/product';
 import { getProducts, restockVariant } from '../api/productApi';
-
-// ─── Helper functions ─────────────────────────────────────────────────────────
-
-export const getTotalStock = (variants: Variant[]): number =>
-	variants.reduce((sum, v) => sum + v.stock, 0);
 
 // --- Search, Filters, Sort types -------------------------------------------
 export interface Filters {
 	stock: 'all' | 'lowstock' | 'outofstock';
 }
 
-type SortColumn = 'name' | 'stock';
+type SortColumn = 'productName' | 'stock';
 type SortDirection = 'asc' | 'desc';
 export interface Sort {
 	column: SortColumn;
@@ -30,7 +25,10 @@ const useRestock = () => {
 	const [filters, setFilters] = useState<Filters>({
 		stock: 'all',
 	});
-	const [sort, setSort] = useState<Sort>({ column: 'name', direction: 'asc' });
+	const [sort, setSort] = useState<Sort>({
+		column: 'productName',
+		direction: 'asc',
+	});
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -47,29 +45,38 @@ const useRestock = () => {
 		fetchData();
 	}, []);
 
-	const filteredProducts = useMemo(() => {
-		let result = [...products];
+	const flatVariants = useMemo(
+		() =>
+			products.flatMap((product) =>
+				product.variants.map((variant) => ({
+					...variant,
+					productId: product.productId,
+					productName: product.name,
+				})),
+			),
+		[products],
+	);
+
+	const filteredVariants = useMemo(() => {
+		let result = [...flatVariants];
 
 		// --- Search ---------------------------------------------------------------
 		if (searchQuery.trim()) {
 			const q = searchQuery.toLowerCase().trim();
-			result = result.filter((p) => {
-				const variantFields = p.variants
-					.flatMap((v) => [v.color, v.case, ...v.mode])
-					.join(' ')
-					.toLowerCase();
-				return p.name.toLowerCase().includes(q) || variantFields.includes(q);
+
+			result = result.filter((v) => {
+				return (
+					v.productName.toLowerCase().includes(q) ||
+					v.color.toLowerCase().includes(q)
+				);
 			});
 		}
 
 		// --- Filters ---------------------------------------------------------------
-		if (filters.stock !== 'all') {
-			result = result.filter((p) => {
-				const total = getTotalStock(p.variants ?? []);
-				if (filters.stock === 'outofstock') return total === 0;
-				if (filters.stock === 'lowstock') return total > 0 && total < 10;
-				return true;
-			});
+		if (filters.stock === 'lowstock') {
+			result = result.filter((v) => v.stock < 10 && v.stock > 0);
+		} else if (filters.stock === 'outofstock') {
+			result = result.filter((v) => v.stock === 0);
 		}
 
 		// --- Sort --------------------------------------------------------------------
@@ -77,25 +84,20 @@ const useRestock = () => {
 			let valA: number | string = 0;
 			let valB: number | string = 0;
 
-			if (sort.column === 'name') {
-				valA = a.name.toLowerCase();
-				valB = b.name.toLowerCase();
+			if (sort.column === 'productName') {
+				valA = a.productName.toLowerCase();
+				valB = b.productName.toLowerCase();
 			} else if (sort.column === 'stock') {
-				valA = getTotalStock(a.variants ?? []);
-				valB = getTotalStock(b.variants ?? []);
+				valA = a.stock;
+				valB = b.stock;
 			}
 			if (valA < valB) return sort.direction === 'asc' ? -1 : 1;
 			if (valA > valB) return sort.direction === 'asc' ? 1 : -1;
 			return 0;
 		});
 		return result;
-	}, [products, searchQuery, filters, sort]);
+	}, [flatVariants, searchQuery, filters, sort]);
 
-	// Replaces one product in state with the updated version returned by the backend
-	const syncProduct = (updated: Product) =>
-		setProducts((prev) =>
-			prev.map((p) => (p.productId === updated.productId ? updated : p)),
-		);
 	// ─── Methods ─────────────────────────────────────────────────────────────────────
 	const restockProductVariant = async (
 		productId: string,
@@ -103,14 +105,16 @@ const useRestock = () => {
 		quantity: number,
 	) => {
 		const updated = await restockVariant(productId, variantId, quantity);
-		syncProduct(updated);
+		setProducts((prev) =>
+			prev.map((p) => (p.productId === productId ? updated : p)),
+		);
 	};
 
 	return {
 		products,
 		isLoading,
 		error,
-		filteredProducts,
+		filteredVariants,
 		filters,
 		setFilters,
 		sort,
