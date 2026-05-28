@@ -1,7 +1,5 @@
 import Category from '../models/Category.js';
-import getNextSequence from '../utils/getNextSequence.js';
-import Counter from '../models/Counter.js';
-import formatCode from '../utils/formatCode.js';
+import generateUniqueId from '../utils/generateUniqueId.js';
 
 export const getAllCategories = async (req, res) => {
 	try {
@@ -55,8 +53,7 @@ export const getCategoryById = async (req, res) => {
 export const createCategory = async (req, res) => {
 	try {
 		const { name, slug } = req.body;
-		const nextNumber = await getNextSequence('category');
-		const categoryId = formatCode('C', nextNumber);
+		const categoryId = generateUniqueId('category');
 		const createCategory = await Category.create({ categoryId, name, slug });
 		res.status(200).json(createCategory);
 	} catch (error) {

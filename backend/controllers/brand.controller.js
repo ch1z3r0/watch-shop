@@ -1,6 +1,5 @@
 import Brand from '../models/Brand.js';
-import getNextSequence from '../utils/getNextSequence.js';
-import formatCode from '../utils/formatCode.js';
+import generateUniqueId from '../utils/generateUniqueId.js';
 
 export const getAllBrands = async (req, res) => {
 	try {
@@ -54,8 +53,7 @@ export const getBrandsById = async (req, res) => {
 export const createBrand = async (req, res) => {
 	try {
 		const { name, slug } = req.body;
-		const nextNumber = await getNextSequence('brand');
-		const brandId = formatCode('B', nextNumber);
+		const brandId = generateUniqueId('brand');
 
 		const brand = await Brand.create({
 			brandId,
