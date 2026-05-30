@@ -11,6 +11,8 @@ import { useState } from 'react';
 import { saveRedirectPath } from '../../auth/authRedirect';
 
 const Navigation = () => {
+	const mainTabs = ['Home'];
+
 	const { watchLogo } = ASSETS;
 	const { user, isLoading, isAdmin } = useAuth();
 	const location = useLocation();
