@@ -1,6 +1,3 @@
-import Navigation from '../components/Navigation/Navigation';
-import { useEffect, useRef, useState } from 'react';
-
 import './Homepage.css';
 
 import { ASSETS } from '../utils/assets';
@@ -21,7 +18,6 @@ const Homepage = () => {
 		<div className='homepage'>
 			{/* <img className='bg1' src={homepageBg} alt='Background Image 1' /> */}
 			<div className='bg1'></div>
-			<Navigation />
 			{/* <h1>Welcome to Banner Section</h1> */}
 			<Banner />
 			<div className='title-wrap'>
