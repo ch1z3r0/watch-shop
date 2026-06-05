@@ -20,8 +20,6 @@ const AnimatedOutlet = () => {
 	const location = useLocation();
 	return (
 		<AnimatePresence mode='wait'>
-			{/* The Outlet will render either SignInPage or SignUpPage */}
-			{/* key={location.pathname} is crucial for AnimatePresence */}
 			<Outlet key={location.pathname} />
 		</AnimatePresence>
 	);

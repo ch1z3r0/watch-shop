@@ -6,9 +6,8 @@ import Navigation from '../components/Navigation/Navigation';
 const RootLayout = () => {
 	return (
 		<div className='root-layout-container'>
+			<Navigation cartCount={0} />
 			<main>
-				{/* <Navigation /> */}
-
 				<Outlet />
 			</main>
 		</div>

@@ -6,6 +6,7 @@ import './fontawesome.js';
 
 import { ASSETS } from './utils/assets.js';
 import { AuthProvider } from './auth/AuthProvider.jsx';
+import { FavouritesProvider } from './context/FavouritesContext.jsx';
 // ---- inject fonts globally from ASSETS ----
 (function injectSamsungFonts() {
 	if (document.querySelector('style[data-fonts="samsung"]')) return; // avoid duplicates
@@ -44,7 +45,9 @@ import { AuthProvider } from './auth/AuthProvider.jsx';
 createRoot(document.getElementById('root')).render(
 	<StrictMode>
 		<AuthProvider>
-			<App />
+			<FavouritesProvider>
+				<App />
+			</FavouritesProvider>
 		</AuthProvider>
 	</StrictMode>,
 );

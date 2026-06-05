@@ -1,6 +1,5 @@
 import { useAuth } from '../auth/AuthProvider';
 import FullScreenLoader from '../components/FullScreenLoader';
-import Navigation from '../components/Navigation/Navigation';
 import './Shop.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { byPrefixAndName } from '@awesome.me/kit-0f2939e7cf/icons';
@@ -238,7 +237,6 @@ const Shop = () => {
 	return (
 		<div className='shop'>
 			<div className='bg1'></div>
-			<Navigation />
 
 			<div className='shop-wrapper'>
 				<div className='shop-hero'>
