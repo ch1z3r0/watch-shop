@@ -11,10 +11,6 @@ main {
 	overflow: hidden;
 }
 
-main {
-	overflow: hidden;
-}
-
 .root-layout-container.dark {
 	--bg-primary: #0a0a0a;
 	--bg-secondary: #111111;
