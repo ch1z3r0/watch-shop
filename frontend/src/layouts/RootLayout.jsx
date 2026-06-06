@@ -15,7 +15,7 @@ const RootLayout = () => {
 		});
 	};
 	return (
-		<div className='root-layout-container'>
+		<div className={`root-layout-container ${theme}`}>
 			<Navigation cartCount={0} theme={theme} onToggleTheme={toggleTheme} />
 			<main>
 				<Outlet />
