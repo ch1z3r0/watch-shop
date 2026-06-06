@@ -1,6 +1,3 @@
-// import watch_logo from '../../assets/icons/watch-logo.svg';
-import { ASSETS } from '../../utils/assets';
-
 import './Navigation.css';
 import { useAuth } from '../../auth/AuthProvider';
 // import { button, li } from 'framer-motion/client';
@@ -11,29 +8,14 @@ import { saveRedirectPath } from '../../auth/authRedirect';
 
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useFavourites } from '../../context/FavouritesContext';
+import {
+	HeartEmptyIcon,
+	HeartFilledIcon,
+	MoonIcon,
+	SunIcon,
+} from '../../icons';
 
-const HeartFilled = () => (
-	<svg viewBox='0 0 24 24' width='17' height='17' fill='#c9a84c'>
-		<path d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z' />
-	</svg>
-);
-
-const HeartEmpty = () => (
-	<svg
-		viewBox='0 0 24 24'
-		width='17'
-		height='17'
-		fill='none'
-		stroke='currentColor'
-		strokeWidth='1.8'
-		strokeLinecap='round'
-		strokeLinejoin='round'
-	>
-		<path d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z' />
-	</svg>
-);
-
-const Navigation = ({ cartCount = 0 }) => {
+const Navigation = ({ cartCount = 0, theme = 'dark', onToggleTheme }) => {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const { user, isAdmin } = useAuth();
@@ -190,8 +172,17 @@ const Navigation = ({ cartCount = 0 }) => {
 			)}
 			<div className='nav__utils'>
 				<button className='nav__icon-btn' aria-label='Favourites'>
-					{favCount > 0 ? <HeartFilled /> : <HeartEmpty />}
+					{favCount > 0 ? <HeartFilledIcon /> : <HeartEmptyIcon />}
 					{favCount > 0 && <span className='nav__badge'>{favCount}</span>}
+				</button>
+				<button
+					className='nav__theme-toggle'
+					onClick={onToggleTheme}
+					aria-label={
+						theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+					}
+				>
+					{theme === 'dark' ? <SunIcon /> : <MoonIcon />}
 				</button>
 			</div>
 		</nav>

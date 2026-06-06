@@ -14,6 +14,10 @@ export const ASSETS = {
 	watchLogo: cdn.icon('watch-logo.svg'),
 	arrowLeft: cdn.icon('arrow-left.svg'),
 	star: cdn.icon('star.svg'),
+	sun: cdn.icon('sun.svg'),
+	moon: cdn.icon('moon.svg'),
+	heartEmpty: cdn.icon('heart-empty.svg'),
+	heartFilled: cdn.icon('heart-filled.svg'),
 
 	//IMAGES
 	signInBanner: cdn.image('watch1.svg'),
