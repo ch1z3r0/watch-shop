@@ -8,9 +8,14 @@ import { saveRedirectPath } from '../../auth/authRedirect';
 
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useFavourites } from '../../context/FavouritesContext';
-import { HeartEmptyIcon, HeartFilledIcon } from '../../icons';
+import {
+	HeartEmptyIcon,
+	HeartFilledIcon,
+	MoonIcon,
+	SunIcon,
+} from '../../icons';
 
-const Navigation = ({ cartCount = 0 }) => {
+const Navigation = ({ cartCount = 0, theme = 'dark', onToggleTheme }) => {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const { user, isAdmin } = useAuth();
@@ -169,6 +174,15 @@ const Navigation = ({ cartCount = 0 }) => {
 				<button className='nav__icon-btn' aria-label='Favourites'>
 					{favCount > 0 ? <HeartFilledIcon /> : <HeartEmptyIcon />}
 					{favCount > 0 && <span className='nav__badge'>{favCount}</span>}
+				</button>
+				<button
+					className='nav__theme-toggle'
+					onClick={onToggleTheme}
+					aria-label={
+						theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+					}
+				>
+					{theme === 'dark' ? <SunIcon /> : <MoonIcon />}
 				</button>
 			</div>
 		</nav>
