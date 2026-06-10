@@ -1,7 +1,7 @@
 import { useAuth } from '../auth/AuthProvider';
 import FullScreenLoader from '../components/FullScreenLoader';
 import './Shop.css';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useFavourites } from '../context/FavouritesContext';
@@ -26,6 +26,61 @@ const getFirstImage = (variants) => {
 		if (v.images && v.images.length > 0) return v.images[0];
 	}
 	return null;
+};
+
+const SORT_OPTIONS = [
+	{ value: 'featured', label: 'Featured' },
+	{ value: 'newest', label: 'Newest First' },
+	{ value: 'price-asc', label: 'Price: Low to High' },
+	{ value: 'price-desc', label: 'Price: High to Low' },
+	{ value: 'name-asc', label: 'Name: A → Z' },
+	{ value: 'name-desc', label: 'Name: Z → A' },
+];
+
+const SortDropdown = ({ value, onChange }) => {
+	const [open, setOpen] = useState(false);
+	const ref = useRef(null);
+
+	useEffect(() => {
+		const handleClickOutside = (e) => {
+			if (ref.current && !ref.current.contains(e.target)) {
+				setOpen(false);
+			}
+		};
+		document.addEventListener('mousedown', handleClickOutside);
+		return () => document.removeEventListener('mousedown', handleClickOutside);
+	}, []);
+
+	const selected = SORT_OPTIONS.find((o) => o.value === value);
+
+	return (
+		<div className='sort-dropdown' ref={ref}>
+			<button
+				className={`sort-dropdown__trigger ${open ? 'is-open' : ''}`}
+				onClick={() => setOpen((prev) => !prev)}
+			>
+				<span>{selected?.label}</span>
+				<span className='sort-dropdown__arrow'>▼</span>
+			</button>
+
+			{open && (
+				<div className='sort-dropdown__menu'>
+					{SORT_OPTIONS.map((opt) => (
+						<div
+							key={opt.value}
+							className={`sort-dropdown__option ${value === opt.value ? 'is-selected' : ''}`}
+							onClick={() => {
+								onChange(opt.value);
+								setOpen(false);
+							}}
+						>
+							{opt.label}
+						</div>
+					))}
+				</div>
+			)}
+		</div>
+	);
 };
 
 const ProductCard = ({ product, onClick }) => {
@@ -258,18 +313,7 @@ const Shop = () => {
 							)}
 						</div>
 
-						<select
-							className='shop-sort'
-							value={sort}
-							onChange={(e) => setSort(e.target.value)}
-						>
-							<option value='featured'>Featured</option>
-							<option value='newest'>Newest First</option>
-							<option value='price-asc'>Price: Low to High</option>
-							<option value='price-desc'>Price: High to Low</option>
-							<option value='name-asc'>Name: A → Z</option>
-							<option value='name-desc'>Name: Z → A</option>
-						</select>
+						<SortDropdown value={sort} onChange={setSort} />
 					</div>
 
 					{activeChips.length > 0 && (
