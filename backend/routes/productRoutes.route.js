@@ -9,6 +9,7 @@ import {
 	updateProduct,
 	updateVariant,
 	restockVariant,
+	getProductBySlug,
 } from '../controllers/product.controller.js';
 
 const router = express.Router();
@@ -18,6 +19,9 @@ router.get('/', getAllProducts);
 
 //Get product by Id
 router.get('/:productId', getProductById);
+
+//Get product by slug
+router.get('/slug/:slug', getProductBySlug);
 
 //Create product
 router.post('/', createProduct);
