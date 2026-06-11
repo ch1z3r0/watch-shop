@@ -1,37 +1,14 @@
 import { useAuth } from '../auth/AuthProvider';
 import FullScreenLoader from '../components/FullScreenLoader';
 import './Shop.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { byPrefixAndName } from '@awesome.me/kit-0f2939e7cf/icons';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { useFavourites } from '../context/FavouritesContext';
+import useShopFilters from '../hooks/useShopFilters';
+import { HeartEmptyIcon, HeartFilledIcon } from '../icons';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
-
-const tabs = [
-	{
-		id: 1,
-		name: 'New & Featured',
-		icon: 'star',
-		prefix: 'far',
-		brandSlug: null,
-	},
-	{
-		id: 2,
-		name: 'Samsung',
-		icon: 'stripe-s',
-		prefix: 'fab',
-		brandSlug: 'samsung',
-	},
-	{ id: 3, name: 'Apple', icon: 'apple', prefix: 'fab', brandSlug: 'apple' },
-	{ id: 4, name: 'Google', icon: 'google', prefix: 'fab', brandSlug: 'google' },
-];
-
-const SORT_OPTIONS = [
-	{ value: 'newest', label: 'Newest First' },
-	{ value: 'price-asc', label: 'Price: Low to High' },
-	{ value: 'price-desc', label: 'Price: High to Low' },
-	{ value: 'name-asc', label: 'Name: A–Z' },
-];
 
 const formatPrice = (price) =>
 	new Intl.NumberFormat('en-US', {
@@ -52,7 +29,70 @@ const getFirstImage = (variants) => {
 	return null;
 };
 
-const ProductCard = ({ product, onAddToCart }) => {
+const SORT_OPTIONS = [
+	{ value: 'featured', label: 'Featured' },
+	{ value: 'newest', label: 'Newest First' },
+	{ value: 'price-asc', label: 'Price: Low to High' },
+	{ value: 'price-desc', label: 'Price: High to Low' },
+	{ value: 'name-asc', label: 'Name: A → Z' },
+	{ value: 'name-desc', label: 'Name: Z → A' },
+];
+
+const SortDropdown = ({ value, onChange }) => {
+	const [open, setOpen] = useState(false);
+	const ref = useRef(null);
+
+	useEffect(() => {
+		const handleClickOutside = (e) => {
+			if (ref.current && !ref.current.contains(e.target)) {
+				setOpen(false);
+			}
+		};
+		document.addEventListener('mousedown', handleClickOutside);
+		return () => document.removeEventListener('mousedown', handleClickOutside);
+	}, []);
+
+	const selected = SORT_OPTIONS.find((o) => o.value === value);
+
+	return (
+		<div className='sort-dropdown' ref={ref}>
+			<button
+				className={`sort-dropdown__trigger ${open ? 'is-open' : ''}`}
+				onClick={() => setOpen((prev) => !prev)}
+			>
+				<span>{selected?.label}</span>
+				<span className='sort-dropdown__arrow'>▼</span>
+			</button>
+
+			{open && (
+				<div className='sort-dropdown__menu'>
+					{SORT_OPTIONS.map((opt) => (
+						<div
+							key={opt.value}
+							className={`sort-dropdown__option ${value === opt.value ? 'is-selected' : ''}`}
+							onClick={() => {
+								onChange(opt.value);
+								setOpen(false);
+							}}
+						>
+							{opt.label}
+						</div>
+					))}
+				</div>
+			)}
+		</div>
+	);
+};
+
+const ProductCard = ({ product, onClick, brandName }) => {
+	const { isFavourite, addFavourites, removeFavourites } = useFavourites();
+	const isFav = isFavourite(product._id);
+
+	const handleFavClick = (e) => {
+		e.stopPropagation();
+		isFav ? removeFavourites(product._id) : addFavourites(product);
+	};
+
 	const lowestPrice = getLowestPrice(product.variants);
 	const image = getFirstImage(product.variants);
 	const inStock = product.variants?.some((v) => v.stock > 0);
@@ -61,6 +101,7 @@ const ProductCard = ({ product, onAddToCart }) => {
 	return (
 		<div
 			className={`product-card ${hovered ? 'product-card--hovered' : ''}`}
+			onClick={onClick}
 			onMouseEnter={() => setHovered(true)}
 			onMouseLeave={() => setHovered(false)}
 		>
@@ -110,6 +151,13 @@ const ProductCard = ({ product, onAddToCart }) => {
 						</svg>
 					</div>
 				)}
+				<button
+					className={`product-card__heart ${isFav ? 'is-fav' : ''}`}
+					onClick={handleFavClick}
+					aria-label={isFav ? 'Remove from favourites' : 'Add to favourites'}
+				>
+					{isFav ? <HeartFilledIcon /> : <HeartEmptyIcon />}
+				</button>
 				{!inStock && (
 					<span className='product-card__badge product-card__badge--out'>
 						Out of Stock
@@ -123,7 +171,7 @@ const ProductCard = ({ product, onAddToCart }) => {
 			</div>
 
 			<div className='product-card__body'>
-				<p className='product-card__brand'>{product.brandId}</p>
+				<p className='product-card__brand'>{brandName}</p>
 				<h3 className='product-card__name'>{product.name}</h3>
 
 				<div className='product-card__variants'>
@@ -146,13 +194,6 @@ const ProductCard = ({ product, onAddToCart }) => {
 					<span className='product-card__price'>
 						{lowestPrice !== null ? `From ${formatPrice(lowestPrice)}` : '—'}
 					</span>
-					<button
-						className='product-card__cta'
-						disabled={!inStock}
-						onClick={() => onAddToCart(product)}
-					>
-						{inStock ? 'Add to Cart' : 'Unavailable'}
-					</button>
 				</div>
 			</div>
 		</div>
@@ -160,34 +201,59 @@ const ProductCard = ({ product, onAddToCart }) => {
 };
 
 const Shop = () => {
-	const { user, isLoading } = useAuth();
-	const [activeTab, setActiveTab] = useState('New & Featured');
+	const { isLoading } = useAuth();
 	const [products, setProducts] = useState([]);
 	const [brands, setBrands] = useState([]);
+	const [categories, setCategories] = useState([]);
 	const [fetching, setFetching] = useState(true);
 	const [error, setError] = useState(null);
-	const [search, setSearch] = useState('');
-	const [sort, setSort] = useState('newest');
-	const [cartCount, setCartCount] = useState(0);
-	const [cartFlash, setCartFlash] = useState(false);
+	const navigate = useNavigate();
+
+	const {
+		filtered,
+		search,
+		setSearch,
+		sort,
+		setSort,
+		selectedBrands,
+		setSelectedBrands,
+		selectedCategories,
+		setSelectedCategories,
+		maxPrice,
+		setMaxPrice,
+		inStock,
+		setInStock,
+		railOpen,
+		setRailOpen,
+		activeChips: rawChips,
+		toggle,
+		clearAll,
+		PRICE_MAX,
+	} = useShopFilters(products);
+
+	const activeChips = rawChips.map((chip) => {
+		const brand = brands.find((b) => b.brandId === chip.label);
+		if (brand) return { ...chip, label: brand.name };
+
+		const category = categories.find((c) => c.categoryId === chip.label);
+		if (category) return { ...chip, label: category.name };
+
+		return chip;
+	});
 
 	useEffect(() => {
 		const fetchData = async () => {
 			setFetching(true);
 			setError(null);
 			try {
-				const [productsRes, brandsRes] = await Promise.all([
-					fetch(`${API_BASE}/api/products`),
-					fetch(`${API_BASE}/api/brands`),
+				const [productsRes, brandsRes, categoriesRes] = await Promise.all([
+					axios.get(`${API_BASE}/api/products`),
+					axios.get(`${API_BASE}/api/brands`),
+					axios.get(`${API_BASE}/api/categories`),
 				]);
-				if (!productsRes.ok) throw new Error('Failed to fetch products');
-				const productsData = await productsRes.json();
-				setProducts(productsData);
-
-				if (brandsRes.ok) {
-					const brandsData = await brandsRes.json();
-					setBrands(brandsData);
-				}
+				setProducts(productsRes.data);
+				setBrands(brandsRes.data);
+				setCategories(categoriesRes.data);
 			} catch (err) {
 				setError(err.message);
 			} finally {
@@ -196,41 +262,6 @@ const Shop = () => {
 		};
 		fetchData();
 	}, []);
-
-	const handleAddToCart = useCallback((product) => {
-		setCartCount((c) => c + 1);
-		setCartFlash(true);
-		setTimeout(() => setCartFlash(false), 600);
-	}, []);
-
-	const activeTabData = tabs.find((t) => t.name === activeTab);
-
-	const filtered = products
-		.filter((p) => {
-			if (activeTabData?.brandSlug) {
-				const matchingBrand = brands.find(
-					(b) => b.name?.toLowerCase() === activeTabData.brandSlug,
-				);
-				if (matchingBrand && p.brandId !== matchingBrand.brandId) return false;
-			}
-			if (search.trim()) {
-				return p.name.toLowerCase().includes(search.toLowerCase());
-			}
-			if (activeTab === 'New & Featured') {
-				const hasFeatured = p.variants?.some((v) => v.featured);
-				return hasFeatured;
-			}
-			return true;
-		})
-		.sort((a, b) => {
-			if (sort === 'price-asc')
-				return getLowestPrice(a.variants) - getLowestPrice(b.variants);
-			if (sort === 'price-desc')
-				return getLowestPrice(b.variants) - getLowestPrice(a.variants);
-			if (sort === 'name-asc') return a.name.localeCompare(b.name);
-			// newest: rely on server order (createdAt desc)
-			return 0;
-		});
 
 	if (isLoading) return <FullScreenLoader message='Checking your session...' />;
 
@@ -245,29 +276,14 @@ const Shop = () => {
 				</div>
 
 				<div className='shop-controls'>
-					<div className='shop-tab'>
-						<div className='shop-tab-list'>
-							{tabs.map((tab) => (
-								<button
-									key={tab.id}
-									className={activeTab === tab.name ? 'is-active' : ''}
-									onClick={() => {
-										setActiveTab(tab.name);
-										setSearch('');
-									}}
-								>
-									<span className='tab-icon'>
-										<FontAwesomeIcon
-											icon={byPrefixAndName[tab.prefix][tab.icon]}
-										/>
-									</span>
-									<span>{tab.name}</span>
-								</button>
-							))}
-						</div>
-					</div>
+					<div className='shop-topbar'>
+						<button
+							className='shop-filter-btn'
+							onClick={() => setRailOpen(true)}
+						>
+							Filters {activeChips.length > 0 && `(${activeChips.length})`}
+						</button>
 
-					<div className='shop-filters'>
 						<div className='shop-search-wrap'>
 							<svg className='search-icon' viewBox='0 0 20 20' fill='none'>
 								<circle
@@ -298,102 +314,196 @@ const Shop = () => {
 							)}
 						</div>
 
-						<select
-							className='shop-sort'
-							value={sort}
-							onChange={(e) => setSort(e.target.value)}
-						>
-							{SORT_OPTIONS.map((opt) => (
-								<option key={opt.value} value={opt.value}>
-									{opt.label}
-								</option>
-							))}
-						</select>
-
-						<button
-							className={`cart-btn ${cartFlash ? 'cart-btn--flash' : ''}`}
-						>
-							<svg
-								viewBox='0 0 24 24'
-								fill='none'
-								stroke='currentColor'
-								strokeWidth='1.8'
-							>
-								<path d='M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z' />
-								<line x1='3' y1='6' x2='21' y2='6' />
-								<path d='M16 10a4 4 0 01-8 0' />
-							</svg>
-							{cartCount > 0 && <span className='cart-count'>{cartCount}</span>}
-						</button>
+						<SortDropdown value={sort} onChange={setSort} />
 					</div>
-				</div>
 
-				<div className='shop-content'>
-					{fetching ? (
-						<div className='shop-state'>
-							<div className='shop-spinner' />
-							<p>Loading watches…</p>
-						</div>
-					) : error ? (
-						<div className='shop-state shop-state--error'>
-							<svg
-								viewBox='0 0 24 24'
-								fill='none'
-								stroke='currentColor'
-								strokeWidth='1.5'
-								width='48'
-								height='48'
-							>
-								<circle cx='12' cy='12' r='10' />
-								<line x1='12' y1='8' x2='12' y2='12' />
-								<line x1='12' y1='16' x2='12.01' y2='16' />
-							</svg>
-							<p>Couldn't load products. Is the backend running?</p>
-							<code>{error}</code>
-						</div>
-					) : filtered.length === 0 ? (
-						<div className='shop-state'>
-							<svg viewBox='0 0 80 80' fill='none' width='80' height='80'>
-								<circle
-									cx='40'
-									cy='40'
-									r='36'
-									stroke='rgba(255,255,255,0.1)'
-									strokeWidth='2'
-								/>
-								<path
-									d='M28 40h24M40 28v24'
-									stroke='rgba(255,255,255,0.2)'
-									strokeWidth='2'
-									strokeLinecap='round'
-								/>
-							</svg>
-							<p>No watches found{search ? ` for "${search}"` : ''}.</p>
-							{search && (
-								<button
-									className='shop-reset-btn'
-									onClick={() => setSearch('')}
-								>
-									Clear Search
+					{activeChips.length > 0 && (
+						<div className='shop-chips'>
+							{activeChips.map((chip, i) => (
+								<button key={i} className='shop-chip' onClick={chip.clear}>
+									{chip.label} ✕
 								</button>
-							)}
+							))}
+							<button className='shop-chip-clear' onClick={clearAll}>
+								Clear all
+							</button>
 						</div>
-					) : (
-						<>
-							<p className='shop-count'>
-								{filtered.length} watch{filtered.length !== 1 ? 'es' : ''}
-							</p>
-							<div className='product-grid'>
-								{filtered.map((product) => (
-									<ProductCard
-										key={product.productId}
-										product={product}
-										onAddToCart={handleAddToCart}
+					)}
+				</div>
+				<div className='shop__layout'>
+					{/* Filter rail — desktop sidebar / mobile drawer */}
+					<aside className={`shop__rail ${railOpen ? 'is-open' : ''}`}>
+						<div className='shop__rail-head'>
+							<span>Filters</span>
+							<button
+								className='shop__rail-close'
+								onClick={() => setRailOpen(false)}
+							>
+								✕
+							</button>
+						</div>
+
+						{/* Brands */}
+						<div className='shop__filter-group'>
+							<p className='shop__filter-label'>Brand</p>
+							{brands.map((brand) => (
+								<label key={brand.brandId} className='shop__check-row'>
+									<input
+										type='checkbox'
+										checked={selectedBrands.includes(brand.brandId)}
+										onChange={() => toggle(setSelectedBrands, brand.brandId)}
 									/>
+									<span className='shop__check-label'>{brand.name}</span>
+									<span className='shop__check-count'>
+										{brand.productCount ?? ''}
+									</span>
+								</label>
+							))}
+						</div>
+
+						{/* Categories */}
+						<div className='shop__filter-group'>
+							<p className='shop__filter-label'>Category</p>
+							{categories.map((cat) => (
+								<label key={cat.categoryId} className='shop__check-row'>
+									<input
+										type='checkbox'
+										checked={selectedCategories.includes(cat.categoryId)}
+										onChange={() =>
+											toggle(setSelectedCategories, cat.categoryId)
+										}
+									/>
+									<span className='shop__check-label'>{cat.name}</span>
+									<span className='shop__check-count'>
+										{cat.productCount ?? ''}
+									</span>
+								</label>
+							))}
+						</div>
+
+						{/* Price range */}
+						<div className='shop__filter-group'>
+							<p className='shop__filter-label'>Price</p>
+							<div className='shop__price-readout'>
+								<span>$0</span>
+								<span className='shop__price-val'>Up to ${maxPrice}</span>
+							</div>
+							<input
+								type='range'
+								className='shop__price-range'
+								min={0}
+								max={PRICE_MAX}
+								value={maxPrice}
+								onChange={(e) => setMaxPrice(Number(e.target.value))}
+							/>
+							<div className='shop__price-presets'>
+								{[200, 400, 600, PRICE_MAX].map((p) => (
+									<button
+										key={p}
+										className={`shop__price-chip ${maxPrice === p ? 'is-active' : ''}`}
+										onClick={() => setMaxPrice(p)}
+									>
+										{p === PRICE_MAX ? 'Any' : `< $${p}`}
+									</button>
 								))}
 							</div>
-						</>
+						</div>
+
+						{/* In stock */}
+						<div className='shop__filter-group'>
+							<p className='shop__filter-label'>Availability</p>
+							<label className='shop__check-row'>
+								<input
+									type='checkbox'
+									checked={inStock}
+									onChange={() => setInStock((prev) => !prev)}
+								/>
+								<span className='shop__check-label'>In stock only</span>
+							</label>
+						</div>
+
+						{activeChips.length > 0 && (
+							<button className='shop__rail-clear' onClick={clearAll}>
+								Clear all filters
+							</button>
+						)}
+					</aside>
+
+					{/* Overlay for mobile — closes rail when clicking outside */}
+					{railOpen && (
+						<div className='shop__overlay' onClick={() => setRailOpen(false)} />
 					)}
+					<div className='shop-content'>
+						{fetching ? (
+							<div className='shop-state'>
+								<div className='shop-spinner' />
+								<p>Loading watches…</p>
+							</div>
+						) : error ? (
+							<div className='shop-state shop-state--error'>
+								<svg
+									viewBox='0 0 24 24'
+									fill='none'
+									stroke='currentColor'
+									strokeWidth='1.5'
+									width='48'
+									height='48'
+								>
+									<circle cx='12' cy='12' r='10' />
+									<line x1='12' y1='8' x2='12' y2='12' />
+									<line x1='12' y1='16' x2='12.01' y2='16' />
+								</svg>
+								<p>Couldn't load products. Is the backend running?</p>
+								<code>{error}</code>
+							</div>
+						) : filtered.length === 0 ? (
+							<div className='shop-state'>
+								<svg viewBox='0 0 80 80' fill='none' width='80' height='80'>
+									<circle
+										cx='40'
+										cy='40'
+										r='36'
+										stroke='rgba(255,255,255,0.1)'
+										strokeWidth='2'
+									/>
+									<path
+										d='M28 40h24M40 28v24'
+										stroke='rgba(255,255,255,0.2)'
+										strokeWidth='2'
+										strokeLinecap='round'
+									/>
+								</svg>
+								<p>No watches found{search ? ` for "${search}"` : ''}.</p>
+								{search && (
+									<button
+										className='shop-reset-btn'
+										onClick={() => setSearch('')}
+									>
+										Clear Search
+									</button>
+								)}
+							</div>
+						) : (
+							<>
+								<p className='shop-count'>
+									{filtered.length} watch{filtered.length !== 1 ? 'es' : ''}
+								</p>
+								<div className='product-grid'>
+									{filtered.map((product) => (
+										<ProductCard
+											key={product.productId}
+											product={product}
+											brandName={
+												brands.find((b) => b.brandId === product.brandId)
+													?.name || product.brandId
+											}
+											onClick={() => navigate(`/product/${product.slug}`)}
+										/>
+									))}
+								</div>
+							</>
+						)}
+					</div>
 				</div>
 			</div>
 		</div>

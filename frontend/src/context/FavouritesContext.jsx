@@ -1,9 +1,10 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { useAuth } from '../auth/AuthProvider';
+import axios from 'axios';
 
 const FavouritesContext = createContext();
 
-const API_BASE = import.meta.env.VITE_API_BASE;
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
 
 export const FavouritesProvider = ({ children }) => {
 	const { user } = useAuth();
@@ -24,11 +25,10 @@ export const FavouritesProvider = ({ children }) => {
 			try {
 				setIsLoading(true);
 				const token = await getToken();
-				const res = await fetch(`${API_BASE}/api/favourites`, {
+				const res = await axios.get(`${API_BASE}/api/favourites`, {
 					headers: { Authorization: `Bearer ${token}` },
 				});
-				const data = await res.json();
-				setFavourites(data);
+				setFavourites(res.data);
 			} catch (error) {
 				console.error('Failed to fetch error', error);
 			} finally {
@@ -42,12 +42,14 @@ export const FavouritesProvider = ({ children }) => {
 	const addFavourites = async (product) => {
 		try {
 			const token = await getToken();
-			const res = await fetch(`${API_BASE}/api/favourites/${product._id}`, {
-				method: 'POST',
-				headers: { Authorization: `Bearer ${token}` },
-			});
-			const data = await res.json();
-			setFavourites(data);
+			const res = await axios.post(
+				`${API_BASE}/api/favourites/${product._id}`,
+				{},
+				{
+					headers: { Authorization: `Bearer ${token}` },
+				},
+			);
+			setFavourites(res.data);
 		} catch (error) {
 			console.error('Failed to add favourites', error);
 		}
@@ -57,12 +59,13 @@ export const FavouritesProvider = ({ children }) => {
 	const removeFavourites = async (productId) => {
 		try {
 			const token = await getToken();
-			const res = await fetch(`${API_BASE}/api/favourites/${productId}`, {
-				method: 'DELETE',
-				headers: { Authorization: `Bearer ${token}` },
-			});
-			const data = await res.json();
-			setFavourites(data);
+			const res = await axios.delete(
+				`${API_BASE}/api/favourites/${productId}`,
+				{
+					headers: { Authorization: `Bearer ${token}` },
+				},
+			);
+			setFavourites(res.data);
 		} catch (error) {
 			console.error('Failed to remove favourites', error);
 		}

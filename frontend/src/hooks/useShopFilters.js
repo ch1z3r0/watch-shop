@@ -2,10 +2,10 @@ import { useMemo, useState } from 'react';
 
 const PRICE_MAX = 900;
 
-const useShopFilters = () => {
+const useShopFilters = (products) => {
 	const [search, setSearch] = useState('');
 	const [sort, setSort] = useState('featured');
-	const [selectedBrands, setSelectedBrand] = useState([]);
+	const [selectedBrands, setSelectedBrands] = useState([]);
 	const [selectedCategories, setSelectedCategories] = useState([]);
 	const [maxPrice, setMaxPrice] = useState(PRICE_MAX);
 	const [inStock, setInStock] = useState(false);
@@ -20,7 +20,7 @@ const useShopFilters = () => {
 
 	const clearAll = () => {
 		setSearch('');
-		setSelectedBrand([]);
+		setSelectedBrands([]);
 		setSelectedCategories([]);
 		setMaxPrice(PRICE_MAX);
 		setInStock(false);
@@ -33,10 +33,88 @@ const useShopFilters = () => {
 	};
 
 	const filtered = useMemo(() => {
-		return products.filter((p) => {});
-	}, []);
+		return products
+			.filter((p) => {
+				if (
+					search.trim() &&
+					!p.name.toLowerCase().includes(search.toLowerCase())
+				)
+					return false;
+				if (selectedBrands.length && !selectedBrands.includes(p.brandId))
+					return false;
+				if (
+					selectedCategories.length &&
+					!selectedCategories.includes(p.categoryId)
+				)
+					return false;
+				if (getLowestPrice(p.variants) > maxPrice) return false;
+				if (inStock && !p.variants?.some((v) => v.stock > 0)) return false;
+				return true;
+			})
+			.sort((a, b) => {
+				if (sort === 'price-asc')
+					return getLowestPrice(a.variants) - getLowestPrice(b.variants);
+				if (sort === 'price-desc')
+					return getLowestPrice(b.variants) - getLowestPrice(a.variants);
+				if (sort === 'name-asc') return a.name.localeCompare(b.name);
+				if (sort === 'name-desc') return b.name.localeCompare(a.name);
+				return 0;
+			});
+	}, [
+		sort,
+		search,
+		selectedBrands,
+		selectedCategories,
+		inStock,
+		maxPrice,
+		products,
+	]);
 
-	return <div>useShopFilters</div>;
+	const activeChips = [
+		...selectedBrands.map((id) => ({
+			label: id,
+			clear: () => {
+				toggle(setSelectedBrands, id);
+			},
+		})),
+		...selectedCategories.map((id) => ({
+			label: id,
+			clear: () => {
+				toggle(setSelectedCategories, id);
+			},
+		})),
+		...(maxPrice < PRICE_MAX
+			? [{ label: `Under $${maxPrice}`, clear: () => setMaxPrice(PRICE_MAX) }]
+			: []),
+		...(inStock
+			? [{ label: 'In stock only', clear: () => setInStock(false) }]
+			: []),
+		...(search.trim()
+			? [{ label: `"${search}"`, clear: () => setSearch('') }]
+			: []),
+	];
+
+	return {
+		filtered,
+		clearAll,
+		PRICE_MAX,
+		toggle,
+		activeChips,
+		selectedBrands,
+		setSelectedBrands,
+		selectedCategories,
+		setSelectedCategories,
+		search,
+		setSearch,
+		sort,
+		setSort,
+		inStock,
+		setInStock,
+		maxPrice,
+		setMaxPrice,
+		railOpen,
+		setRailOpen,
+	};
 };
 
 export default useShopFilters;
