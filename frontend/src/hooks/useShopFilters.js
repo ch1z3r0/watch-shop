@@ -52,6 +52,13 @@ const useShopFilters = (products) => {
 				return true;
 			})
 			.sort((a, b) => {
+				if (sort === 'featured') {
+					const aFeatured = a.variants?.some((v) => v.featured) ? 1 : 0;
+					const bFeatured = b.variants?.some((v) => v.featured) ? 1 : 0;
+					return bFeatured - aFeatured;
+				}
+				if (sort === 'newest')
+					return new Date(b.createdAt) - new Date(a.createdAt);
 				if (sort === 'price-asc')
 					return getLowestPrice(a.variants) - getLowestPrice(b.variants);
 				if (sort === 'price-desc')
