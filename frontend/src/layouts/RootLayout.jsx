@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import './RootLayout.css';
 import Navigation from '../components/Navigation/Navigation';
 import { useState } from 'react';
+import Footer from '../components/Footer/Footer';
 
 const RootLayout = () => {
 	const [theme, setTheme] = useState(
@@ -20,6 +21,7 @@ const RootLayout = () => {
 			<main>
 				<Outlet />
 			</main>
+			<Footer />
 		</div>
 	);
 };
