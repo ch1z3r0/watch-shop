@@ -14,7 +14,7 @@ export const getFavourites = async (req, res) => {
 	try {
 		const user = await findOrCreateUser({
 			firebaseUid: req.user.uid,
-			email: req.user.email,
+			email: req.user.email || req.user.name || '',
 		});
 		await user.populate('favourites');
 		return res.status(200).json(user.favourites);
@@ -28,7 +28,7 @@ export const addFavourites = async (req, res) => {
 	try {
 		const user = await findOrCreateUser({
 			firebaseUid: req.user.uid,
-			email: req.user.email,
+			email: req.user.email || req.user.name || '',
 		});
 		const { productId } = req.params;
 		if (user.favourites.includes(productId)) {
@@ -48,7 +48,7 @@ export const removeFavourites = async (req, res) => {
 	try {
 		const user = await findOrCreateUser({
 			firebaseUid: req.user.uid,
-			email: req.user.email,
+			email: req.user.email || req.user.name || '',
 		});
 		const { productId } = req.params;
 		user.favourites = user.favourites.filter(
