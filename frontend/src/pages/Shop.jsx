@@ -84,7 +84,7 @@ const SortDropdown = ({ value, onChange }) => {
 	);
 };
 
-const ProductCard = ({ product, onClick }) => {
+const ProductCard = ({ product, onClick, brandName }) => {
 	const { isFavourite, addFavourites, removeFavourites } = useFavourites();
 	const isFav = isFavourite(product._id);
 
@@ -171,7 +171,7 @@ const ProductCard = ({ product, onClick }) => {
 			</div>
 
 			<div className='product-card__body'>
-				<p className='product-card__brand'>{product.brandId}</p>
+				<p className='product-card__brand'>{brandName}</p>
 				<h3 className='product-card__name'>{product.name}</h3>
 
 				<div className='product-card__variants'>
@@ -493,6 +493,10 @@ const Shop = () => {
 										<ProductCard
 											key={product.productId}
 											product={product}
+											brandName={
+												brands.find((b) => b.brandId === product.brandId)
+													?.name || product.brandId
+											}
 											onClick={() => navigate(`/product/${product.slug}`)}
 										/>
 									))}
