@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useFavourites } from '../context/FavouritesContext';
 import useShopFilters from '../hooks/useShopFilters';
+import { HeartEmptyIcon, HeartFilledIcon } from '../icons';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
 
@@ -84,12 +85,12 @@ const SortDropdown = ({ value, onChange }) => {
 };
 
 const ProductCard = ({ product, onClick }) => {
-	const { isFavourite, addFavourite, removeFavourite } = useFavourites();
+	const { isFavourite, addFavourites, removeFavourites } = useFavourites();
 	const isFav = isFavourite(product._id);
 
 	const handleFavClick = (e) => {
 		e.stopPropagation();
-		isFav ? removeFavourite(product._id) : addFavourite(product);
+		isFav ? removeFavourites(product._id) : addFavourites(product);
 	};
 
 	const lowestPrice = getLowestPrice(product.variants);
@@ -155,7 +156,7 @@ const ProductCard = ({ product, onClick }) => {
 					onClick={handleFavClick}
 					aria-label={isFav ? 'Remove from favourites' : 'Add to favourites'}
 				>
-					{isFav ? '♥' : '♡'}
+					{isFav ? <HeartFilledIcon /> : <HeartEmptyIcon />}
 				</button>
 				{!inStock && (
 					<span className='product-card__badge product-card__badge--out'>
