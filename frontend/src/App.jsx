@@ -15,6 +15,7 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 import { PublicOnly } from './auth/PublicOnly';
 import RequireAuth from './auth/RequireAuth';
 import Shop from './pages/Shop';
+import ProductDetail from './pages/ProductDetail';
 
 const AnimatedOutlet = () => {
 	const location = useLocation();
