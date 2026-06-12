@@ -17,6 +17,7 @@ interface VariantFormModalProps {
 
 type Draft = {
 	color: string;
+	colorHex: string;
 	size: string;
 	stock: string;
 	price: string;
@@ -28,6 +29,7 @@ type Draft = {
 
 const empty: Draft = {
 	color: '',
+	colorHex: '#000000',
 	size: '',
 	stock: '',
 	price: '',
@@ -60,6 +62,7 @@ export default function VariantFormModal({
 		if (variant) {
 			setDraft({
 				color: variant.color,
+				colorHex: variant.colorHex ?? '#000000',
 				size: String(variant.size),
 				stock: String(variant.stock),
 				price: String(variant.price),
@@ -79,6 +82,8 @@ export default function VariantFormModal({
 	const validate = () => {
 		const e: Record<string, string> = {};
 		if (!draft.color.trim()) e.color = 'Color is required';
+		if (!/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(draft.colorHex))
+			e.colorHex = 'Valid hex color is required';
 		if (!draft.size || isNaN(Number(draft.size)) || Number(draft.size) <= 0)
 			e.size = 'Valid size (mm) is required';
 		if (!draft.stock || isNaN(Number(draft.stock)) || Number(draft.stock) < 0)
@@ -97,6 +102,7 @@ export default function VariantFormModal({
 		try {
 			await onSave({
 				color: draft.color.trim(),
+				colorHex: draft.colorHex,
 				size: Number(draft.size),
 				stock: Number(draft.stock),
 				price: Number(draft.price),
@@ -152,6 +158,29 @@ export default function VariantFormModal({
 							error={!!errors.color}
 							hint={errors.color}
 						/>
+					</div>
+					<div>
+						<Label htmlFor='v-colorHex'>Color Swatch</Label>
+						<div className='flex items-center gap-2'>
+							<input
+								id='v-colorHex'
+								type='color'
+								value={draft.colorHex}
+								onChange={(e) =>
+									setDraft((prev) => ({ ...prev, colorHex: e.target.value }))
+								}
+								className='h-10 w-12 rounded border border-gray-300 dark:border-gray-600 cursor-pointer bg-transparent'
+							/>
+							<Input
+								placeholder='#2b3d63'
+								value={draft.colorHex}
+								onChange={(e) =>
+									setDraft((prev) => ({ ...prev, colorHex: e.target.value }))
+								}
+								error={!!errors.colorHex}
+								hint={errors.colorHex}
+							/>
+						</div>
 					</div>
 					<div>
 						<Label htmlFor='v-case'>Case Material</Label>

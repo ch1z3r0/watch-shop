@@ -12,6 +12,15 @@ const variantSchema = new mongoose.Schema(
 			required: [true, 'Variant color is required'],
 			trim: true,
 		},
+		colorHex: {
+			type: String,
+			required: [true, 'Variant color hex is required'],
+			trim: true,
+			match: [
+				/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/,
+				'Must be a valid hex color',
+			],
+		},
 		size: {
 			type: Number,
 			required: [true, 'Variant size is required'],

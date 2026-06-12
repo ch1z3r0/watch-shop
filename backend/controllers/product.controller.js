@@ -30,6 +30,20 @@ export const getProductById = async (req, res) => {
 	}
 };
 
+export const getProductBySlug = async (req, res) => {
+	try {
+		const product = await Product.findOne({ slug: req.params.slug });
+		if (!product) {
+			res.status(404).json({ message: 'Product not found' });
+		}
+		res.status(200).json(product);
+	} catch (error) {
+		res
+			.status(500)
+			.json({ message: 'Failed to get product', error: error.message });
+	}
+};
+
 export const createProduct = async (req, res) => {
 	try {
 		const { name, slug, brandId, categoryId, variants } = req.body;
@@ -69,6 +83,7 @@ export const createProduct = async (req, res) => {
 			processedVariants.push({
 				variantId,
 				color: variant.color,
+				colorHex: variant.colorHex ?? '#888888',
 				size: variant.size,
 				stock: variant.stock,
 				price: variant.price,
@@ -172,6 +187,7 @@ export const addVariant = async (req, res) => {
 	try {
 		const {
 			color,
+			colorHex,
 			size,
 			stock,
 			price,
@@ -210,6 +226,7 @@ export const addVariant = async (req, res) => {
 		const newVariant = {
 			variantId,
 			color: color?.toLowerCase() ?? '',
+			colorHex: colorHex ?? '#888888',
 			size,
 			stock,
 			price,
@@ -238,6 +255,7 @@ export const updateVariant = async (req, res) => {
 		const { productId, variantId } = req.params;
 		const {
 			color,
+			colorHex,
 			size,
 			stock,
 			price,
@@ -281,6 +299,7 @@ export const updateVariant = async (req, res) => {
 		}
 
 		if (color != undefined) variant.color = color?.toLowerCase();
+		if (colorHex != undefined) variant.colorHex = colorHex;
 		if (size != undefined) variant.size = size;
 		if (stock != undefined) variant.stock = Number(stock);
 		if (price != undefined) variant.price = Number(price);
