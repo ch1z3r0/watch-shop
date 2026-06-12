@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useFavourites } from '../context/FavouritesContext';
 import './ProductDetail.css';
 import { HeartEmptyIcon, HeartFilledIcon } from '../icons';
+import { useCart } from '../context/CartContext';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
 
@@ -35,6 +36,8 @@ const ProductDetail = () => {
 	const variant = product?.variants?.[selectedVariantIdx];
 	const isFav = product ? isFavourite(product._id) : false;
 	const inStock = variant?.stock > 0;
+
+	const { addToCart } = useCart();
 
 	useEffect(() => {
 		const fetchProduct = async () => {
@@ -92,8 +95,7 @@ const ProductDetail = () => {
 
 	const handleAddToCart = () => {
 		if (!product || !variant || !inStock) return;
-		// CartContext wiring goes here once built
-		console.log('Add to cart:', { product, variant, qty });
+		addToCart(product, variant, qty);
 	};
 
 	if (fetching) {
