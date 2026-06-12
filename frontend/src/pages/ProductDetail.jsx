@@ -145,6 +145,9 @@ const ProductDetail = () => {
 		const colorMatch = product.variants.findIndex((v) => v.color === color);
 		return colorMatch !== -1 ? colorMatch : 0;
 	};
+	const isSizeAvailable = (size, color) => {
+		return product.variants.some((v) => v.color === color && v.size === size);
+	};
 
 	const handleColorSelect = (color) => {
 		const idx = findVariantIndex(color, variant.size);
@@ -257,15 +260,19 @@ const ProductDetail = () => {
 							<span className='pd__option-value'>{variant.size}mm</span>
 						</div>
 						<div className='pd__size-tiles'>
-							{uniqueSizes.map((size) => (
-								<button
-									key={size}
-									className={`pd__size-tile ${size === variant.size ? 'is-active' : ''}`}
-									onClick={() => handleSizeSelect(size)}
-								>
-									{size}mm
-								</button>
-							))}
+							{uniqueSizes.map((size) => {
+								const available = isSizeAvailable(size, variant.color);
+								return (
+									<button
+										key={size}
+										className={`pd__size-tile ${size === variant.size ? 'is-active' : ''} ${!available ? 'is-disabled' : ''}`}
+										onClick={() => available && handleSizeSelect(size)}
+										disabled={!available}
+									>
+										{size}mm
+									</button>
+								);
+							})}
 						</div>
 					</div>
 

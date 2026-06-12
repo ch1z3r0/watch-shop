@@ -328,6 +328,17 @@
 	background: rgba(201, 168, 76, 0.08);
 }
 
+.pd__size-tile.is-disabled {
+	opacity: 0.35;
+	cursor: not-allowed;
+	text-decoration: line-through;
+}
+
+.pd__size-tile.is-disabled:hover {
+	color: var(--text-secondary);
+	border-color: var(--border-color);
+}
+
 /* Mode pills */
 .pd__modes {
 	display: flex;
