@@ -1,6 +1,7 @@
 export interface Variant {
 	variantId: string;
 	color: string;
+	colorHex: string;
 	size: number;
 	stock: number;
 	price: number;
