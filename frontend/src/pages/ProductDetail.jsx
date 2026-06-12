@@ -156,10 +156,6 @@ const ProductDetail = () => {
 		handleVariantSelect(idx);
 	};
 
-	const getColorHex = (colorName) => {
-		return COLOR_MAP[colorName?.toLowerCase()] || '#888888';
-	};
-
 	return (
 		<div className='pd'>
 			{/* Breadcrumbs */}
@@ -233,15 +229,20 @@ const ProductDetail = () => {
 					<span className='pd__option-value'>{variant.color}</span>
 				</div>
 				<div className='pd__swatches'>
-					{uniqueColors.map((color) => (
-						<button
-							key={color}
-							className={`pd__swatch ${color === variant.color ? 'is-active' : ''}`}
-							style={{ background: color.toLowerCase() }}
-							onClick={() => handleColorSelect(color)}
-							aria-label={color}
-						/>
-					))}
+					{uniqueColors.map((color) => {
+						const colorVariant = product.variants.find(
+							(v) => v.color === color,
+						);
+						return (
+							<button
+								key={color}
+								className={`pd__swatch ${color === variant.color ? 'is-active' : ''}`}
+								style={{ background: colorVariant.colorHex }}
+								onClick={() => handleColorSelect(color)}
+								aria-label={color}
+							/>
+						);
+					})}
 				</div>
 			</div>
 

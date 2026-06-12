@@ -83,6 +83,7 @@ export const createProduct = async (req, res) => {
 			processedVariants.push({
 				variantId,
 				color: variant.color,
+				colorHex: variant.colorHex ?? '#888888',
 				size: variant.size,
 				stock: variant.stock,
 				price: variant.price,
@@ -186,6 +187,7 @@ export const addVariant = async (req, res) => {
 	try {
 		const {
 			color,
+			colorHex,
 			size,
 			stock,
 			price,
@@ -224,6 +226,7 @@ export const addVariant = async (req, res) => {
 		const newVariant = {
 			variantId,
 			color: color?.toLowerCase() ?? '',
+			colorHex: colorHex ?? '#888888',
 			size,
 			stock,
 			price,
@@ -252,6 +255,7 @@ export const updateVariant = async (req, res) => {
 		const { productId, variantId } = req.params;
 		const {
 			color,
+			colorHex,
 			size,
 			stock,
 			price,
@@ -295,6 +299,7 @@ export const updateVariant = async (req, res) => {
 		}
 
 		if (color != undefined) variant.color = color?.toLowerCase();
+		if (colorHex != undefined) variant.colorHex = colorHex;
 		if (size != undefined) variant.size = size;
 		if (stock != undefined) variant.stock = Number(stock);
 		if (price != undefined) variant.price = Number(price);
