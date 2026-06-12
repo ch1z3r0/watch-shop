@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useFavourites } from '../context/FavouritesContext';
 import './ProductDetail.css';
+import { HeartEmptyIcon, HeartFilledIcon } from '../icons';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
 
@@ -16,7 +17,7 @@ const formatPrice = (price) =>
 const ProductDetail = () => {
 	const { slug } = useParams();
 	const navigate = useNavigate();
-	const { isFavourite, addFavourite, removeFavourite } = useFavourites();
+	const { isFavourite, addFavourites, removeFavourites } = useFavourites();
 
 	// ── Server state ──
 	const [product, setProduct] = useState(null);
@@ -77,7 +78,7 @@ const ProductDetail = () => {
 
 	const handleFavClick = () => {
 		if (!product) return;
-		isFav ? removeFavourite(product._id) : addFavourite(product);
+		isFav ? removeFavourites(product._id) : addFavourites(product);
 	};
 
 	const handleQtyChange = (delta) => {
@@ -213,7 +214,7 @@ const ProductDetail = () => {
 								isFav ? 'Remove from favourites' : 'Add to favourites'
 							}
 						>
-							{isFav ? '♥' : '♡'}
+							{isFav ? <HeartFilledIcon /> : <HeartEmptyIcon />}
 						</button>
 					</div>
 
