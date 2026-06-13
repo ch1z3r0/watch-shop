@@ -16,6 +16,7 @@ import { PublicOnly } from './auth/PublicOnly';
 import RequireAuth from './auth/RequireAuth';
 import Shop from './pages/Shop';
 import ProductDetail from './pages/ProductDetail';
+import Cart from './pages/Cart';
 
 const AnimatedOutlet = () => {
 	const location = useLocation();
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
 			{
 				path: '/product/:slug',
 				element: <ProductDetail />,
+			},
+			{
+				path: '/cart',
+				element: <Cart />,
 			},
 
 			//public only

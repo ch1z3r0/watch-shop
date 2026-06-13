@@ -95,7 +95,7 @@ const ProductDetail = () => {
 
 	const handleAddToCart = () => {
 		if (!product || !variant || !inStock) return;
-		addToCart(product, variant, qty);
+		addToCart(product, variant, qty, brandName);
 	};
 
 	if (fetching) {

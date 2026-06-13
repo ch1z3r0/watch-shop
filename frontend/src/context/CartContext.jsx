@@ -17,7 +17,7 @@ export const CartProvider = ({ children }) => {
 		localStorage.setItem(STORAGE_KEY, JSON.stringify(cartItems));
 	}, [cartItems]);
 
-	const addToCart = (product, variant, qty = 1) => {
+	const addToCart = (product, variant, qty = 1, brandName = '') => {
 		setCartItems((prev) => {
 			const existingIndex = prev.findIndex(
 				(item) =>
@@ -43,6 +43,7 @@ export const CartProvider = ({ children }) => {
 					name: product.name,
 					slug: product.slug,
 					brandId: product.brandId,
+					brandName: brandName || product.brandId,
 					color: variant.color,
 					colorHex: variant.colorHex,
 					size: variant.size,
