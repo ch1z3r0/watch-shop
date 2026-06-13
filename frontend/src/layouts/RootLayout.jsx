@@ -3,6 +3,7 @@ import './RootLayout.css';
 import Navigation from '../components/Navigation/Navigation';
 import { useState } from 'react';
 import Footer from '../components/Footer/Footer';
+import { useCart } from '../context/CartContext';
 
 const RootLayout = () => {
 	const [theme, setTheme] = useState(
@@ -15,9 +16,14 @@ const RootLayout = () => {
 			return next;
 		});
 	};
+	const { cartCount } = useCart();
 	return (
 		<div className={`root-layout-container ${theme}`}>
-			<Navigation cartCount={0} theme={theme} onToggleTheme={toggleTheme} />
+			<Navigation
+				cartCount={cartCount}
+				theme={theme}
+				onToggleTheme={toggleTheme}
+			/>
 			<main>
 				<Outlet />
 			</main>

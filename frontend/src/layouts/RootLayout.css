@@ -1,5 +1,7 @@
 .root-layout-container {
 	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
 	background: var(--bg-primary);
 	color: var(--text-primary);
 	transition:
@@ -8,6 +10,7 @@
 }
 
 main {
+	flex: 1;
 	overflow: hidden;
 }
 

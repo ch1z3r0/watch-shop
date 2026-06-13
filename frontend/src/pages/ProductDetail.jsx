@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useFavourites } from '../context/FavouritesContext';
 import './ProductDetail.css';
 import { HeartEmptyIcon, HeartFilledIcon } from '../icons';
+import { useCart } from '../context/CartContext';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
 
@@ -18,6 +19,7 @@ const ProductDetail = () => {
 	const { slug } = useParams();
 	const navigate = useNavigate();
 	const { isFavourite, addFavourites, removeFavourites } = useFavourites();
+	const { addToCart, cartItems } = useCart();
 
 	// ── Server state ──
 	const [product, setProduct] = useState(null);
@@ -34,7 +36,16 @@ const ProductDetail = () => {
 	// ── Derived from selection ──
 	const variant = product?.variants?.[selectedVariantIdx];
 	const isFav = product ? isFavourite(product._id) : false;
-	const inStock = variant?.stock > 0;
+
+	const cartQty =
+		cartItems.find(
+			(item) =>
+				item.productId === product?._id &&
+				item.variantId === variant?.variantId,
+		)?.qty || 0;
+
+	const availableToAdd = (variant?.stock ?? 0) - cartQty;
+	const inStock = availableToAdd > 0;
 
 	useEffect(() => {
 		const fetchProduct = async () => {
@@ -85,15 +96,20 @@ const ProductDetail = () => {
 		setQty((prev) => {
 			const next = prev + delta;
 			if (next < 1) return 1;
-			if (variant && next > variant.stock) return variant.stock;
+			if (next > availableToAdd) return availableToAdd;
 			return next;
 		});
 	};
 
 	const handleAddToCart = () => {
 		if (!product || !variant || !inStock) return;
-		// CartContext wiring goes here once built
-		console.log('Add to cart:', { product, variant, qty });
+		addToCart(product, variant, qty, brandName);
+	};
+
+	const handleBuyNow = async () => {
+		if (!product || !variant || !inStock) return;
+		await addToCart(product, variant, qty, brandName);
+		navigate('/cart');
 	};
 
 	if (fetching) {
@@ -297,7 +313,7 @@ const ProductDetail = () => {
 						<div className='pd__stepper'>
 							<button
 								onClick={() => handleQtyChange(-1)}
-								disabled={qty <= 1}
+								disabled={qty <= availableToAdd}
 								aria-label='Decrease quantity'
 							>
 								−
@@ -305,7 +321,7 @@ const ProductDetail = () => {
 							<span>{qty}</span>
 							<button
 								onClick={() => handleQtyChange(1)}
-								disabled={qty >= variant.stock}
+								disabled={qty >= availableToAdd}
 								aria-label='Increase quantity'
 							>
 								+
@@ -316,24 +332,33 @@ const ProductDetail = () => {
 							disabled={!inStock}
 							onClick={handleAddToCart}
 						>
-							{inStock ? 'Add to Cart' : 'Out of Stock'}
+							{inStock
+								? 'Add to Cart'
+								: variant?.stock > 0
+									? 'Max in Cart'
+									: 'Out of Stock'}
 						</button>
 					</div>
 
 					<button
 						className='pd__buy'
 						disabled={!inStock}
-						onClick={handleAddToCart}
+						onClick={handleBuyNow}
 					>
 						Buy Now
 					</button>
 
-					{inStock && (
+					{inStock ? (
 						<p className='pd__stock-note'>
-							Max {variant.stock} unit{variant.stock !== 1 ? 's' : ''} available
-							for this variant
+							Max {availableToAdd} unit{availableToAdd !== 1 ? 's' : ''}{' '}
+							available
 						</p>
-					)}
+					) : cartQty > 0 ? (
+						<p className='pd__stock-note'>
+							You already have all {cartQty} available unit
+							{cartQty !== 1 ? 's' : ''} in your cart
+						</p>
+					) : null}
 					{/* Trust icons */}
 					<ul className='pd__trust'>
 						<li>
