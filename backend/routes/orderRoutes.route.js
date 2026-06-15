@@ -1,5 +1,7 @@
 import express from 'express';
+import { verifyFirebaseToken } from '../middleware/firebaseAuth.middleware.js';
 import {
+	createCustomerOrder,
 	createOrder,
 	deleteOrder,
 	getAllOrders,
@@ -9,19 +11,22 @@ import {
 
 const router = express.Router();
 
-//Get all brands
+//Get all orders
 router.get('/', getAllOrders);
 
-//Get one brand by id
+//Get one order by id
 router.get('/:orderId', getOrderById);
 
-//Create brand
+//Create order
 router.post('/', createOrder);
 
-//Update Brand
+// Create customer order
+router.post('/checkout', verifyFirebaseToken, createCustomerOrder);
+
+//Update order
 router.patch('/:orderId', updateOrder);
 
-//Delete Brand
+//Delete order
 router.delete('/:orderId', deleteOrder);
 
 export default router;

@@ -16,6 +16,7 @@ const orderItemSchema = new mongoose.Schema({
 const orderSchema = new mongoose.Schema(
 	{
 		orderId: { type: String, required: true, unique: true },
+		firebaseUid: { type: String, required: false, default: '' },
 
 		// Customer info
 		customerName: { type: String, required: true },

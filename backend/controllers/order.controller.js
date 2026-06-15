@@ -49,8 +49,6 @@ export const getOrderById = async (req, res) => {
 
 // --- Create Order -----------------------------------------------------------------------
 export const createOrder = async (req, res) => {
-	console.log('CREATE ORDER HIT');
-	console.log('BODY:', req.body);
 	try {
 		const {
 			customerName,
@@ -65,7 +63,6 @@ export const createOrder = async (req, res) => {
 		// --- Check and decrement stock ---------------------------------------------------
 		for (const item of items) {
 			const product = await Product.findOne({ productId: item.productId });
-			console.log('FOUND PRODUCT:', product);
 
 			if (!product) {
 				return res.status(404).json({ message: 'Product not found!' });
@@ -87,8 +84,14 @@ export const createOrder = async (req, res) => {
 			}
 
 			// --- Stock decrement ---------------------------------------------------------
-			variant.stock -= item.quantity;
-			await product.save();
+			for (const item of items) {
+				const product = await Product.findOne({ productId: item.productId });
+				const variant = product.variants.find(
+					(v) => v.variantId === item.variantId,
+				);
+				variant.stock -= item.quantity;
+				await product.save();
+			}
 		}
 		const orderId = await generateUniqueId('order');
 
@@ -111,6 +114,68 @@ export const createOrder = async (req, res) => {
 	}
 };
 
+// --- Create Order -----------------------------------------------------------------------
+export const createCustomerOrder = async (req, res) => {
+	try {
+		const { customerName, shippingAddress, phone, items, totalAmount, notes } =
+			req.body;
+
+		const firebaseUid = req.user.uid;
+		const customerEmail = req.user.email || '';
+		// --- Check and decrement stock ---------------------------------------------------
+		for (const item of items) {
+			const product = await Product.findOne({ productId: item.productId });
+
+			if (!product) {
+				return res.status(404).json({ message: 'Product not found!' });
+			}
+
+			const variant = product.variants.find((v) => {
+				return v.variantId === item.variantId;
+			});
+			if (!variant) {
+				return res.status(404).json({
+					message: `Variant not found for product: ${item.productName}`,
+				});
+			}
+
+			if (variant.stock < item.quantity) {
+				return res.status(400).json({
+					message: `Not enough stock for ${item.productName} (${item.variantColor}). Available: ${variant.stock}, Requested: ${item.quantity}`,
+				});
+			}
+
+			// --- Stock decrement ---------------------------------------------------------
+			for (const item of items) {
+				const product = await Product.findOne({ productId: item.productId });
+				const variant = product.variants.find(
+					(v) => v.variantId === item.variantId,
+				);
+				variant.stock -= item.quantity;
+				await product.save();
+			}
+		}
+		const orderId = await generateUniqueId('order');
+
+		const newOrder = await Order.create({
+			orderId,
+			firebaseUid,
+			customerName,
+			customerEmail,
+			shippingAddress,
+			phone,
+			items,
+			totalAmount,
+			notes,
+		});
+		res.status(201).json(newOrder);
+	} catch (error) {
+		res.status(500).json({
+			message: 'Failed to create order',
+			error: error.message,
+		});
+	}
+};
 // --- Update Order -----------------------------------------------------------------------
 export const updateOrder = async (req, res) => {
 	console.log('UPDATE ORDER HIT:', req.params.orderId);
