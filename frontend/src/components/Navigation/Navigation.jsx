@@ -171,10 +171,14 @@ const Navigation = ({ cartCount = 0, theme = 'dark', onToggleTheme }) => {
 				</div>
 			)}
 			<div className='nav__utils'>
-				<button className='nav__icon-btn' aria-label='Favourites'>
+				<Link
+					className='nav__icon-btn'
+					aria-label='Favourites'
+					to='/favourites'
+				>
 					{favCount > 0 ? <HeartFilledIcon /> : <HeartEmptyIcon />}
 					{favCount > 0 && <span className='nav__badge'>{favCount}</span>}
-				</button>
+				</Link>
 				<button
 					className='nav__theme-toggle'
 					onClick={onToggleTheme}
