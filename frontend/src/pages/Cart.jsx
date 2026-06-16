@@ -3,10 +3,6 @@ import { useCart } from '../context/CartContext';
 import { useState } from 'react';
 import './Cart.css';
 
-const FREE_SHIPPING_THRESHOLD = 500;
-const SHIPPING_FEE = 15; //TODO add functional shipping system later
-const PROMO_CODES = { CHIRON10: 0.1 }; //TODO add backend promotions for flexibility
-
 const formatPrice = (price) =>
 	new Intl.NumberFormat('en-US', {
 		style: 'currency',
@@ -15,40 +11,41 @@ const formatPrice = (price) =>
 	}).format(price);
 
 const Cart = () => {
-	const { cartItems, cartTotal, removeFromCart, updateQty } = useCart();
+	const {
+		cartItems,
+		cartTotal,
+		removeFromCart,
+		updateQty,
+		appliedCode,
+		appliedPromo,
+		applyPromo,
+		removePromo,
+		subtotal,
+		discount,
+		shipping,
+		orderTotal,
+	} = useCart();
 	const navigate = useNavigate();
 
 	const [promoInput, setPromoInput] = useState('');
-	const [appliedPromo, setAppliedPromo] = useState(null);
-	const [appliedCode, setAppliedCode] = useState(null);
 	const [promoError, setPromoError] = useState(false);
 
-	const isEmpty = cartItems.length === 0;
-
-	const subtotal = cartTotal;
-	const discount = appliedPromo ? cartTotal * appliedPromo : 0;
-	const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
-	const total = subtotal - discount + shipping;
-
 	const handleApplyPromo = () => {
-		const code = promoInput.trim().toUpperCase();
-		if (PROMO_CODES[code]) {
-			setAppliedPromo(PROMO_CODES[code]);
-			setAppliedCode(code);
+		const success = applyPromo(promoInput);
+		if (success) {
 			setPromoError(false);
 		} else {
-			setAppliedPromo(null);
-			setAppliedCode(null);
-			setPromoError(true);
+			setPromoError(false);
 		}
 	};
 
 	const handleRemovePromo = () => {
-		setAppliedPromo(null);
-		setAppliedCode(null);
+		removePromo();
 		setPromoInput('');
 		setPromoError(false);
 	};
+
+	const isEmpty = cartItems.length === 0;
 
 	if (isEmpty) {
 		return (
@@ -160,7 +157,8 @@ const Cart = () => {
 							placeholder='Promo code'
 							value={promoInput}
 							onChange={(e) => {
-								(setPromoInput(e.target.value), setPromoError(false));
+								setPromoInput(e.target.value);
+								setPromoError(false);
 							}}
 							onKeyDown={(e) => {
 								if (e.key === 'Enter') handleApplyPromo();
@@ -201,7 +199,7 @@ const Cart = () => {
 
 					<div className='cart__summary-total'>
 						<span>Total</span>
-						<span>{formatPrice(total)}</span>
+						<span>{formatPrice(orderTotal)}</span>
 					</div>
 
 					<button

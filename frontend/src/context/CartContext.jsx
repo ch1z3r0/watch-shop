@@ -4,7 +4,32 @@ const CartContext = createContext();
 
 const STORAGE_KEY = 'chirons_cart';
 
+const FREE_SHIPPING_THRESHOLD = 500;
+const SHIPPING_FEE = 15; //TODO add functional shipping system later
+const PROMO_CODES = { CHIRON10: 0.1 }; //TODO add backend promotions for flexibility
+
 export const CartProvider = ({ children }) => {
+	const [appliedPromo, setAppliedPromo] = useState(null);
+	const [appliedCode, setAppliedCode] = useState(null);
+
+	const applyPromo = (code) => {
+		const normalized = code.trim().toUpperCase();
+		if (PROMO_CODES[normalized]) {
+			setAppliedPromo(PROMO_CODES[normalized]);
+			setAppliedCode(normalized);
+			return true;
+		} else {
+			setAppliedPromo(null);
+			setAppliedCode(null);
+			return false;
+		}
+	};
+
+	const removePromo = () => {
+		setAppliedPromo(null);
+		setAppliedCode(null);
+	};
+
 	const [cartItems, setCartItems] = useState(() => {
 		try {
 			const saved = localStorage.getItem(STORAGE_KEY);
@@ -21,7 +46,7 @@ export const CartProvider = ({ children }) => {
 		setCartItems((prev) => {
 			const existingIndex = prev.findIndex(
 				(item) =>
-					item.productId === product._id &&
+					item.productId === product.productId &&
 					item.variantId === variant.variantId,
 			);
 
@@ -38,7 +63,7 @@ export const CartProvider = ({ children }) => {
 			return [
 				...prev,
 				{
-					productId: product._id,
+					productId: product.productId,
 					variantId: variant.variantId,
 					name: product.name,
 					slug: product.slug,
@@ -77,7 +102,11 @@ export const CartProvider = ({ children }) => {
 		);
 	};
 
-	const clearCart = () => setCartItems([]);
+	const clearCart = () => {
+		setCartItems([]);
+		setAppliedCode(null);
+		setAppliedPromo(null);
+	};
 
 	const cartCount = cartItems.reduce((sum, item) => sum + item.qty, 0);
 
@@ -85,6 +114,11 @@ export const CartProvider = ({ children }) => {
 		(sum, item) => sum + item.price * item.qty,
 		0,
 	);
+
+	const subtotal = cartTotal;
+	const discount = appliedPromo ? cartTotal * appliedPromo : 0;
+	const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+	const orderTotal = subtotal - discount + shipping;
 
 	return (
 		<CartContext.Provider
@@ -96,6 +130,14 @@ export const CartProvider = ({ children }) => {
 				removeFromCart,
 				updateQty,
 				clearCart,
+				appliedCode,
+				appliedPromo,
+				applyPromo,
+				removePromo,
+				subtotal,
+				discount,
+				shipping,
+				orderTotal,
 			}}
 		>
 			{children}
