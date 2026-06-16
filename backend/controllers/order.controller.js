@@ -60,7 +60,7 @@ export const createOrder = async (req, res) => {
 			notes,
 		} = req.body;
 
-		// --- Check and decrement stock ---------------------------------------------------
+		// --- Validate all items first ---
 		for (const item of items) {
 			const product = await Product.findOne({ productId: item.productId });
 
@@ -68,9 +68,9 @@ export const createOrder = async (req, res) => {
 				return res.status(404).json({ message: 'Product not found!' });
 			}
 
-			const variant = product.variants.find((v) => {
-				return v.variantId === item.variantId;
-			});
+			const variant = product.variants.find(
+				(v) => v.variantId === item.variantId,
+			);
 			if (!variant) {
 				return res.status(404).json({
 					message: `Variant not found for product: ${item.productName}`,
@@ -82,16 +82,16 @@ export const createOrder = async (req, res) => {
 					message: `Not enough stock for ${item.productName} (${item.variantColor}). Available: ${variant.stock}, Requested: ${item.quantity}`,
 				});
 			}
+		}
 
-			// --- Stock decrement ---------------------------------------------------------
-			for (const item of items) {
-				const product = await Product.findOne({ productId: item.productId });
-				const variant = product.variants.find(
-					(v) => v.variantId === item.variantId,
-				);
-				variant.stock -= item.quantity;
-				await product.save();
-			}
+		// --- All validated — now deduct stock ---
+		for (const item of items) {
+			const product = await Product.findOne({ productId: item.productId });
+			const variant = product.variants.find(
+				(v) => v.variantId === item.variantId,
+			);
+			variant.stock -= item.quantity;
+			await product.save();
 		}
 		const orderId = await generateUniqueId('order');
 
@@ -122,7 +122,7 @@ export const createCustomerOrder = async (req, res) => {
 
 		const firebaseUid = req.user.uid;
 		const customerEmail = req.user.email || '';
-		// --- Check and decrement stock ---------------------------------------------------
+		// --- Validate all items first ---
 		for (const item of items) {
 			const product = await Product.findOne({ productId: item.productId });
 
@@ -130,9 +130,9 @@ export const createCustomerOrder = async (req, res) => {
 				return res.status(404).json({ message: 'Product not found!' });
 			}
 
-			const variant = product.variants.find((v) => {
-				return v.variantId === item.variantId;
-			});
+			const variant = product.variants.find(
+				(v) => v.variantId === item.variantId,
+			);
 			if (!variant) {
 				return res.status(404).json({
 					message: `Variant not found for product: ${item.productName}`,
@@ -144,16 +144,16 @@ export const createCustomerOrder = async (req, res) => {
 					message: `Not enough stock for ${item.productName} (${item.variantColor}). Available: ${variant.stock}, Requested: ${item.quantity}`,
 				});
 			}
+		}
 
-			// --- Stock decrement ---------------------------------------------------------
-			for (const item of items) {
-				const product = await Product.findOne({ productId: item.productId });
-				const variant = product.variants.find(
-					(v) => v.variantId === item.variantId,
-				);
-				variant.stock -= item.quantity;
-				await product.save();
-			}
+		// --- All validated — now deduct stock ---
+		for (const item of items) {
+			const product = await Product.findOne({ productId: item.productId });
+			const variant = product.variants.find(
+				(v) => v.variantId === item.variantId,
+			);
+			variant.stock -= item.quantity;
+			await product.save();
 		}
 		const orderId = await generateUniqueId('order');
 

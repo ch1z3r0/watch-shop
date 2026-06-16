@@ -46,7 +46,7 @@ export const CartProvider = ({ children }) => {
 		setCartItems((prev) => {
 			const existingIndex = prev.findIndex(
 				(item) =>
-					item.productId === product._id &&
+					item.productId === product.productId &&
 					item.variantId === variant.variantId,
 			);
 
@@ -63,7 +63,7 @@ export const CartProvider = ({ children }) => {
 			return [
 				...prev,
 				{
-					productId: product._id,
+					productId: product.productId,
 					variantId: variant.variantId,
 					name: product.name,
 					slug: product.slug,

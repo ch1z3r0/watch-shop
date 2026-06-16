@@ -3,6 +3,7 @@ import { useAuth } from '../auth/AuthProvider';
 import { useCart } from '../context/CartContext';
 import './Checkout.css';
 import { useState, useRef, useEffect } from 'react';
+import axios from 'axios';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
 
@@ -147,6 +148,16 @@ const Checkout = () => {
 				price: item.price,
 				quantity: item.qty,
 			}));
+
+			console.log('Sending payload:', {
+				customerName: `${form.firstName} ${form.lastName}`.trim(),
+				customerEmail: form.email,
+				shippingAddress: `${form.address}, ${form.city}, ${form.zip}, ${form.country}`,
+				phone: form.phone,
+				items,
+				totalAmount: orderTotal,
+				notes: '',
+			});
 
 			const res = await axios.post(
 				`${API_BASE}/api/orders/checkout`,
