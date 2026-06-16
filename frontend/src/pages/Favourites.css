@@ -1,0 +1,211 @@
+/* ── Page ── */
+.fav {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 2rem;
+	color: var(--text-primary);
+}
+
+.fav__head {
+	display: flex;
+	align-items: baseline;
+	gap: 12px;
+	margin-bottom: 1.5rem;
+	padding-bottom: 1rem;
+	border-bottom: 1px solid var(--border-color);
+}
+
+.fav__title {
+	font-family: 'Playfair Display', Georgia, serif;
+	font-style: italic;
+	font-size: clamp(1.6rem, 4vw, 2.4rem);
+	margin: 0;
+}
+
+.fav__count {
+	font-size: 0.8rem;
+	color: var(--text-secondary);
+}
+
+/* ── Grid ── */
+.fav__grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	gap: 1.25rem;
+}
+
+/* ── Card ── */
+.fav-card {
+	background: var(--bg-card);
+	border: 1px solid var(--border-color);
+	border-radius: 12px;
+	overflow: hidden;
+	transition:
+		transform 0.2s,
+		border-color 0.2s;
+}
+
+.fav-card:hover {
+	transform: translateY(-3px);
+	border-color: rgba(201, 168, 76, 0.3);
+}
+
+.fav-card__img-wrap {
+	position: relative;
+	aspect-ratio: 1;
+	background: rgba(128, 128, 128, 0.05);
+	overflow: hidden;
+	cursor: pointer;
+}
+
+.fav-card__img-wrap img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.fav-card__img-placeholder {
+	width: 100%;
+	height: 100%;
+}
+
+.fav-card__heart {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	background: rgba(0, 0, 0, 0.4);
+	border: none;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	color: var(--gold);
+	transition: all 0.2s;
+	backdrop-filter: blur(4px);
+}
+
+.fav-card__heart:hover {
+	background: rgba(0, 0, 0, 0.6);
+	transform: scale(1.1);
+}
+
+.fav-card__heart svg {
+	width: 14px;
+	height: 14px;
+	display: block;
+}
+
+.fav-card__body {
+	padding: 12px;
+}
+
+.fav-card__brand {
+	font-size: 0.7rem;
+	color: var(--gold);
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	margin: 0 0 4px;
+}
+
+.fav-card__name {
+	font-size: 0.88rem;
+	font-weight: 500;
+	color: var(--text-primary);
+	margin: 0 0 8px;
+	line-height: 1.3;
+	cursor: pointer;
+	transition: color 0.15s;
+}
+
+.fav-card__name:hover {
+	color: var(--gold);
+}
+
+.fav-card__price {
+	font-size: 0.85rem;
+	font-weight: 600;
+	margin: 0 0 10px;
+}
+
+.fav-card__add {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	padding: 9px;
+	background: var(--text-primary);
+	color: var(--bg-primary);
+	border: none;
+	border-radius: 6px;
+	font-size: 0.78rem;
+	font-weight: 600;
+	cursor: pointer;
+	font-family: 'Poppins', sans-serif;
+	transition: opacity 0.15s;
+}
+
+.fav-card__add:hover {
+	opacity: 0.85;
+}
+
+/* ── Empty state ── */
+.fav--empty {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 60vh;
+}
+
+.fav__empty-box {
+	text-align: center;
+	color: var(--text-secondary);
+}
+
+.fav__empty-box svg {
+	color: var(--text-secondary);
+	margin-bottom: 1rem;
+}
+
+.fav__empty-box h1 {
+	font-size: 1.3rem;
+	color: var(--text-primary);
+	margin: 0 0 6px;
+	font-family: 'Playfair Display', Georgia, serif;
+	font-style: italic;
+}
+
+.fav__empty-box p {
+	font-size: 0.85rem;
+	margin: 0 0 1.25rem;
+}
+
+.fav__empty-btn {
+	display: inline-flex;
+	padding: 10px 28px;
+	background: var(--text-primary);
+	color: var(--bg-primary);
+	border-radius: 50px;
+	font-size: 0.82rem;
+	font-weight: 600;
+	text-decoration: none;
+	font-family: 'Poppins', sans-serif;
+	transition: opacity 0.15s;
+}
+
+.fav__empty-btn:hover {
+	opacity: 0.85;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+	.fav {
+		padding: 1.25rem;
+	}
+
+	.fav__grid {
+		grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+	}
+}

@@ -19,6 +19,7 @@ import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import TrackOrder from './pages/TrackOrder';
+import Favourites from './pages/Favourites';
 
 const AnimatedOutlet = () => {
 	const location = useLocation();
@@ -115,6 +116,10 @@ const router = createBrowserRouter([
 					{
 						path: '/checkout',
 						element: <Checkout />,
+					},
+					{
+						path: '/favourites',
+						element: <Favourites />,
 					},
 				],
 			},
