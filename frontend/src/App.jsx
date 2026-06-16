@@ -51,10 +51,7 @@ const router = createBrowserRouter([
 				path: '/cart',
 				element: <Cart />,
 			},
-			{
-				path: '/checkout',
-				element: <Checkout />,
-			},
+
 			{
 				path: '/track-order',
 				element: <TrackOrder />,
@@ -114,7 +111,12 @@ const router = createBrowserRouter([
 						<AnimatedOutlet />
 					</RequireAuth>
 				),
-				children: [],
+				children: [
+					{
+						path: '/checkout',
+						element: <Checkout />,
+					},
+				],
 			},
 		],
 	},
