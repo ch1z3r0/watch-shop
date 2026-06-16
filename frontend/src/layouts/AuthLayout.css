@@ -3,19 +3,13 @@
 	display: flex;
 	width: 100vw;
 	height: 100vh;
-	background: linear-gradient(
-		180deg,
-		rgba(113, 141, 235, 1) 0%,
-		rgba(164, 118, 215, 1) 100%
-	);
-	/* margin-left: 12.5vw;
-	margin-right: 12.5vw; */
+	background: #0a0a0a;
 	overflow: hidden;
 }
 
 .form-panel,
 .image-panel {
-	position: absolute; /* CRITICAL: Allows panels to overlap and slide over each other */
+	position: absolute;
 	top: 0;
 	bottom: 0;
 	height: 100%;
@@ -25,15 +19,16 @@
 }
 
 .form-panel {
-	background-color: #ffffff;
-	z-index: 2; /* Ensure form panel is on top during slide */
+	background-color: #0a0a0a;
+	z-index: 2;
 	overflow-y: scroll;
 	scrollbar-width: none;
 }
 
 .image-panel {
-	left: 50%; /* Initially positioned at the right half of the container */
-	z-index: 1; /* Image panel is behind the form panel */
+	left: 50%;
+	z-index: 1;
+	background: radial-gradient(ellipse at 30% 40%, #2a2a2a 0%, #0a0a0a 70%);
 }
 
 .form-section {
@@ -42,6 +37,7 @@
 	font-size: 1.1rem;
 	width: 100%;
 }
+
 .image-section {
 	position: relative;
 	flex: 1;
@@ -50,6 +46,7 @@
 	align-content: center;
 	justify-content: center;
 }
+
 .image-section > img {
 	width: 100%;
 	object-fit: contain;
