@@ -1,5 +1,5 @@
 import express from 'express';
-import { verifyFirebaseToken } from '../middleware/firebaseAuth.middleware.js';
+import verifyFirebaseToken from '../middleware/firebaseAuth.middleware.js';
 import {
 	createCustomerOrder,
 	createOrder,

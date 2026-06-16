@@ -17,6 +17,7 @@ import RequireAuth from './auth/RequireAuth';
 import Shop from './pages/Shop';
 import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
+import Checkout from './pages/Checkout';
 
 const AnimatedOutlet = () => {
 	const location = useLocation();
@@ -48,6 +49,10 @@ const router = createBrowserRouter([
 			{
 				path: '/cart',
 				element: <Cart />,
+			},
+			{
+				path: '/checkout',
+				element: <Checkout />,
 			},
 
 			//public only
