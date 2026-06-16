@@ -360,6 +360,9 @@
 }
 
 .co-place-btn {
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	width: 100%;
 	padding: 13px;
 	background: var(--text-primary);
