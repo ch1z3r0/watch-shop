@@ -58,53 +58,6 @@ const router = createBrowserRouter([
 				element: <TrackOrder />,
 			},
 
-			//public only
-			{
-				element: <PublicOnly />,
-				children: [
-					{
-						path: '/signin',
-						element: <AnimatedOutlet />,
-						children: [
-							{
-								index: true,
-								element: <SignInPage />,
-							},
-						],
-					},
-					{
-						path: '/signup',
-						element: <AnimatedOutlet />,
-						children: [
-							{
-								index: true,
-								element: <SignUpPage />,
-							},
-						],
-					},
-					{
-						path: '/forgotpassword',
-						element: <AnimatedOutlet />,
-						children: [
-							{
-								index: true,
-								element: <ForgotPasswordPage />,
-							},
-						],
-					},
-					{
-						path: '/resetpassword',
-						element: <AnimatedOutlet />,
-						children: [
-							{
-								index: true,
-								element: <ResetPasswordPage />,
-							},
-						],
-					},
-				],
-			},
-
 			//Private Route (Only for signed in users)
 			{
 				element: (
@@ -120,6 +73,51 @@ const router = createBrowserRouter([
 					{
 						path: '/favourites',
 						element: <Favourites />,
+					},
+				],
+			},
+		],
+	}, //public only
+	{
+		element: <PublicOnly />,
+		children: [
+			{
+				path: '/signin',
+				element: <AnimatedOutlet />,
+				children: [
+					{
+						index: true,
+						element: <SignInPage />,
+					},
+				],
+			},
+			{
+				path: '/signup',
+				element: <AnimatedOutlet />,
+				children: [
+					{
+						index: true,
+						element: <SignUpPage />,
+					},
+				],
+			},
+			{
+				path: '/forgotpassword',
+				element: <AnimatedOutlet />,
+				children: [
+					{
+						index: true,
+						element: <ForgotPasswordPage />,
+					},
+				],
+			},
+			{
+				path: '/resetpassword',
+				element: <AnimatedOutlet />,
+				children: [
+					{
+						index: true,
+						element: <ResetPasswordPage />,
 					},
 				],
 			},
