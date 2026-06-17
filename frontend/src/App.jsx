@@ -53,11 +53,6 @@ const router = createBrowserRouter([
 				element: <Cart />,
 			},
 
-			{
-				path: '/track-order',
-				element: <TrackOrder />,
-			},
-
 			//Private Route (Only for signed in users)
 			{
 				element: (
@@ -73,6 +68,10 @@ const router = createBrowserRouter([
 					{
 						path: '/favourites',
 						element: <Favourites />,
+					},
+					{
+						path: '/track-order',
+						element: <TrackOrder />,
 					},
 				],
 			},
