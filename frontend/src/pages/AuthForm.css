@@ -1,0 +1,302 @@
+.signin-form {
+	flex: 1;
+	min-height: 100vh;
+	background-color: #0a0a0a;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	color: #f0ede8;
+	padding-bottom: 3rem;
+	gap: 2rem;
+	font-family: 'Poppins', sans-serif;
+}
+
+.back-browse {
+	align-self: flex-start;
+	margin-left: 5%;
+	margin-top: 2%;
+}
+
+.back-browse a {
+	display: flex;
+	align-items: center;
+	font-size: 1rem;
+	text-decoration: none;
+	color: rgba(240, 237, 232, 0.5);
+	transition: color 0.15s;
+}
+
+.back-browse a:hover {
+	color: #f0ede8;
+}
+
+.back-browse img {
+	height: 20px;
+	width: 20px;
+	margin-right: 5px;
+	filter: brightness(0) invert(1);
+	opacity: 0.6;
+}
+
+.signin-main {
+	flex: 1;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 2rem;
+}
+
+.signin-main > div h1 {
+	padding: 0;
+	margin: 0;
+	text-align: center;
+	font-family: 'Playfair Display', Georgia, serif;
+	font-style: italic;
+	font-size: 28px;
+}
+
+.signin-main div:first-of-type {
+	margin-bottom: 1rem;
+	text-align: center;
+}
+
+.signin-main h1 + span {
+	display: block;
+	font-size: 13px;
+	color: rgba(240, 237, 232, 0.5);
+	text-align: center;
+	margin-top: 4px;
+}
+
+.signin-main > form {
+	display: flex;
+	flex-direction: column;
+	width: 60%;
+	gap: 1.5rem;
+	min-width: 320px;
+}
+
+.signin-main > form > ul {
+	padding: 0;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	gap: 2rem;
+	margin: 0;
+	min-width: 320px;
+}
+
+.field {
+	position: relative;
+	list-style: none;
+}
+
+.field input {
+	width: 100%;
+	padding: 18px 14px 14px;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 14px;
+	outline: none;
+	background: rgba(255, 255, 255, 0.04);
+	font-size: 14px;
+	transition:
+		border-color 150ms ease,
+		box-shadow 150ms ease;
+	color: #f0ede8;
+	font-family: 'Poppins', sans-serif;
+}
+
+.field:focus-within input {
+	border-color: rgba(201, 168, 76, 0.5);
+	box-shadow: 0 0 0 4px rgba(201, 168, 76, 0.12);
+}
+
+.field label {
+	position: absolute;
+	left: 14px;
+	top: 50%;
+	transform: translateY(-50%);
+	background: transparent;
+	color: rgba(240, 237, 232, 0.45);
+	font-size: 14px;
+	pointer-events: none;
+	transition: 150ms ease;
+}
+
+.field:focus-within label,
+.field input:not(:placeholder-shown) + label {
+	top: 0;
+	font-size: 12px;
+	color: #c9a84c;
+	background: #0a0a0a;
+	padding: 0 4px;
+}
+
+.signin-main > form > span a {
+	align-self: start;
+	font-weight: 500;
+	color: #c9a84c;
+	cursor: pointer;
+	text-decoration: none;
+	font-size: 12px;
+}
+
+.signin-button {
+	width: 100%;
+	text-align: center;
+	padding: 0.7rem;
+	border: none;
+	border-radius: 50px;
+	font-size: 14px;
+	color: #000;
+	background-color: #f0ede8;
+	font-weight: 600;
+	cursor: pointer;
+	transition: opacity 0.15s;
+	font-family: 'Poppins', sans-serif;
+}
+
+.signin-button:hover:not(:disabled) {
+	opacity: 0.85;
+}
+
+.signin-button:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.signin-with {
+	display: flex;
+	align-items: center;
+	width: 70%;
+	color: rgba(240, 237, 232, 0.3);
+	font-size: 11px;
+}
+
+.signin-with > hr {
+	flex-grow: 1;
+	border: none;
+	border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.signin-with > p {
+	margin-left: 0.5rem;
+	margin-right: 0.5rem;
+}
+
+.signin-with-icons {
+	width: 70%;
+	display: flex;
+	justify-content: space-evenly;
+}
+
+.signin-with-icons > img {
+	width: 42px;
+	height: 42px;
+	padding: 10px;
+	border-radius: 50%;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	background: rgba(255, 255, 255, 0.04);
+	cursor: pointer;
+	transition: background 0.15s;
+	box-sizing: border-box;
+}
+
+.signin-with-icons > img[alt='Github Icon'] {
+	filter: brightness(0) invert(1);
+	padding: 11px;
+}
+
+.signin-with-icons > img:hover {
+	background: rgba(255, 255, 255, 0.1);
+}
+
+.signin-banner {
+	width: 50%;
+	height: 100%;
+	display: flex;
+	align-content: center;
+	justify-content: center;
+}
+
+.auth-banner--signin {
+	background: radial-gradient(ellipse at 65% 50%, #2a2a2a 0%, #0a0a0a 65%);
+}
+
+.auth-banner--signup {
+	background: radial-gradient(ellipse at 30% 40%, #2a2a2a 0%, #0a0a0a 70%);
+}
+
+.no-account {
+	font-size: 0.85rem;
+	display: flex;
+	gap: 6px;
+	color: rgba(240, 237, 232, 0.5);
+}
+
+.no-account > span > :first-child {
+	font-weight: 600;
+	color: #c9a84c;
+	cursor: pointer;
+	text-decoration: none;
+}
+
+.signin-fields {
+	list-style: none;
+}
+
+.auth-banner {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.auth-banner .background-image {
+	max-width: 75%;
+	max-height: 70%;
+	object-fit: contain;
+	position: relative;
+	z-index: 1;
+}
+
+.auth-banner__copy {
+	position: absolute;
+	bottom: 48px;
+	left: 48px;
+	right: 48px;
+	z-index: 2;
+}
+
+.auth-banner__copy h2 {
+	font-family: 'Playfair Display', Georgia, serif;
+	font-style: italic;
+	font-size: 22px;
+	color: #f0ede8;
+	line-height: 1.3;
+	margin: 0 0 10px;
+	max-width: 320px;
+}
+
+.auth-banner__copy p {
+	font-size: 12px;
+	color: rgba(240, 237, 232, 0.65);
+	line-height: 1.6;
+	max-width: 300px;
+	margin: 0;
+}
+
+.field input:-webkit-autofill,
+.field input:-webkit-autofill:hover,
+.field input:-webkit-autofill:focus,
+.field input:-webkit-autofill:active {
+	-webkit-text-fill-color: #f0ede8 !important;
+	-webkit-box-shadow: 0 0 0 1000px #1a1a1a inset !important;
+	box-shadow: 0 0 0 1000px #1a1a1a inset !important;
+	caret-color: #f0ede8 !important;
+	transition: background-color 5000s ease-in-out 0s;
+}
