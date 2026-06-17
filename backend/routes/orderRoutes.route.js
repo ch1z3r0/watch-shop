@@ -6,6 +6,7 @@ import {
 	deleteOrder,
 	getAllOrders,
 	getOrderById,
+	getMyOrders,
 	updateOrder,
 } from '../controllers/order.controller.js';
 
@@ -16,6 +17,9 @@ router.get('/', getAllOrders);
 
 //Get one order by id
 router.get('/:orderId', getOrderById);
+
+// Get customer orders
+router.get('/my-orders', verifyFirebaseToken, getMyOrders);
 
 //Create order
 router.post('/', createOrder);
