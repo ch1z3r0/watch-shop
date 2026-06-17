@@ -62,10 +62,12 @@
 	text-align: center;
 }
 
-.signin-main div:nth-of-type(2) {
-	text-align: center;
+.signin-main h1 + span {
+	display: block;
 	font-size: 13px;
 	color: rgba(240, 237, 232, 0.5);
+	text-align: center;
+	margin-top: 4px;
 }
 
 .signin-main > form {
