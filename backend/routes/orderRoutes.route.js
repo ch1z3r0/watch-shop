@@ -15,11 +15,11 @@ const router = express.Router();
 //Get all orders
 router.get('/', getAllOrders);
 
-//Get one order by id
-router.get('/:orderId', getOrderById);
-
 // Get customer orders
 router.get('/my-orders', verifyFirebaseToken, getMyOrders);
+
+//Get one order by id
+router.get('/:orderId', getOrderById);
 
 //Create order
 router.post('/', createOrder);
