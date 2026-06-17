@@ -28,7 +28,7 @@
 .image-panel {
 	left: 50%;
 	z-index: 1;
-	background: radial-gradient(ellipse at 30% 40%, #2a2a2a 0%, #0a0a0a 70%);
+	background: #0a0a0a;
 }
 
 .form-section {

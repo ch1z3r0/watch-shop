@@ -1,6 +1,6 @@
 import SignIn from '../components/SignIn';
 
-import './SignInPage.css';
+import './AuthForm.css';
 // import signin_banner from '../assets/images/watch1.svg';
 import { ASSETS } from '../utils/assets';
 import AuthLayout from '../layouts/AuthLayout';
@@ -9,12 +9,20 @@ import AuthLayout from '../layouts/AuthLayout';
 const SignInPage = () => {
 	const { signInBanner } = ASSETS;
 	const signInImage = (
-		// You can apply motion to the image directly here if you want to animate it
-		<img
-			src={signInBanner}
-			alt='Sign Up Background'
-			className='background-image'
-		/>
+		<div className='auth-banner auth-banner--signin'>
+			<img
+				src={signInBanner}
+				alt="CHIRON's smartwatch"
+				className='background-image'
+			/>
+			<div className='auth-banner__copy'>
+				<h2>Smart enough for every adventure.</h2>
+				<p>
+					Track your goals, stay connected, and explore the CHIRON's smartwatch
+					collection.
+				</p>
+			</div>
+		</div>
 	);
 	return (
 		<AuthLayout imageContent={signInImage} formType='signInForm'>
