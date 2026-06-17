@@ -287,3 +287,14 @@
 	max-width: 300px;
 	margin: 0;
 }
+
+.field input:-webkit-autofill,
+.field input:-webkit-autofill:hover,
+.field input:-webkit-autofill:focus,
+.field input:-webkit-autofill:active {
+	-webkit-text-fill-color: #f0ede8 !important;
+	-webkit-box-shadow: 0 0 0 1000px #1a1a1a inset !important;
+	box-shadow: 0 0 0 1000px #1a1a1a inset !important;
+	caret-color: #f0ede8 !important;
+	transition: background-color 5000s ease-in-out 0s;
+}
