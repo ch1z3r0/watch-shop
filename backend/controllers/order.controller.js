@@ -192,7 +192,6 @@ export const createCustomerOrder = async (req, res) => {
 };
 // --- Update Order -----------------------------------------------------------------------
 export const updateOrder = async (req, res) => {
-	console.log('UPDATE ORDER HIT:', req.params.orderId);
 	try {
 		const {
 			customerName,
