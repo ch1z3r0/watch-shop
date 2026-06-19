@@ -6,6 +6,7 @@ import {
 	deleteOrder,
 	getAllOrders,
 	getOrderById,
+	getMyOrders,
 	updateOrder,
 } from '../controllers/order.controller.js';
 
@@ -13,6 +14,9 @@ const router = express.Router();
 
 //Get all orders
 router.get('/', getAllOrders);
+
+// Get customer orders
+router.get('/my-orders', verifyFirebaseToken, getMyOrders);
 
 //Get one order by id
 router.get('/:orderId', getOrderById);

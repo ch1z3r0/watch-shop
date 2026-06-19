@@ -47,6 +47,20 @@ export const getOrderById = async (req, res) => {
 	}
 };
 
+// --- Get Customer order by firebase uid ------------------------------------------------
+export const getMyOrders = async (req, res) => {
+	try {
+		const firebaseUid = req.user.uid;
+		const orders = await Order.find({ firebaseUid }).sort({ createdAt: -1 });
+		res.status(200).json(orders);
+	} catch (error) {
+		res.status(500).json({
+			message: 'Failed to fetch orders',
+			error: error.message,
+		});
+	}
+};
+
 // --- Create Order -----------------------------------------------------------------------
 export const createOrder = async (req, res) => {
 	try {
@@ -178,7 +192,6 @@ export const createCustomerOrder = async (req, res) => {
 };
 // --- Update Order -----------------------------------------------------------------------
 export const updateOrder = async (req, res) => {
-	console.log('UPDATE ORDER HIT:', req.params.orderId);
 	try {
 		const {
 			customerName,
