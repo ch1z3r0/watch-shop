@@ -20,8 +20,6 @@ export const AuthProvider = ({ children }) => {
 			if (u) {
 				try {
 					const idTokenResult = await u.getIdTokenResult();
-					console.log(idTokenResult);
-
 					setIsAdmin(idTokenResult.claims.admin === true);
 				} catch (error) {
 					console.error('Error checking admin status: ', error);
