@@ -1,0 +1,195 @@
+/* ── Page ── */
+.promo {
+	max-width: 900px;
+	margin: 0 auto;
+	padding: 2rem;
+	color: var(--text-primary);
+}
+
+/* ── Hero ── */
+.promo__hero {
+	background: linear-gradient(
+		135deg,
+		var(--bg-card) 0%,
+		rgba(128, 128, 128, 0.04) 100%
+	);
+	border: 1px solid rgba(201, 168, 76, 0.2);
+	border-radius: 16px;
+	padding: 2.5rem;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 2rem;
+	margin-bottom: 1.25rem;
+	position: relative;
+	overflow: hidden;
+}
+
+.promo__hero::before {
+	content: '';
+	position: absolute;
+	top: -40px;
+	right: -40px;
+	width: 220px;
+	height: 220px;
+	border-radius: 50%;
+	background: radial-gradient(
+		circle,
+		rgba(201, 168, 76, 0.14) 0%,
+		transparent 70%
+	);
+}
+
+.promo__hero-left {
+	position: relative;
+	z-index: 1;
+}
+
+.promo__hero-left h1 {
+	font-family: 'Playfair Display', Georgia, serif;
+	font-style: italic;
+	font-size: clamp(1.5rem, 3.5vw, 2rem);
+	margin: 0 0 10px;
+	line-height: 1.2;
+}
+
+.promo__hero-left p {
+	font-size: 0.85rem;
+	color: var(--text-secondary);
+	max-width: 360px;
+	margin: 0 0 1.25rem;
+	line-height: 1.5;
+}
+
+.promo__hero-right {
+	position: relative;
+	z-index: 1;
+	text-align: right;
+	flex-shrink: 0;
+}
+
+.promo__discount {
+	display: block;
+	font-size: 3rem;
+	font-weight: 700;
+	color: var(--gold);
+	line-height: 1;
+}
+
+.promo__discount-label {
+	display: block;
+	font-size: 0.72rem;
+	color: var(--text-secondary);
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	margin-top: 4px;
+}
+
+/* ── Code pill ── */
+.promo__code-pill {
+	background: rgba(201, 168, 76, 0.1);
+	border: 1px dashed rgba(201, 168, 76, 0.4);
+	border-radius: 8px;
+	padding: 10px 22px;
+	font-size: 0.9rem;
+	font-weight: 600;
+	color: var(--gold);
+	letter-spacing: 0.05em;
+	cursor: pointer;
+	font-family: 'Poppins', sans-serif;
+	transition: all 0.15s;
+}
+
+.promo__code-pill:hover {
+	background: rgba(201, 168, 76, 0.18);
+}
+
+.promo__code-pill--small {
+	padding: 7px 16px;
+	font-size: 0.75rem;
+}
+
+.promo__code-pill--disabled {
+	cursor: default;
+	opacity: 0.4;
+	color: var(--text-secondary);
+	border-color: var(--border-color);
+	background: rgba(128, 128, 128, 0.04);
+}
+
+/* ── Grid ── */
+.promo__grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1rem;
+	margin-bottom: 1.5rem;
+}
+
+.promo__card {
+	background: var(--bg-card);
+	border: 1px solid var(--border-color);
+	border-radius: 12px;
+	padding: 1.25rem;
+}
+
+.promo__card h3 {
+	font-size: 0.88rem;
+	font-weight: 600;
+	margin: 0 0 6px;
+}
+
+.promo__card p {
+	font-size: 0.78rem;
+	color: var(--text-secondary);
+	line-height: 1.5;
+	margin: 0 0 14px;
+}
+
+.promo__card--placeholder {
+	opacity: 0.6;
+}
+
+/* ── Footer ── */
+.promo__footer {
+	text-align: center;
+	padding-top: 1rem;
+	border-top: 1px solid var(--border-color);
+}
+
+.promo__footer p {
+	font-size: 0.8rem;
+	color: var(--text-secondary);
+	margin: 0 0 6px;
+}
+
+.promo__footer a {
+	font-size: 0.85rem;
+	color: var(--gold);
+	text-decoration: none;
+	font-weight: 500;
+}
+
+.promo__footer a:hover {
+	opacity: 0.8;
+}
+
+/* ── Responsive ── */
+@media (max-width: 700px) {
+	.promo {
+		padding: 1.25rem;
+	}
+
+	.promo__hero {
+		flex-direction: column;
+		align-items: flex-start;
+		text-align: left;
+	}
+
+	.promo__hero-right {
+		text-align: left;
+	}
+
+	.promo__grid {
+		grid-template-columns: 1fr;
+	}
+}

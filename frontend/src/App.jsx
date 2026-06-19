@@ -20,6 +20,7 @@ import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import TrackOrder from './pages/TrackOrder';
 import Favourites from './pages/Favourites';
+import Promotions from './pages/Promotions';
 
 const AnimatedOutlet = () => {
 	const location = useLocation();
@@ -51,6 +52,10 @@ const router = createBrowserRouter([
 			{
 				path: '/cart',
 				element: <Cart />,
+			},
+			{
+				path: '/promotions',
+				element: <Promotions />,
 			},
 
 			//Private Route (Only for signed in users)
