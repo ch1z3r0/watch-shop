@@ -103,6 +103,14 @@ const Checkout = () => {
 		cardName: '',
 	});
 
+	// KHQR States
+	const [khqrData, setKhqrData] = useState(null);
+	const [khqrLoading, setKhqrLoading] = useState(false);
+	const [khqrError, setKhqrError] = useState(null);
+	const [khqrExpired, setKhqrExpired] = useState(false);
+	const pollIntervalRef = useRef(null);
+	const pollTimeoutRef = useRef(null);
+
 	const set = (field) => (e) =>
 		setForm((prev) => ({ ...prev, [field]: e.target.value }));
 	// e collecting errors
@@ -353,6 +361,12 @@ const Checkout = () => {
 							>
 								PayPal
 							</button>
+							<button
+								className={`co-pay-tab ${paymentTab === 'khqr' ? 'is-active' : ''}`}
+								onClick={() => setPaymentTab('khqr')}
+							>
+								🏦 KHQR
+							</button>
 						</div>
 
 						{paymentTab === 'card' && (
@@ -400,7 +414,90 @@ const Checkout = () => {
 							</div>
 						)}
 
-						{paymentTab !== 'card' && (
+						{/* KHQR Tab Content */}
+						{paymentTab === 'khqr' && (
+							<div className='khqr-box'>
+								{/* Idle state */}
+								{!khqrData && !khqrLoading && !khqrExpired && (
+									<div className='khqr-idle'>
+										<svg
+											viewBox='0 0 24 24'
+											width='40'
+											height='40'
+											fill='none'
+											stroke='currentColor'
+											strokeWidth='1.4'
+										>
+											<rect x='3' y='3' width='7' height='7' rx='1' />
+											<rect x='14' y='3' width='7' height='7' rx='1' />
+											<rect x='3' y='14' width='7' height='7' rx='1' />
+											<path d='M14 14h2v2h-2zM18 14h2v2h-2zM14 18h2v2h-2zM18 18h2v2h-2z' />
+										</svg>
+										<p>Pay instantly with any Bakong-supported app</p>
+										<p className='khqr-idle-sub'>
+											ABA, Wing, Acleda, and 60+ banks supported
+										</p>
+									</div>
+								)}
+
+								{/* Loading state */}
+								{khqrLoading && (
+									<div className='khqr-loading'>
+										<div className='khqr-spinner' />
+										<p>Generating QR code…</p>
+									</div>
+								)}
+
+								{/* QR displayed state */}
+								{khqrData && !khqrLoading && !khqrExpired && (
+									<div className='khqr-qr-wrap'>
+										<p className='khqr-instructions'>
+											Open your banking app and scan to pay
+										</p>
+										<div className='khqr-qr-img-wrap'>
+											<img
+												src={khqrData.qrImage}
+												alt='Scan to pay with Bakong KHQR'
+												className='khqr-qr-img'
+											/>
+										</div>
+										<p className='khqr-amount'>{formatPrice(orderTotal)}</p>
+										<p className='khqr-ref'>Ref: {khqrData.orderId}</p>
+										<div className='poll-status'>
+											<span className='poll-dot' />
+											Waiting for payment…
+										</div>
+									</div>
+								)}
+
+								{/* Expired state */}
+								{khqrExpired && (
+									<div className='khqr-expired'>
+										<svg
+											viewBox='0 0 24 24'
+											width='36'
+											height='36'
+											fill='none'
+											stroke='currentColor'
+											strokeWidth='1.4'
+										>
+											<circle cx='12' cy='12' r='10' />
+											<path d='M12 6v6l4 2' />
+										</svg>
+										<p>QR code expired</p>
+										<p className='khqr-expired-sub'>
+											This QR is no longer valid. Generate a new one to
+											continue.
+										</p>
+									</div>
+								)}
+
+								{/* Error */}
+								{khqrError && <p className='khqr-error'>{khqrError}</p>}
+							</div>
+						)}
+
+						{paymentTab !== 'card' && paymentTab !== 'khqr' && (
 							<p className='co-pay-placeholder'>
 								You'll be redirected to complete payment after placing your
 								order.
@@ -464,12 +561,16 @@ const Checkout = () => {
 
 					<button
 						className='co-place-btn'
-						onClick={handleSubmit}
-						disabled={submitting}
+						onClick={paymentTab === 'khqr' ? handleSubmit : handleSubmit}
+						disabled={submitting || khqrLoading}
 					>
-						{submitting
-							? 'Placing Order…'
-							: `Place Order · ${formatPrice(orderTotal)}`}
+						{khqrLoading
+							? 'Generating QR…'
+							: paymentTab === 'khqr' && khqrData
+								? `Awaiting Payment · ${formatPrice(orderTotal)}`
+								: submitting
+									? 'Placing Order…'
+									: `Place Order · ${formatPrice(orderTotal)}`}
 					</button>
 
 					<p className='co-secure'>🔒 Secure encrypted checkout</p>
