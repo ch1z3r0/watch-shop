@@ -1,11 +1,11 @@
 import express from 'express';
-import verifyFirebaseToken from '../middleware/firebaseAuth.middleware';
+import verifyFirebaseToken from '../middleware/firebaseAuth.middleware.js';
 import {
 	checkPaymentStatus,
 	createPayment,
-} from '../controllers/payment.controller';
+} from '../controllers/payment.controller.js';
 
-router = express.Router();
+const router = express.Router();
 
 router.post('/create', verifyFirebaseToken, createPayment);
 

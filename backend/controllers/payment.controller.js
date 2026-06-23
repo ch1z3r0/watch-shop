@@ -1,7 +1,7 @@
-import Order from '../models/Order';
-import Product from '../models/Product';
-import { checkPayment, generateKHQR } from '../utils/bakong';
-import generateUniqueId from '../utils/generateUniqueId';
+import Order from '../models/Order.js';
+import Product from '../models/Product.js';
+import { checkPayment, generateKHQR } from '../utils/bakong.js';
+import generateUniqueId from '../utils/generateUniqueId.js';
 
 export const createPayment = async (req, res) => {
 	try {
@@ -9,7 +9,7 @@ export const createPayment = async (req, res) => {
 
 		const orderId = await generateUniqueId('order');
 
-		const { qrImage, md5 } = generateKHQR({
+		const { qrImage, md5 } = await generateKHQR({
 			amount: totalAmount,
 			currency,
 			billNumber: orderId,
@@ -46,9 +46,12 @@ export const checkPaymentStatus = async (req, res) => {
 
 		// Check for existing order
 		const existingOrder = await Order.findOne({ orderId });
+		if (existingOrder) {
+			return res.status(200).json({ paid: true, order: existingOrder });
+		}
 
-		const firebaseUid = req.body.uid;
-		const customerEmail = req.body.email || '';
+		const firebaseUid = req.user.uid;
+		const customerEmail = req.user.email || '';
 
 		// --- Validate all items first ---
 		for (const item of items) {

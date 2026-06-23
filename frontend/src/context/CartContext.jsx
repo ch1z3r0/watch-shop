@@ -5,7 +5,7 @@ const CartContext = createContext();
 const STORAGE_KEY = 'chirons_cart';
 
 const FREE_SHIPPING_THRESHOLD = 500;
-const SHIPPING_FEE = 15; //TODO add functional shipping system later
+const SHIPPING_FEE = 0; //TODO add functional shipping system later
 const PROMO_CODES = { CHIRON10: 0.1 }; //TODO add backend promotions for flexibility
 
 export const CartProvider = ({ children }) => {

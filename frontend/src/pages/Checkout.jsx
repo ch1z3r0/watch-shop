@@ -111,6 +111,20 @@ const Checkout = () => {
 	const pollIntervalRef = useRef(null);
 	const pollTimeoutRef = useRef(null);
 
+	// Stop polling helper
+	const stopPolling = () => {
+		if (pollIntervalRef.current) {
+			clearInterval(pollIntervalRef.current);
+			clearTimeout(pollTimeoutRef.current);
+		}
+	};
+
+	useEffect(() => {
+		return () => {
+			stopPolling();
+		};
+	}, []);
+
 	const set = (field) => (e) =>
 		setForm((prev) => ({ ...prev, [field]: e.target.value }));
 	// e collecting errors
@@ -157,16 +171,6 @@ const Checkout = () => {
 				quantity: item.qty,
 			}));
 
-			console.log('Sending payload:', {
-				customerName: `${form.firstName} ${form.lastName}`.trim(),
-				customerEmail: form.email,
-				shippingAddress: `${form.address}, ${form.city}, ${form.zip}, ${form.country}`,
-				phone: form.phone,
-				items,
-				totalAmount: orderTotal,
-				notes: '',
-			});
-
 			const res = await axios.post(
 				`${API_BASE}/api/orders/checkout`,
 				{
@@ -190,6 +194,85 @@ const Checkout = () => {
 			);
 		} finally {
 			setSubmitting(false);
+		}
+	};
+
+	const handleKHQRPay = async () => {
+		const validationErrors = validate();
+		if (Object.keys(validationErrors).length > 0) {
+			setErrors(validationErrors);
+			return;
+		}
+		setErrors({});
+
+		setKhqrError(null);
+		setKhqrLoading(true);
+		setKhqrExpired(false);
+		try {
+			const token = await user.getIdToken();
+
+			const res = await axios.post(
+				`${API_BASE}/api/payments/create`,
+				{
+					totalAmount: orderTotal,
+					currency: 'usd',
+				},
+				{ headers: { Authorization: `Bearer ${token}` } },
+			);
+			setKhqrData(res.data);
+
+			const items = cartItems.map((item) => ({
+				productId: item.productId,
+				variantId: item.variantId,
+				productName: item.name,
+				variantColor: item.color,
+				size: item.size,
+				image: item.image ? [item.image] : [],
+				price: item.price,
+				quantity: item.qty,
+			}));
+
+			const orderPayload = {
+				md5: res.data.md5,
+				orderId: res.data.orderId,
+				customerName: `${form.firstName} ${form.lastName}`.trim(),
+				customerEmail: form.email,
+				shippingAddress: `${form.address}, ${form.city}, ${form.zip}, ${form.country}`,
+				phone: form.phone,
+				items,
+				totalAmount: orderTotal,
+				notes: '',
+			};
+
+			pollTimeoutRef.current = setTimeout(
+				() => {
+					stopPolling();
+					setKhqrExpired(true);
+				},
+				10 * 60 * 1000,
+			);
+			pollIntervalRef.current = setInterval(async () => {
+				try {
+					const res = await axios.post(
+						`${API_BASE}/api/payments/check`,
+						orderPayload,
+						{ headers: { Authorization: `Bearer ${token}` } },
+					);
+					if (res.data.paid) {
+						stopPolling();
+						setPlacedOrder(res.data.order);
+						clearCart();
+					}
+				} catch (error) {
+					stopPolling();
+					setKhqrError(
+						error.response?.data?.message || 'Payment check failed.',
+					);
+				}
+			}, 3000);
+		} catch (error) {
+		} finally {
+			setKhqrLoading(false);
 		}
 	};
 
@@ -561,7 +644,7 @@ const Checkout = () => {
 
 					<button
 						className='co-place-btn'
-						onClick={paymentTab === 'khqr' ? handleSubmit : handleSubmit}
+						onClick={paymentTab === 'khqr' ? handleKHQRPay : handleSubmit}
 						disabled={submitting || khqrLoading}
 					>
 						{khqrLoading

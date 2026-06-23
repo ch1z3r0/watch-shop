@@ -128,7 +128,7 @@ export const createOrder = async (req, res) => {
 	}
 };
 
-// --- Create Order -----------------------------------------------------------------------
+// --- Create Customer Order -----------------------------------------------------------------------
 export const createCustomerOrder = async (req, res) => {
 	try {
 		const { customerName, shippingAddress, phone, items, totalAmount, notes } =
