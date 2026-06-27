@@ -4,6 +4,7 @@ import { useCart } from '../context/CartContext';
 import './Checkout.css';
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
+import KHQRDisplay from '../components/KHQRDisplay/KHQRDisplay';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
 
@@ -538,14 +539,13 @@ const Checkout = () => {
 											Open your banking app and scan to pay
 										</p>
 										<div className='khqr-qr-img-wrap'>
-											<img
-												src={khqrData.qrImage}
-												alt='Scan to pay with Bakong KHQR'
-												className='khqr-qr-img'
+											<KHQRDisplay
+												qrImage={khqrData.qrImage}
+												merchantName="CHIRON's Watch Shop"
+												amount={formatPrice(orderTotal)}
+												orderId={khqrData.orderId}
 											/>
 										</div>
-										<p className='khqr-amount'>{formatPrice(orderTotal)}</p>
-										<p className='khqr-ref'>Ref: {khqrData.orderId}</p>
 										<div className='poll-status'>
 											<span className='poll-dot' />
 											Waiting for payment…
