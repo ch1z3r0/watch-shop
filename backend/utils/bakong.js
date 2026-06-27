@@ -48,7 +48,14 @@ export const generateKHQR = async ({
 		throw new Error(`KHQR generation failed: ${merchant.status.message}`);
 	}
 
-	const qrImage = await QRCode.toDataURL(merchant.data.qr);
+	// const qrImage = await QRCode.toDataURL(merchant.data.qr);
+
+	const qrImage = await QRCode.toDataURL(merchant.data.qr, {
+		width: 300,
+		margin: 2,
+		color: { dark: '#000000', light: '#ffffff' },
+		errorCorrectionLevel: 'H',
+	});
 
 	return {
 		qrString: merchant.data.qr,

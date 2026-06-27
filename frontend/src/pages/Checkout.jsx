@@ -542,8 +542,8 @@ const Checkout = () => {
 											<KHQRDisplay
 												qrImage={khqrData.qrImage}
 												merchantName="CHIRON's Watch Shop"
-												amount={formatPrice(orderTotal)}
-												orderId={khqrData.orderId}
+												amount={orderTotal.toLocaleString('en-US')}
+												currency='USD'
 											/>
 										</div>
 										<div className='poll-status'>
