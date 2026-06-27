@@ -39,7 +39,7 @@ const KHQRDisplay = ({ qrImage, merchantName, amount, currency = 'USD' }) => {
 								fontSize='20'
 								fontWeight='700'
 								fill='white'
-								fontFamily='Arial, sans-serif'
+								fontFamily='Arial, "Times New Roman", serif'
 							>
 								$
 							</text>
