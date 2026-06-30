@@ -313,7 +313,7 @@ const ProductDetail = () => {
 						<div className='pd__stepper'>
 							<button
 								onClick={() => handleQtyChange(-1)}
-								disabled={qty <= availableToAdd}
+								disabled={qty <= 1}
 								aria-label='Decrease quantity'
 							>
 								−
