@@ -4,6 +4,7 @@ import { useCart } from '../context/CartContext';
 import './Checkout.css';
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
+import KHQRDisplay from '../components/KHQRDisplay/KHQRDisplay';
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:5000';
 
@@ -103,6 +104,28 @@ const Checkout = () => {
 		cardName: '',
 	});
 
+	// KHQR States
+	const [khqrData, setKhqrData] = useState(null);
+	const [khqrLoading, setKhqrLoading] = useState(false);
+	const [khqrError, setKhqrError] = useState(null);
+	const [khqrExpired, setKhqrExpired] = useState(false);
+	const pollIntervalRef = useRef(null);
+	const pollTimeoutRef = useRef(null);
+
+	// Stop polling helper
+	const stopPolling = () => {
+		if (pollIntervalRef.current) {
+			clearInterval(pollIntervalRef.current);
+			clearTimeout(pollTimeoutRef.current);
+		}
+	};
+
+	useEffect(() => {
+		return () => {
+			stopPolling();
+		};
+	}, []);
+
 	const set = (field) => (e) =>
 		setForm((prev) => ({ ...prev, [field]: e.target.value }));
 	// e collecting errors
@@ -149,16 +172,6 @@ const Checkout = () => {
 				quantity: item.qty,
 			}));
 
-			console.log('Sending payload:', {
-				customerName: `${form.firstName} ${form.lastName}`.trim(),
-				customerEmail: form.email,
-				shippingAddress: `${form.address}, ${form.city}, ${form.zip}, ${form.country}`,
-				phone: form.phone,
-				items,
-				totalAmount: orderTotal,
-				notes: '',
-			});
-
 			const res = await axios.post(
 				`${API_BASE}/api/orders/checkout`,
 				{
@@ -182,6 +195,85 @@ const Checkout = () => {
 			);
 		} finally {
 			setSubmitting(false);
+		}
+	};
+
+	const handleKHQRPay = async () => {
+		const validationErrors = validate();
+		if (Object.keys(validationErrors).length > 0) {
+			setErrors(validationErrors);
+			return;
+		}
+		setErrors({});
+
+		setKhqrError(null);
+		setKhqrLoading(true);
+		setKhqrExpired(false);
+		try {
+			const token = await user.getIdToken();
+
+			const res = await axios.post(
+				`${API_BASE}/api/payments/create`,
+				{
+					totalAmount: orderTotal,
+					currency: 'usd',
+				},
+				{ headers: { Authorization: `Bearer ${token}` } },
+			);
+			setKhqrData(res.data);
+
+			const items = cartItems.map((item) => ({
+				productId: item.productId,
+				variantId: item.variantId,
+				productName: item.name,
+				variantColor: item.color,
+				size: item.size,
+				image: item.image ? [item.image] : [],
+				price: item.price,
+				quantity: item.qty,
+			}));
+
+			const orderPayload = {
+				md5: res.data.md5,
+				orderId: res.data.orderId,
+				customerName: `${form.firstName} ${form.lastName}`.trim(),
+				customerEmail: form.email,
+				shippingAddress: `${form.address}, ${form.city}, ${form.zip}, ${form.country}`,
+				phone: form.phone,
+				items,
+				totalAmount: orderTotal,
+				notes: '',
+			};
+
+			pollTimeoutRef.current = setTimeout(
+				() => {
+					stopPolling();
+					setKhqrExpired(true);
+				},
+				10 * 60 * 1000,
+			);
+			pollIntervalRef.current = setInterval(async () => {
+				try {
+					const res = await axios.post(
+						`${API_BASE}/api/payments/check`,
+						orderPayload,
+						{ headers: { Authorization: `Bearer ${token}` } },
+					);
+					if (res.data.paid) {
+						stopPolling();
+						setPlacedOrder(res.data.order);
+						clearCart();
+					}
+				} catch (error) {
+					stopPolling();
+					setKhqrError(
+						error.response?.data?.message || 'Payment check failed.',
+					);
+				}
+			}, 3000);
+		} catch (error) {
+		} finally {
+			setKhqrLoading(false);
 		}
 	};
 
@@ -353,6 +445,12 @@ const Checkout = () => {
 							>
 								PayPal
 							</button>
+							<button
+								className={`co-pay-tab ${paymentTab === 'khqr' ? 'is-active' : ''}`}
+								onClick={() => setPaymentTab('khqr')}
+							>
+								🏦 KHQR
+							</button>
 						</div>
 
 						{paymentTab === 'card' && (
@@ -400,7 +498,89 @@ const Checkout = () => {
 							</div>
 						)}
 
-						{paymentTab !== 'card' && (
+						{/* KHQR Tab Content */}
+						{paymentTab === 'khqr' && (
+							<div className='khqr-box'>
+								{/* Idle state */}
+								{!khqrData && !khqrLoading && !khqrExpired && (
+									<div className='khqr-idle'>
+										<svg
+											viewBox='0 0 24 24'
+											width='40'
+											height='40'
+											fill='none'
+											stroke='currentColor'
+											strokeWidth='1.4'
+										>
+											<rect x='3' y='3' width='7' height='7' rx='1' />
+											<rect x='14' y='3' width='7' height='7' rx='1' />
+											<rect x='3' y='14' width='7' height='7' rx='1' />
+											<path d='M14 14h2v2h-2zM18 14h2v2h-2zM14 18h2v2h-2zM18 18h2v2h-2z' />
+										</svg>
+										<p>Pay instantly with any Bakong-supported app</p>
+										<p className='khqr-idle-sub'>
+											ABA, Wing, Acleda, and 60+ banks supported
+										</p>
+									</div>
+								)}
+
+								{/* Loading state */}
+								{khqrLoading && (
+									<div className='khqr-loading'>
+										<div className='khqr-spinner' />
+										<p>Generating QR code…</p>
+									</div>
+								)}
+
+								{/* QR displayed state */}
+								{khqrData && !khqrLoading && !khqrExpired && (
+									<div className='khqr-qr-wrap'>
+										<p className='khqr-instructions'>
+											Open your banking app and scan to pay
+										</p>
+										<div className='khqr-qr-img-wrap'>
+											<KHQRDisplay
+												qrImage={khqrData.qrImage}
+												merchantName="CHIRON's Watch Shop"
+												amount={orderTotal.toLocaleString('en-US')}
+												currency='USD'
+											/>
+										</div>
+										<div className='poll-status'>
+											<span className='poll-dot' />
+											Waiting for payment…
+										</div>
+									</div>
+								)}
+
+								{/* Expired state */}
+								{khqrExpired && (
+									<div className='khqr-expired'>
+										<svg
+											viewBox='0 0 24 24'
+											width='36'
+											height='36'
+											fill='none'
+											stroke='currentColor'
+											strokeWidth='1.4'
+										>
+											<circle cx='12' cy='12' r='10' />
+											<path d='M12 6v6l4 2' />
+										</svg>
+										<p>QR code expired</p>
+										<p className='khqr-expired-sub'>
+											This QR is no longer valid. Generate a new one to
+											continue.
+										</p>
+									</div>
+								)}
+
+								{/* Error */}
+								{khqrError && <p className='khqr-error'>{khqrError}</p>}
+							</div>
+						)}
+
+						{paymentTab !== 'card' && paymentTab !== 'khqr' && (
 							<p className='co-pay-placeholder'>
 								You'll be redirected to complete payment after placing your
 								order.
@@ -464,12 +644,16 @@ const Checkout = () => {
 
 					<button
 						className='co-place-btn'
-						onClick={handleSubmit}
-						disabled={submitting}
+						onClick={paymentTab === 'khqr' ? handleKHQRPay : handleSubmit}
+						disabled={submitting || khqrLoading}
 					>
-						{submitting
-							? 'Placing Order…'
-							: `Place Order · ${formatPrice(orderTotal)}`}
+						{khqrLoading
+							? 'Generating QR…'
+							: paymentTab === 'khqr' && khqrData
+								? `Awaiting Payment · ${formatPrice(orderTotal)}`
+								: submitting
+									? 'Placing Order…'
+									: `Place Order · ${formatPrice(orderTotal)}`}
 					</button>
 
 					<p className='co-secure'>🔒 Secure encrypted checkout</p>

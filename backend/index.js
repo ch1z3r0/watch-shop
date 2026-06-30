@@ -10,6 +10,7 @@ import uploadRoutes from './routes/uploadRoutes.route.js';
 import authRoutes from './routes/authRoutes.route.js';
 import orderRoutes from './routes/orderRoutes.route.js';
 import favouritesRoutes from './routes/favouritesRoutes.route.js';
+import paymentRoutes from './routes/paymentRoutes.route.js';
 
 dotenv.config();
 connectDB();
@@ -27,8 +28,9 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/favourites', favouritesRoutes);
+app.use('/api/payments', paymentRoutes);
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () =>
+app.listen(PORT, '0.0.0.0', () =>
 	console.log(`✅ Backend running on http://localhost:${PORT}`),
 );

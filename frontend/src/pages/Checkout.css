@@ -241,6 +241,167 @@
 	margin: 0;
 }
 
+/* ── KHQR Payment ── */
+.khqr-box {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 1.5rem 1rem;
+	gap: 12px;
+	text-align: center;
+	min-height: 220px;
+	justify-content: center;
+}
+
+/* Idle */
+.khqr-idle svg {
+	color: var(--text-secondary);
+	margin-bottom: 4px;
+}
+
+.khqr-idle p {
+	font-size: 0.82rem;
+	color: var(--text-primary);
+	margin: 0;
+}
+
+.khqr-idle-sub {
+	font-size: 0.72rem;
+	color: var(--text-secondary) !important;
+	margin-top: 2px;
+}
+
+/* Loading */
+.khqr-loading {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+}
+
+.khqr-loading p {
+	font-size: 0.82rem;
+	color: var(--text-secondary);
+	margin: 0;
+}
+
+.khqr-spinner {
+	width: 28px;
+	height: 28px;
+	border: 2px solid var(--border-color);
+	border-top-color: var(--gold);
+	border-radius: 50%;
+	animation: co-spin 0.8s linear infinite;
+}
+
+@keyframes co-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* QR displayed */
+.khqr-qr-wrap {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+	width: 100%;
+}
+
+.khqr-instructions {
+	font-size: 0.78rem;
+	color: var(--text-secondary);
+	margin: 0;
+}
+
+.khqr-qr-img-wrap {
+	background: #ffffff;
+	padding: 10px;
+	border-radius: 10px;
+}
+
+.khqr-qr-img {
+	width: 160px;
+	height: 160px;
+	display: block;
+}
+
+.khqr-amount {
+	font-size: 1.1rem;
+	font-weight: 600;
+	color: var(--gold);
+	margin: 0;
+}
+
+.khqr-ref {
+	font-size: 0.68rem;
+	color: var(--text-secondary);
+	margin: 0;
+}
+
+/* Poll status */
+.poll-status {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	font-size: 0.75rem;
+	color: var(--text-secondary);
+}
+
+.poll-dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: var(--gold);
+	animation: poll-pulse 1.5s ease-in-out infinite;
+	flex-shrink: 0;
+}
+
+@keyframes poll-pulse {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.25;
+	}
+}
+
+/* Expired */
+.khqr-expired {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 8px;
+}
+
+.khqr-expired svg {
+	color: var(--text-secondary);
+}
+
+.khqr-expired p {
+	font-size: 0.85rem;
+	color: var(--text-primary);
+	margin: 0;
+	font-weight: 500;
+}
+
+.khqr-expired-sub {
+	font-size: 0.72rem;
+	color: var(--text-secondary) !important;
+	font-weight: 400 !important;
+	max-width: 240px;
+}
+
+/* Error */
+.khqr-error {
+	font-size: 0.75rem;
+	color: #f87171;
+	margin: 0;
+	text-align: center;
+}
+
 /* ── Summary sidebar ── */
 .co-summary {
 	background: var(--bg-card);
