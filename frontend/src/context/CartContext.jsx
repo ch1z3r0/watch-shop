@@ -108,7 +108,7 @@ export const CartProvider = ({ children }) => {
 		setAppliedPromo(null);
 	};
 
-	const cartCount = cartItems.reduce((sum, item) => sum + item.qty, 0);
+	const cartCount = cartItems.length;
 
 	const cartTotal = cartItems.reduce(
 		(sum, item) => sum + item.price * item.qty,
