@@ -2,23 +2,10 @@ import FailedOrder from '../models/FailedOrder.js';
 import Order from '../models/Order.js';
 import Product from '../models/Product.js';
 import generateUniqueId from '../utils/generateUniqueId.js';
-
-// --- Helpers -------------------------------------------------------------------------
-//Rollback restore
-const rollbackRestore = async (oldItems) => {
-	for (const oldItem of oldItems) {
-		const product = await Product.findOne({ productId: oldItem.productId });
-		if (product) {
-			const variant = product.variants.find(
-				(v) => v.variantId === oldItem.variantId,
-			);
-			if (variant) {
-				variant.stock -= oldItem.quantity; // undo the restore
-				await product.save();
-			}
-		}
-	}
-};
+import {
+	rollbackRestore,
+	validateAndDeductStock,
+} from '../utils/stockHelpers.js';
 
 // --- Get Order -----------------------------------------------------------------------
 export const getAllOrders = async (req, res) => {
@@ -47,7 +34,6 @@ export const getOrderById = async (req, res) => {
 		});
 	}
 };
-
 // --- Get Customer order by firebase uid ------------------------------------------------
 export const getMyOrders = async (req, res) => {
 	try {
@@ -64,50 +50,20 @@ export const getMyOrders = async (req, res) => {
 
 // --- Create Order -----------------------------------------------------------------------
 export const createOrder = async (req, res) => {
+	const {
+		customerName,
+		customerEmail,
+		shippingAddress,
+		phone,
+		items,
+		totalAmount,
+		notes,
+	} = req.body;
+	let stockAlreadyDeducted = false;
 	try {
-		const {
-			customerName,
-			customerEmail,
-			shippingAddress,
-			phone,
-			items,
-			totalAmount,
-			notes,
-		} = req.body;
+		await validateAndDeductStock(items, res);
+		stockAlreadyDeducted = true;
 
-		// --- Validate all items first ---
-		for (const item of items) {
-			const product = await Product.findOne({ productId: item.productId });
-
-			if (!product) {
-				return res.status(404).json({ message: 'Product not found!' });
-			}
-
-			const variant = product.variants.find(
-				(v) => v.variantId === item.variantId,
-			);
-			if (!variant) {
-				return res.status(404).json({
-					message: `Variant not found for product: ${item.productName}`,
-				});
-			}
-
-			if (variant.stock < item.quantity) {
-				return res.status(400).json({
-					message: `Not enough stock for ${item.productName} (${item.variantColor}). Available: ${variant.stock}, Requested: ${item.quantity}`,
-				});
-			}
-		}
-
-		// --- All validated — now deduct stock ---
-		for (const item of items) {
-			const product = await Product.findOne({ productId: item.productId });
-			const variant = product.variants.find(
-				(v) => v.variantId === item.variantId,
-			);
-			variant.stock -= item.quantity;
-			await product.save();
-		}
 		const orderId = await generateUniqueId('order');
 
 		const newOrder = await Order.create({
@@ -122,6 +78,20 @@ export const createOrder = async (req, res) => {
 		});
 		res.status(201).json(newOrder);
 	} catch (error) {
+		let rolledBack = false;
+		if (stockAlreadyDeducted) {
+			await rollbackRestore(items);
+			rolledBack = true;
+		}
+
+		await FailedOrder.create({
+			source: 'admin',
+			firebaseUid: '',
+			attemptedPayload: req.body,
+			errorMessage: error.message,
+			stockRolledBack: rolledBack,
+		});
+
 		res.status(500).json({
 			message: 'Failed to create order',
 			error: error.message,
@@ -144,40 +114,9 @@ export const createCustomerOrder = async (req, res) => {
 	const finalEmail = customerEmail || req.user.email || '';
 
 	let stockAlreadyDeducted = false;
+
 	try {
-		// --- Validate all items first ---
-		for (const item of items) {
-			const product = await Product.findOne({ productId: item.productId });
-
-			if (!product) {
-				return res.status(404).json({ message: 'Product not found!' });
-			}
-
-			const variant = product.variants.find(
-				(v) => v.variantId === item.variantId,
-			);
-			if (!variant) {
-				return res.status(404).json({
-					message: `Variant not found for product: ${item.productName}`,
-				});
-			}
-
-			if (variant.stock < item.quantity) {
-				return res.status(400).json({
-					message: `Not enough stock for ${item.productName} (${item.variantColor}). Available: ${variant.stock}, Requested: ${item.quantity}`,
-				});
-			}
-		}
-
-		// --- All validated — now deduct stock ---
-		for (const item of items) {
-			const product = await Product.findOne({ productId: item.productId });
-			const variant = product.variants.find(
-				(v) => v.variantId === item.variantId,
-			);
-			variant.stock -= item.quantity;
-			await product.save();
-		}
+		await validateAndDeductStock(items, res);
 		stockAlreadyDeducted = true;
 		const orderId = await generateUniqueId('order');
 
@@ -194,14 +133,19 @@ export const createCustomerOrder = async (req, res) => {
 		});
 		res.status(201).json(newOrder);
 	} catch (error) {
+		let rolledBack = false;
+
 		if (stockAlreadyDeducted) {
 			await rollbackRestore(items);
+			rolledBack = true;
 		}
 
 		await FailedOrder.create({
+			source: 'customer',
 			firebaseUid,
 			attemptedPayload: req.body,
 			errorMessage: error.message,
+			stockRolledBack: rolledBack,
 		});
 
 		res.status(500).json({
