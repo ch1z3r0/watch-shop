@@ -1,3 +1,4 @@
+import FailedOrder from '../models/FailedOrder.js';
 import Order from '../models/Order.js';
 import Product from '../models/Product.js';
 import generateUniqueId from '../utils/generateUniqueId.js';
@@ -130,12 +131,20 @@ export const createOrder = async (req, res) => {
 
 // --- Create Customer Order -----------------------------------------------------------------------
 export const createCustomerOrder = async (req, res) => {
-	try {
-		const { customerName, shippingAddress, phone, items, totalAmount, notes } =
-			req.body;
+	const {
+		customerName,
+		customerEmail,
+		shippingAddress,
+		phone,
+		items,
+		totalAmount,
+		notes,
+	} = req.body;
+	const firebaseUid = req.user.uid;
+	const finalEmail = customerEmail || req.user.email || '';
 
-		const firebaseUid = req.user.uid;
-		const customerEmail = req.user.email || '';
+	let stockAlreadyDeducted = false;
+	try {
 		// --- Validate all items first ---
 		for (const item of items) {
 			const product = await Product.findOne({ productId: item.productId });
@@ -169,13 +178,14 @@ export const createCustomerOrder = async (req, res) => {
 			variant.stock -= item.quantity;
 			await product.save();
 		}
+		stockAlreadyDeducted = true;
 		const orderId = await generateUniqueId('order');
 
 		const newOrder = await Order.create({
 			orderId,
 			firebaseUid,
 			customerName,
-			customerEmail,
+			customerEmail: finalEmail,
 			shippingAddress,
 			phone,
 			items,
@@ -184,6 +194,16 @@ export const createCustomerOrder = async (req, res) => {
 		});
 		res.status(201).json(newOrder);
 	} catch (error) {
+		if (stockAlreadyDeducted) {
+			await rollbackRestore(items);
+		}
+
+		await FailedOrder.create({
+			firebaseUid,
+			attemptedPayload: req.body,
+			errorMessage: error.message,
+		});
+
 		res.status(500).json({
 			message: 'Failed to create order',
 			error: error.message,
