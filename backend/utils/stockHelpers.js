@@ -6,22 +6,19 @@ export const validateAndDeductStock = async (items, res) => {
 		const product = await Product.findOne({ productId: item.productId });
 
 		if (!product) {
-			return res.status(404).json({ message: 'Product not found!' });
+			throw new Error('Product not found!');
 		}
 
 		const variant = product.variants.find(
 			(v) => v.variantId === item.variantId,
 		);
 		if (!variant) {
-			return res.status(404).json({
-				message: `Variant not found for product: ${item.productName}`,
-			});
+			throw new Error(`Variant not found for product: ${item.productName}`);
 		}
-
 		if (variant.stock < item.quantity) {
-			return res.status(400).json({
-				message: `Not enough stock for ${item.productName} (${item.variantColor}). Available: ${variant.stock}, Requested: ${item.quantity}`,
-			});
+			throw new Error(
+				`Not enough stock for ${item.productName} (${item.variantColor}). Available: ${variant.stock}, Requested: ${item.quantity}`,
+			);
 		}
 	}
 
@@ -45,7 +42,7 @@ export const rollbackRestore = async (oldItems) => {
 				(v) => v.variantId === oldItem.variantId,
 			);
 			if (variant) {
-				variant.stock -= oldItem.quantity; // undo the restore
+				variant.stock += oldItem.quantity; // undo the restore
 				await product.save();
 			}
 		}
