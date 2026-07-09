@@ -20,7 +20,7 @@ const orderSchema = new mongoose.Schema(
 
 		// Customer info
 		customerName: { type: String, required: true },
-		customerEmail: { type: String, required: false },
+		customerEmail: { type: String, required: false, default: '' },
 		shippingAddress: { type: String, required: true },
 		phone: { type: String, required: true },
 
