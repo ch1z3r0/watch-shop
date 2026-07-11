@@ -43,9 +43,9 @@
   <h1>PayWay Sandbox — Card Test</h1>
 
   <div class="details">
-    <div><strong>tran_id:</strong> TEST-1783571241017</div>
+    <div><strong>tran_id:</strong> TEST-1783731708953</div>
     <div><strong>amount:</strong> 1.00 USD</div>
-    <div><strong>req_time:</strong> 20260709112721</div>
+    <div><strong>req_time:</strong> 20260711080148</div>
   </div>
 
   <form
@@ -54,9 +54,9 @@
     target="aba_webservice"
     action="https://checkout-sandbox.payway.com.kh/api/payment-gateway/v1/payments/purchase"
   >
-    <input type="hidden" name="req_time" value="20260709112721" />
+    <input type="hidden" name="req_time" value="20260711080148" />
     <input type="hidden" name="merchant_id" value="ec476583" />
-    <input type="hidden" name="tran_id" value="TEST-1783571241017" />
+    <input type="hidden" name="tran_id" value="TEST-1783731708953" />
     <input type="hidden" name="firstname" value="Long" />
     <input type="hidden" name="lastname" value="James" />
     <input type="hidden" name="email" value="jameslong@gmail.com" />
@@ -67,8 +67,8 @@
     <input type="hidden" name="shipping" value="0.00" />
     <input type="hidden" name="amount" value="1.00" />
     <input type="hidden" name="currency" value="USD" />
-    <input type="hidden" name="return_url" value="https://example.com/payway-return" />
-    <input type="hidden" name="cancel_url" value="" />
+    <input type="hidden" name="return_url" value="aHR0cHM6Ly9leGFtcGxlLmNvbS9wYXl3YXktcmV0dXJu" />
+    <input type="hidden" name="cancel_url" value="aHR0cHM6Ly9leGFtcGxlLmNvbS9wYXl3YXktY2FuY2Vs" />
     <input type="hidden" name="continue_success_url" value="" />
     <input type="hidden" name="return_deeplink" value="" />
     <input type="hidden" name="custom_fields" value="" />
@@ -78,7 +78,9 @@
     <input type="hidden" name="additional_params" value="" />
     <input type="hidden" name="google_pay_token" value="" />
     <input type="hidden" name="skip_success_page" value="" />
-    <input type="hidden" name="hash" value="vsVO01z7AAdfR/1ejPmC3SzNBb2FG/Eo01HKy5WOzfcHGW1MZ/O4gCytZbDWQautmbci6yItzdguHnR8lpliIw==" />
+    <input type="hidden" name="view_type" value="popup" />
+    <input type="hidden" name="payment_gate" value="0" />
+    <input type="hidden" name="hash" value="If5LSIGQZ8ws+5PYaDUuecyq1XITJwQ5ETJXXK/d+/MGLbeJRrOOBKBab3rR7fc4RfrXdn5PvsONNbjJEsCBsA==" />
 
     <button type="submit">Open PayWay Checkout</button>
   </form>
@@ -87,12 +89,16 @@
     var form = document.getElementById('aba_merchant_request');
     form.addEventListener('submit', function (event) {
       event.preventDefault();
+      if (typeof AbaPayway === 'undefined') {
+        alert('PayWay checkout script is still loading — please wait a second and try again.');
+        return;
+      }
       AbaPayway.checkout();
     });
   </script>
 
   <p class="note">
-    This transaction was generated at 2026-07-09T04:27:21.019Z.
+    This transaction was generated at 2026-07-11T01:01:48.954Z.
     The hash is time-sensitive — if this page sits open too long before you
     click the button, re-run <code>generate-test-checkout.js</code> to get a
     fresh one.

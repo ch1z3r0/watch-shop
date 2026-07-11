@@ -70,8 +70,16 @@ const items = '';
 const shipping = '0.00';
 const amount = '1.00';
 const currency = 'USD';
-const return_url = 'https://example.com/payway-return';
-const cancel_url = '';
+// PayWay expects return_url / cancel_url base64-encoded — confirmed from
+// a working reference implementation. Plain URLs were likely breaking
+// the hosted checkout page generation server-side.
+const return_url = Buffer.from('https://example.com/payway-return').toString(
+	'base64',
+);
+const cancel_url = Buffer.from('https://example.com/payway-cancel').toString(
+	'base64',
+);
+const payment_gate = '0'; // NOT included in the hash, per docs
 const continue_success_url = '';
 const return_deeplink = '';
 const custom_fields = '';
@@ -197,6 +205,8 @@ const html = `<!DOCTYPE html>
     <input type="hidden" name="additional_params" value="${additional_params}" />
     <input type="hidden" name="google_pay_token" value="${google_pay_token}" />
     <input type="hidden" name="skip_success_page" value="${skip_success_page}" />
+    <input type="hidden" name="view_type" value="popup" />
+    <input type="hidden" name="payment_gate" value="${payment_gate}" />
     <input type="hidden" name="hash" value="${hash}" />
 
     <button type="submit">Open PayWay Checkout</button>
@@ -206,6 +216,10 @@ const html = `<!DOCTYPE html>
     var form = document.getElementById('aba_merchant_request');
     form.addEventListener('submit', function (event) {
       event.preventDefault();
+      if (typeof AbaPayway === 'undefined') {
+        alert('PayWay checkout script is still loading — please wait a second and try again.');
+        return;
+      }
       AbaPayway.checkout();
     });
   </script>

@@ -11,4 +11,6 @@ router.post('/create', verifyFirebaseToken, createPayment);
 
 router.post('/check', verifyFirebaseToken, checkPaymentStatus);
 
+router.post('/create-intent', verifyFirebaseToken);
+
 export default router;

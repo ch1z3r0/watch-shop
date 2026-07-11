@@ -112,7 +112,7 @@ const createCardTransaction = async () => {
 	data.append('return_deeplink', '');
 	data.append('custom_fields', '');
 	data.append('return_params', '');
-	data.append('view_type', '');
+	data.append('view_type', 'popup');
 	data.append('payment_gate', '');
 	data.append('payout', '');
 	data.append('additional_params', '');
