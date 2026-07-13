@@ -31,20 +31,47 @@ const buildHash = (parts) => {
 };
 
 // Create PayWay Card transaction
-const createCardTransaction = async () => {
+export const buildPayWayCheckout = async ({
+	amount,
+	tran_id,
+	firstname,
+	lastname,
+	email,
+	phone,
+}) => {
 	const req_time = getReqTime();
-	const tran_id = `TEST-${Date.now()}`;
-	const firstname = 'Long';
-	const lastname = 'James';
-	const email = 'jameslong@gmail.com';
-	const phone = '85519837412';
+	const merchant_id = MERCHANT_ID;
+	// const tran_id = `TEST-${Date.now()}`;
+	// const firstname = 'Long';
+	// const lastname = 'James';
+	// const email = 'jameslong@gmail.com';
+	// const phone = '85519837412';
 	const type = 'purchase';
-	const payment_option = 'cards';
+	const payment_option = '';
 	const items = '';
-	const amount = '1.00';
+	const shipping = '0.00';
+	// const amount = '1.00';
 	const currency = 'USD';
 
-	const return_url = 'https://example.com/payway-return';
+	const return_url = Buffer.from('https://example.com/payway-return').toString(
+		'base64',
+	);
+	const cancel_url = Buffer.from('https://example.com/payway-cancel').toString(
+		'base64',
+	);
+
+	const view_type = 'popup';
+
+	const payment_gate = '0'; // NOT included in the hash, per docs
+	const continue_success_url = '';
+	const return_deeplink = '';
+	const custom_fields = '';
+	const return_params = '';
+	const payout = '';
+	const lifetime = '';
+	const additional_params = '';
+	const google_pay_token = '';
+	const skip_success_page = '';
 
 	const hash = buildHash([
 		req_time,
@@ -52,7 +79,7 @@ const createCardTransaction = async () => {
 		tran_id,
 		amount,
 		items,
-		'0.00', // shipping
+		shipping,
 		firstname,
 		lastname,
 		email,
@@ -60,52 +87,22 @@ const createCardTransaction = async () => {
 		type,
 		payment_option,
 		return_url,
-		'', // cancel_url
-		'', // continue_success_url
-		'', // return_deeplink
+		cancel_url,
+		continue_success_url,
+		return_deeplink,
 		currency,
-		'', // custom_fields
-		'', // return_params
-		'', // payout
-		'', // lifetime
-		'', // additional_params
-		'', // google_pay_token
-		'', // skip_success_page
+		custom_fields,
+		return_params,
+		payout,
+		lifetime,
+		additional_params,
+		google_pay_token,
+		skip_success_page,
 	]);
 
-	const data = new FormData();
-	data.append('req_time', req_time);
-	data.append('merchant_id', MERCHANT_ID);
-	data.append('tran_id', tran_id);
-	data.append('firstname', firstname);
-	data.append('lastname', lastname);
-	data.append('email', email);
-	data.append('phone', phone);
-	data.append('type', type);
-	data.append('payment_option', payment_option);
-	data.append('items', items);
-	data.append('shipping', '0.00');
-	data.append('amount', amount);
-	data.append('currency', currency);
-	data.append('return_url', return_url);
-	data.append('cancel_url', '');
-	data.append('skip_success_page', '');
-	data.append('continue_success_url', '');
-	data.append('return_deeplink', '');
-	data.append('custom_fields', '');
-	data.append('return_params', '');
-	data.append('view_type', '');
-	data.append('payment_gate', '');
-	data.append('payout', '');
-	data.append('additional_params', '');
-	data.append('lifetime', '');
-	data.append('google_pay_token', '');
-	data.append('hash', hash);
-
-	console.log('--- Sending Create Transaction (cards) request ---');
-	console.log({
+	const res = {
 		req_time,
-		merchant_id: MERCHANT_ID,
+		merchant_id,
 		tran_id,
 		firstname,
 		lastname,
@@ -114,15 +111,26 @@ const createCardTransaction = async () => {
 		type,
 		payment_option,
 		items,
+		shipping,
 		amount,
-	});
+		currency,
+		return_url,
+		cancel_url,
+		skip_success_page,
+		continue_success_url,
+		return_deeplink,
+		custom_fields,
+		return_params,
+		view_type,
+		payment_gate,
+		payout,
+		additional_params,
+		lifetime,
+		google_pay_token,
+		hash,
+	};
 
-	const response = await axios.post(
-		`${BASE_URL}/api/payment-gateway/v1/payments/purchase`,
-		data,
-		{ headers: data.getHeaders() },
-	);
+	const action = `${BASE_URL}/api/payment-gateway/v1/payments/purchase`;
 
-	console.log(JSON.stringify(response.data, null, 2));
-	return { tran_id, req_time };
+	return { action, fields: res };
 };
