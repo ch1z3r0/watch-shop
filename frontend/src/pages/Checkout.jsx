@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../auth/AuthProvider';
 import { useCart } from '../context/CartContext';
 import './Checkout.css';
@@ -80,7 +80,6 @@ const Checkout = () => {
 		shipping,
 		orderTotal,
 	} = useCart();
-	const navigate = useNavigate();
 
 	const [paymentTab, setPaymentTab] = useState('card');
 	const [submitting, setSubmitting] = useState(false);
@@ -104,6 +103,11 @@ const Checkout = () => {
 		cardName: '',
 	});
 
+	//Payway States
+	const [paywayLoading, setPaywayLoading] = useState(false);
+	const [paywayError, setPaywayError] = useState(null);
+	const [paywayCheckout, setPaywayCheckout] = useState(null);
+
 	// KHQR States
 	const [khqrData, setKhqrData] = useState(null);
 	const [khqrLoading, setKhqrLoading] = useState(false);
@@ -111,6 +115,23 @@ const Checkout = () => {
 	const [khqrExpired, setKhqrExpired] = useState(false);
 	const pollIntervalRef = useRef(null);
 	const pollTimeoutRef = useRef(null);
+
+	useEffect(() => {
+		if (paywayCheckout) {
+			const tryCheckout = (attempts = 0) => {
+				if (typeof AbaPayway !== 'undefined') {
+					AbaPayway.checkout();
+				} else if (attempts < 20) {
+					setTimeout(() => tryCheckout(attempts + 1), 150);
+				} else {
+					setPaywayError(
+						'PayWay checkout script failed to load. Please refresh and try again.',
+					);
+				}
+			};
+			tryCheckout();
+		}
+	}, [paywayCheckout]);
 
 	// Stop polling helper
 	const stopPolling = () => {
@@ -198,6 +219,45 @@ const Checkout = () => {
 		}
 	};
 
+	//Handle Payway Payment
+	const handlePaywayPay = async () => {
+		const validateErrors = validate();
+		if (Object.keys(validateErrors).length > 0) {
+			setErrors(validateErrors);
+			return;
+		}
+		setErrors({});
+
+		setPaywayError(null);
+		setPaywayLoading(true);
+
+		try {
+			const token = await user.getIdToken();
+
+			const res = await axios.post(
+				`${API_BASE}/api/payments/payway/checkout`,
+				{
+					amount: orderTotal,
+					firstname: form.firstName,
+					lastname: form.lastName,
+					email: form.email,
+					phone: form.phone,
+				},
+				{ headers: { Authorization: `Bearer ${token}` } },
+			);
+
+			setPaywayCheckout(res.data);
+		} catch (error) {
+			setPaywayError(
+				error.response?.data?.message || 'Failed to start ABA PayWay checkout.',
+			);
+			setPaywayLoading(false);
+		} finally {
+			setPaywayLoading(false);
+		}
+	};
+
+	// Handle KHQR Payment
 	const handleKHQRPay = async () => {
 		const validationErrors = validate();
 		if (Object.keys(validationErrors).length > 0) {
@@ -272,6 +332,8 @@ const Checkout = () => {
 				}
 			}, 3000);
 		} catch (error) {
+			setKhqrError(error.response?.data?.message) ||
+				'Failed to checkout with KHQR.';
 		} finally {
 			setKhqrLoading(false);
 		}
@@ -434,10 +496,10 @@ const Checkout = () => {
 								💳 Card
 							</button>
 							<button
-								className={`co-pay-tab ${paymentTab === 'applepay' ? 'is-active' : ''}`}
-								onClick={() => setPaymentTab('applepay')}
+								className={`co-pay-tab ${paymentTab === 'payway' ? 'is-active' : ''}`}
+								onClick={() => setPaymentTab('payway')}
 							>
-								Apple Pay
+								ABA PayWay
 							</button>
 							<button
 								className={`co-pay-tab ${paymentTab === 'paypal' ? 'is-active' : ''}`}
@@ -495,6 +557,22 @@ const Checkout = () => {
 										<p className='co-error'>{errors.cardName}</p>
 									)}
 								</div>
+							</div>
+						)}
+
+						{/* PayWay Tab Content */}
+						{paymentTab === 'payway' && (
+							<div className='payway-box'>
+								{paywayError ? (
+									<p className='co-error'>{paywayError}</p>
+								) : paywayLoading || paywayCheckout ? (
+									<p>Opening ABA PayWay checkout…</p>
+								) : (
+									<p>
+										You'll be asked to complete payment via ABA PayWay after
+										placing your order.
+									</p>
+								)}
 							</div>
 						)}
 
@@ -580,12 +658,14 @@ const Checkout = () => {
 							</div>
 						)}
 
-						{paymentTab !== 'card' && paymentTab !== 'khqr' && (
-							<p className='co-pay-placeholder'>
-								You'll be redirected to complete payment after placing your
-								order.
-							</p>
-						)}
+						{paymentTab !== 'card' &&
+							paymentTab !== 'khqr' &&
+							paymentTab !== 'payway' && (
+								<p className='co-pay-placeholder'>
+									You'll be redirected to complete payment after placing your
+									order.
+								</p>
+							)}
 					</div>
 
 					{serverError && <p className='co-server-error'>{serverError}</p>}
@@ -644,21 +724,43 @@ const Checkout = () => {
 
 					<button
 						className='co-place-btn'
-						onClick={paymentTab === 'khqr' ? handleKHQRPay : handleSubmit}
-						disabled={submitting || khqrLoading}
+						onClick={
+							paymentTab === 'khqr'
+								? handleKHQRPay
+								: paymentTab === 'payway'
+									? handlePaywayPay
+									: handleSubmit
+						}
+						disabled={submitting || khqrLoading || paywayLoading}
 					>
 						{khqrLoading
 							? 'Generating QR…'
 							: paymentTab === 'khqr' && khqrData
 								? `Awaiting Payment · ${formatPrice(orderTotal)}`
-								: submitting
-									? 'Placing Order…'
-									: `Place Order · ${formatPrice(orderTotal)}`}
+								: paywayLoading
+									? 'Starting PayWay…'
+									: submitting
+										? 'Placing Order…'
+										: `Place Order · ${formatPrice(orderTotal)}`}
 					</button>
 
 					<p className='co-secure'>🔒 Secure encrypted checkout</p>
 				</aside>
 			</div>
+
+			{/* ABA PayWay hidden form */}
+			<form
+				id='aba_merchant_request'
+				method='POST'
+				target='aba_webservice'
+				action={paywayCheckout?.action || ''}
+				style={{ display: 'none' }}
+			>
+				{paywayCheckout?.fields &&
+					Object.entries(paywayCheckout.fields).map(([key, value]) => (
+						<input key={key} type='hidden' name={key} value={value} />
+					))}
+			</form>
 		</div>
 	);
 };

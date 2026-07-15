@@ -2,6 +2,7 @@ import Order from '../models/Order.js';
 import Product from '../models/Product.js';
 import { checkPayment, generateKHQR } from '../utils/bakong.js';
 import generateUniqueId from '../utils/generateUniqueId.js';
+import { buildPayWayCheckout } from '../utils/payway.js';
 
 export const createPayment = async (req, res) => {
 	try {
@@ -102,6 +103,29 @@ export const checkPaymentStatus = async (req, res) => {
 	} catch (error) {
 		res.status(500).json({
 			message: 'Failed to create order',
+			error: error.message,
+		});
+	}
+};
+
+export const createPayWayCheckout = async (req, res) => {
+	try {
+		const { amount, firstname, lastname, email, phone } = req.body;
+		const tran_id = await generateUniqueId('order');
+
+		const result = await buildPayWayCheckout({
+			amount,
+			tran_id,
+			firstname,
+			lastname,
+			email,
+			phone,
+		});
+
+		return res.status(200).json(result);
+	} catch (error) {
+		return res.status(500).json({
+			message: 'Failed to create PayWay checkout.',
 			error: error.message,
 		});
 	}

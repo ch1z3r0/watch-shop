@@ -2,11 +2,6 @@ import axios from 'axios';
 import crypto from 'crypto';
 import FormData from 'form-data';
 
-const MERCHANT_ID = process.env.PAYWAY_MERCHANT_ID;
-const API_KEY = process.env.PAYWAY_API_KEY;
-const BASE_URL =
-	process.env.PAYWAY_API_URL || 'https://checkout-sandbox.payway.com.kh';
-
 // Get request time that ABA wants
 const getReqTime = () => {
 	const now = new Date();
@@ -25,6 +20,7 @@ const getReqTime = () => {
 
 // Hash builder
 const buildHash = (parts) => {
+	const API_KEY = process.env.PAYWAY_API_KEY;
 	const raw = parts.join('');
 	console.log('  [hash debug] raw string being hashed:', JSON.stringify(raw));
 	return crypto.createHmac('sha512', API_KEY).update(raw).digest('base64');
@@ -39,24 +35,22 @@ export const buildPayWayCheckout = async ({
 	email,
 	phone,
 }) => {
+	const MERCHANT_ID = process.env.PAYWAY_MERCHANT_ID;
+	const BASE_URL =
+		process.env.PAYWAY_API_URL || 'https://checkout-sandbox.payway.com.kh';
+
 	const req_time = getReqTime();
 	const merchant_id = MERCHANT_ID;
-	// const tran_id = `TEST-${Date.now()}`;
-	// const firstname = 'Long';
-	// const lastname = 'James';
-	// const email = 'jameslong@gmail.com';
-	// const phone = '85519837412';
 	const type = 'purchase';
 	const payment_option = '';
 	const items = '';
 	const shipping = '0.00';
-	// const amount = '1.00';
 	const currency = 'USD';
 
-	const return_url = Buffer.from('https://example.com/payway-return').toString(
+	const return_url = Buffer.from(process.env.PAYWAY_RETURN_URL).toString(
 		'base64',
 	);
-	const cancel_url = Buffer.from('https://example.com/payway-cancel').toString(
+	const cancel_url = Buffer.from(process.env.PAYWAY_CANCEL_URL).toString(
 		'base64',
 	);
 
