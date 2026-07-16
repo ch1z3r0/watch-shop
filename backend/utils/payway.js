@@ -27,7 +27,7 @@ const buildHash = (parts) => {
 };
 
 // Create PayWay Card transaction
-export const buildPayWayCheckout = async ({
+export const buildPaywayCheckout = async ({
 	amount,
 	tran_id,
 	firstname,
@@ -127,4 +127,32 @@ export const buildPayWayCheckout = async ({
 	const action = `${BASE_URL}/api/payment-gateway/v1/payments/purchase`;
 
 	return { action, fields: res };
+};
+
+export const checkPaywayTransaction = async ({ tran_id }) => {
+	const MERCHANT_ID = process.env.PAYWAY_MERCHANT_ID;
+	const BASE_URL =
+		process.env.PAYWAY_API_URL || 'https://checkout-sandbox.payway.com.kh';
+
+	const req_time = getReqTime();
+	const hash = buildHash([req_time, MERCHANT_ID, tran_id]);
+
+	try {
+		const res = await axios.post(
+			`${BASE_URL}/api/payment-gateway/v1/payments/check-transaction-2`,
+			{ req_time, merchant_id: MERCHANT_ID, tran_id, hash },
+			{
+				headers: {
+					'Content-Type': 'application/json',
+				},
+			},
+		);
+
+		return res.data;
+	} catch (error) {
+		throw new Error(
+			error.response?.data?.status?.message ||
+				'Failed to check Payway Transaction.',
+		);
+	}
 };
