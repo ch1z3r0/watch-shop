@@ -1,4 +1,5 @@
 import Order from '../models/Order.js';
+import PendingPaywayOrder from '../models/PendingPaywayOrder.js';
 import Product from '../models/Product.js';
 import { checkPayment, generateKHQR } from '../utils/bakong.js';
 import generateUniqueId from '../utils/generateUniqueId.js';
@@ -114,7 +115,17 @@ export const checkPaymentStatus = async (req, res) => {
 // --- PAYWAY ------------------------------------------------------------
 export const createPaywayCheckout = async (req, res) => {
 	try {
-		const { amount, firstname, lastname, email, phone } = req.body;
+		const {
+			amount,
+			firstname,
+			lastname,
+			email,
+			phone,
+			shippingAddress,
+			items,
+			totalAmount,
+			notes,
+		} = req.body;
 		const tran_id = await generateUniqueId('order');
 
 		const result = await buildPaywayCheckout({
@@ -124,6 +135,18 @@ export const createPaywayCheckout = async (req, res) => {
 			lastname,
 			email,
 			phone,
+		});
+
+		await PendingPaywayOrder.create({
+			tran_id,
+			firebaseUid: req.user.uid,
+			customerName: `${firstname} ${lastname}`,
+			customerEmail: email,
+			shippingAddress,
+			phone,
+			items,
+			totalAmount,
+			notes,
 		});
 
 		return res.status(200).json(result);
@@ -141,9 +164,81 @@ export const checkPaywayTransactionStatus = async (req, res) => {
 		const result = await checkPaywayTransaction({ tran_id });
 
 		if (result.data?.payment_status === 'APPROVED') {
-			//Create Order Logic
+			// Check if an order already exists for this transaction
+			const existingOrder = await Order.findOne({ orderId: tran_id });
+			if (existingOrder) {
+				return res.status(200).json({ paid: true, order: existingOrder });
+			}
+
+			const pending = await PendingPaywayOrder.findOne({ tran_id });
+			if (!pending) {
+				return res
+					.status(400)
+					.json({ message: 'No Pending Order found for this transaction' });
+			}
+			const {
+				firebaseUid,
+				customerName,
+				customerEmail,
+				shippingAddress,
+				phone,
+				items,
+				totalAmount,
+				notes,
+			} = pending;
+			// --- Validate all items first ---
+			for (const item of items) {
+				const product = await Product.findOne({ productId: item.productId });
+
+				if (!product) {
+					return res.status(404).json({ message: 'Product not found!' });
+				}
+
+				const variant = product.variants.find(
+					(v) => v.variantId === item.variantId,
+				);
+				if (!variant) {
+					return res.status(404).json({
+						message: `Variant not found for product: ${item.productName}`,
+					});
+				}
+
+				if (variant.stock < item.quantity) {
+					return res.status(400).json({
+						message: `Not enough stock for ${item.productName} (${item.variantColor}). Available: ${variant.stock}, Requested: ${item.quantity}`,
+					});
+				}
+			}
+			// --- All validated — now deduct stock ---
+			for (const item of items) {
+				const product = await Product.findOne({ productId: item.productId });
+				const variant = product.variants.find(
+					(v) => v.variantId === item.variantId,
+				);
+				variant.stock -= item.quantity;
+				await product.save();
+			}
+
+			const newOrder = await Order.create({
+				orderId: tran_id,
+				firebaseUid,
+				customerName,
+				customerEmail,
+				shippingAddress,
+				phone,
+				items,
+				totalAmount,
+				notes,
+			});
+
+			await PendingPaywayOrder.deleteOne({ tran_id });
+
+			return res.status(201).json({ paid: true, order: newOrder });
 		}
-		return res.status(200).json(result);
+
+		return res
+			.status(200)
+			.json({ paid: false, status: result.data?.payment_status });
 	} catch (error) {
 		return res.status(500).json({
 			message: 'Failed to check PayWay payment status.',
