@@ -4,7 +4,7 @@ import {
 	checkPaymentStatus,
 	checkPaywayTransactionStatus,
 	createPayment,
-	createPayWayCheckout,
+	createPaywayCheckout,
 } from '../controllers/payment.controller.js';
 
 const router = express.Router();

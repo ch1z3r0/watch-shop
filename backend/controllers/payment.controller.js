@@ -3,7 +3,7 @@ import Product from '../models/Product.js';
 import { checkPayment, generateKHQR } from '../utils/bakong.js';
 import generateUniqueId from '../utils/generateUniqueId.js';
 import {
-	buildPayWayCheckout,
+	buildPaywayCheckout,
 	checkPaywayTransaction,
 } from '../utils/payway.js';
 
@@ -112,12 +112,12 @@ export const checkPaymentStatus = async (req, res) => {
 };
 
 // --- PAYWAY ------------------------------------------------------------
-export const createPayWayCheckout = async (req, res) => {
+export const createPaywayCheckout = async (req, res) => {
 	try {
 		const { amount, firstname, lastname, email, phone } = req.body;
 		const tran_id = await generateUniqueId('order');
 
-		const result = await buildPayWayCheckout({
+		const result = await buildPaywayCheckout({
 			amount,
 			tran_id,
 			firstname,
