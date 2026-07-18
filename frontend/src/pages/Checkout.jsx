@@ -107,6 +107,7 @@ const Checkout = () => {
 	const [paywayLoading, setPaywayLoading] = useState(false);
 	const [paywayError, setPaywayError] = useState(null);
 	const [paywayCheckout, setPaywayCheckout] = useState(null);
+	const [paywayPolling, setPaywayPolling] = useState(false);
 
 	// KHQR States
 	const [khqrData, setKhqrData] = useState(null);
@@ -115,6 +116,25 @@ const Checkout = () => {
 	const [khqrExpired, setKhqrExpired] = useState(false);
 	const pollIntervalRef = useRef(null);
 	const pollTimeoutRef = useRef(null);
+	const paywayPollIntervalRef = useRef(null);
+	const paywayPollingRef = useRef(false);
+
+	useEffect(() => {
+		const handleMessage = (event) => {
+			if (
+				event.origin !== 'https://checkout.payway.com.kh' &&
+				event.origin !== 'https://checkout-sandbox.payway.com.kh'
+			) {
+				return;
+			}
+			if (paywayCheckout?.fields?.tran_id && !paywayPollingRef.current) {
+				startPaywayPolling(paywayCheckout.fields.tran_id);
+			}
+		};
+
+		window.addEventListener('message', handleMessage);
+		return () => window.removeEventListener('message', handleMessage);
+	}, [paywayCheckout]);
 
 	useEffect(() => {
 		if (paywayCheckout) {
@@ -138,6 +158,10 @@ const Checkout = () => {
 		if (pollIntervalRef.current) {
 			clearInterval(pollIntervalRef.current);
 			clearTimeout(pollTimeoutRef.current);
+		}
+		if (paywayPollIntervalRef.current) {
+			clearInterval(paywayPollIntervalRef.current);
+			setPaywayPolling(false);
 		}
 	};
 
@@ -233,7 +257,16 @@ const Checkout = () => {
 
 		try {
 			const token = await user.getIdToken();
-
+			const items = cartItems.map((item) => ({
+				productId: item.productId,
+				variantId: item.variantId,
+				productName: item.name,
+				variantColor: item.color,
+				size: item.size,
+				image: item.image ? [item.image] : [],
+				price: item.price,
+				quantity: item.qty,
+			}));
 			const res = await axios.post(
 				`${API_BASE}/api/payments/payway/checkout`,
 				{
@@ -242,6 +275,10 @@ const Checkout = () => {
 					lastname: form.lastName,
 					email: form.email,
 					phone: form.phone,
+					shippingAddress: `${form.address}, ${form.city}, ${form.zip}, ${form.country}`,
+					items,
+					totalAmount: orderTotal,
+					notes: '',
 				},
 				{ headers: { Authorization: `Bearer ${token}` } },
 			);
@@ -255,6 +292,32 @@ const Checkout = () => {
 		} finally {
 			setPaywayLoading(false);
 		}
+	};
+
+	const startPaywayPolling = (tran_id) => {
+		if (paywayPollingRef.current) return; // extra safety
+		paywayPollingRef.current = true;
+		setPaywayPolling(true);
+
+		paywayPollIntervalRef.current = setInterval(async () => {
+			try {
+				const token = await user.getIdToken();
+				const res = await axios.post(
+					`${API_BASE}/api/payments/payway/check`,
+					{ tran_id },
+					{ headers: { Authorization: `Bearer ${token}` } },
+				);
+				if (res.data.paid) {
+					clearInterval(paywayPollIntervalRef.current);
+					paywayPollingRef.current = false;
+					setPaywayPolling(false);
+					setPlacedOrder(res.data.order);
+					clearCart();
+				}
+			} catch (error) {
+				console.error('PayWay poll error:', error);
+			}
+		}, 3000);
 	};
 
 	// Handle KHQR Payment
@@ -332,8 +395,9 @@ const Checkout = () => {
 				}
 			}, 3000);
 		} catch (error) {
-			setKhqrError(error.response?.data?.message) ||
-				'Failed to checkout with KHQR.';
+			setKhqrError(
+				error.response?.data?.message || 'Failed to checkout with KHQR.',
+			);
 		} finally {
 			setKhqrLoading(false);
 		}
