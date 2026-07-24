@@ -23,6 +23,7 @@ const buildHash = (parts) => {
 	const API_KEY = process.env.PAYWAY_API_KEY;
 	const raw = parts.join('');
 	console.log('  [hash debug] raw string being hashed:', JSON.stringify(raw));
+
 	return crypto.createHmac('sha512', API_KEY).update(raw).digest('base64');
 };
 

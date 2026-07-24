@@ -108,6 +108,7 @@ const Checkout = () => {
 	const [paywayError, setPaywayError] = useState(null);
 	const [paywayCheckout, setPaywayCheckout] = useState(null);
 	const [paywayPolling, setPaywayPolling] = useState(false);
+	const [paywayTimedOut, setPaywayTimedOut] = useState(false);
 
 	// KHQR States
 	const [khqrData, setKhqrData] = useState(null);
@@ -118,6 +119,7 @@ const Checkout = () => {
 	const pollTimeoutRef = useRef(null);
 	const paywayPollIntervalRef = useRef(null);
 	const paywayPollingRef = useRef(false);
+	const paywayPollTimeoutRef = useRef(null);
 
 	useEffect(() => {
 		const handleMessage = (event) => {
@@ -163,6 +165,10 @@ const Checkout = () => {
 			clearInterval(paywayPollIntervalRef.current);
 			setPaywayPolling(false);
 		}
+		if (paywayPollTimeoutRef.current) {
+			clearTimeout(paywayPollTimeoutRef.current);
+		}
+		paywayPollingRef.current = false;
 	};
 
 	useEffect(() => {
@@ -298,6 +304,17 @@ const Checkout = () => {
 		if (paywayPollingRef.current) return; // extra safety
 		paywayPollingRef.current = true;
 		setPaywayPolling(true);
+		setPaywayTimedOut(false);
+
+		paywayPollTimeoutRef.current = setTimeout(
+			() => {
+				clearInterval(paywayPollIntervalRef.current);
+				paywayPollIntervalRef.current = null;
+				setPaywayPolling(false);
+				setPaywayTimedOut(true);
+			},
+			3 * 60 * 1000,
+		);
 
 		paywayPollIntervalRef.current = setInterval(async () => {
 			try {
@@ -309,10 +326,23 @@ const Checkout = () => {
 				);
 				if (res.data.paid) {
 					clearInterval(paywayPollIntervalRef.current);
+					clearTimeout(paywayPollTimeoutRef.current);
+					paywayPollIntervalRef.current = null;
+					paywayPollTimeoutRef.current = null;
 					paywayPollingRef.current = false;
 					setPaywayPolling(false);
 					setPlacedOrder(res.data.order);
 					clearCart();
+				} else if (res.data.failed) {
+					clearInterval(paywayPollIntervalRef.current);
+					clearTimeout(paywayPollTimeoutRef.current);
+					paywayPollIntervalRef.current = null;
+					paywayPollTimeoutRef.current = null;
+					paywayPollingRef.current = false;
+					setPaywayPolling(false);
+					setPaywayError(
+						res.data.message || 'Payment failed. Please try again.',
+					);
 				}
 			} catch (error) {
 				console.error('PayWay poll error:', error);
@@ -627,8 +657,14 @@ const Checkout = () => {
 						{/* PayWay Tab Content */}
 						{paymentTab === 'payway' && (
 							<div className='payway-box'>
-								{paywayError ? (
+								{paywayTimedOut ? (
+									<p className='co-error'>
+										Payment timed out. Please try again.
+									</p>
+								) : paywayError ? (
 									<p className='co-error'>{paywayError}</p>
+								) : paywayPolling ? (
+									<p>Waiting for payment confirmation…</p>
 								) : paywayLoading || paywayCheckout ? (
 									<p>Opening ABA PayWay checkout…</p>
 								) : (

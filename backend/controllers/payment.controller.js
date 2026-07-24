@@ -1,7 +1,9 @@
+import FailedPayment from '../models/FailedPayment.js';
 import Order from '../models/Order.js';
 import PendingPaywayOrder from '../models/PendingPaywayOrder.js';
 import Product from '../models/Product.js';
 import { checkPayment, generateKHQR } from '../utils/bakong.js';
+import { fulfillPaywayOrder } from '../utils/fulfillPaywayOrder.js';
 import generateUniqueId from '../utils/generateUniqueId.js';
 import {
 	buildPaywayCheckout,
@@ -160,80 +162,53 @@ export const createPaywayCheckout = async (req, res) => {
 
 export const checkPaywayTransactionStatus = async (req, res) => {
 	try {
+		const firebaseUid = req.user.uid;
 		const { tran_id } = req.body;
 		const result = await checkPaywayTransaction({ tran_id });
 
-		if (result.data?.payment_status === 'APPROVED') {
-			// Check if an order already exists for this transaction
-			const existingOrder = await Order.findOne({ orderId: tran_id });
-			if (existingOrder) {
-				return res.status(200).json({ paid: true, order: existingOrder });
-			}
-
-			const pending = await PendingPaywayOrder.findOne({ tran_id });
-			if (!pending) {
-				return res
-					.status(400)
-					.json({ message: 'No Pending Order found for this transaction' });
-			}
-			const {
-				firebaseUid,
-				customerName,
-				customerEmail,
-				shippingAddress,
-				phone,
-				items,
-				totalAmount,
-				notes,
-			} = pending;
-			// --- Validate all items first ---
-			for (const item of items) {
-				const product = await Product.findOne({ productId: item.productId });
-
-				if (!product) {
-					return res.status(404).json({ message: 'Product not found!' });
-				}
-
-				const variant = product.variants.find(
-					(v) => v.variantId === item.variantId,
-				);
-				if (!variant) {
-					return res.status(404).json({
-						message: `Variant not found for product: ${item.productName}`,
-					});
-				}
-
-				if (variant.stock < item.quantity) {
-					return res.status(400).json({
-						message: `Not enough stock for ${item.productName} (${item.variantColor}). Available: ${variant.stock}, Requested: ${item.quantity}`,
-					});
-				}
-			}
-			// --- All validated — now deduct stock ---
-			for (const item of items) {
-				const product = await Product.findOne({ productId: item.productId });
-				const variant = product.variants.find(
-					(v) => v.variantId === item.variantId,
-				);
-				variant.stock -= item.quantity;
-				await product.save();
-			}
-
-			const newOrder = await Order.create({
-				orderId: tran_id,
-				firebaseUid,
-				customerName,
-				customerEmail,
-				shippingAddress,
-				phone,
-				items,
-				totalAmount,
-				notes,
+		// Error/failure shape — no `data`, just a top-level status object
+		if (!result.data && result.status?.code !== '00') {
+			return res.status(200).json({
+				paid: false,
+				failed: true,
+				message: result.status?.message || 'Payment failed.',
 			});
+		}
 
-			await PendingPaywayOrder.deleteOne({ tran_id });
+		if (result.data?.payment_status === 'APPROVED') {
+			try {
+				const { order } = await fulfillPaywayOrder(tran_id);
+				return res.status(201).json({ paid: true, order });
+			} catch (error) {
+				const pending = await PendingPaywayOrder.findOne({ tran_id });
+				await FailedPayment.create({
+					provider: 'payway',
+					tran_id,
+					firebaseUid,
+					customerEmail: pending?.customerEmail || '',
+					paymentAmount: result.data?.total_amount || 0,
+					attemptedPayload: pending || req.body,
+					errorMessage: error.message,
+					resolved: false,
+				});
+				return res.status(200).json({
+					paid: false,
+					failed: true,
+					message:
+						'Payment received, but we could not complete your order. Our team will contact you shortly.',
+				});
+			}
+		}
 
-			return res.status(201).json({ paid: true, order: newOrder });
+		if (
+			result.data?.payment_status === 'DECLINED' ||
+			result.data?.payment_status === 'CANCELLED'
+		) {
+			return res.status(200).json({
+				paid: false,
+				failed: true,
+				message: 'Payment was declined or cancelled.',
+			});
 		}
 
 		return res
