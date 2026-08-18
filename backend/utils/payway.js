@@ -1,6 +1,9 @@
 import axios from 'axios';
 import crypto from 'crypto';
 import FormData from 'form-data';
+import { fulfillPaywayOrder } from './fulfillPaywayOrder.js';
+import PendingPaywayOrder from '../models/PendingPaywayOrder.js';
+import FailedPayment from '../models/FailedPayment.js';
 
 // Get request time that ABA wants
 const getReqTime = () => {
@@ -22,7 +25,6 @@ const getReqTime = () => {
 const buildHash = (parts) => {
 	const API_KEY = process.env.PAYWAY_API_KEY;
 	const raw = parts.join('');
-	console.log('  [hash debug] raw string being hashed:', JSON.stringify(raw));
 
 	return crypto.createHmac('sha512', API_KEY).update(raw).digest('base64');
 };
@@ -43,17 +45,14 @@ export const buildPaywayCheckout = async ({
 	const req_time = getReqTime();
 	const merchant_id = MERCHANT_ID;
 	const type = 'purchase';
-	const payment_option = '';
+	const payment_option = 'abapay_khqr';
 	const items = '';
 	const shipping = '0.00';
 	const currency = 'USD';
 
-	const return_url = Buffer.from(process.env.PAYWAY_RETURN_URL).toString(
-		'base64',
-	);
-	const cancel_url = Buffer.from(process.env.PAYWAY_CANCEL_URL).toString(
-		'base64',
-	);
+	const return_url = process.env.PAYWAY_RETURN_URL;
+
+	const cancel_url = process.env.PAYWAY_CANCEL_URL;
 
 	const view_type = 'popup';
 
@@ -63,7 +62,7 @@ export const buildPaywayCheckout = async ({
 	const custom_fields = '';
 	const return_params = '';
 	const payout = '';
-	const lifetime = '';
+	const lifetime = '3';
 	const additional_params = '';
 	const google_pay_token = '';
 	const skip_success_page = '';
@@ -155,5 +154,61 @@ export const checkPaywayTransaction = async ({ tran_id }) => {
 			error.response?.data?.status?.message ||
 				'Failed to check Payway Transaction.',
 		);
+	}
+};
+
+const verifyWebhookSignature = (payload, receivedSignature) => {
+	const API_KEY = process.env.PAYWAY_API_KEY;
+	const sortedKeys = Object.keys(payload).sort();
+	const concatenated = sortedKeys
+		.map((key) => {
+			const value = payload[key];
+			return typeof value === 'object' && value != null
+				? JSON.stringify(value)
+				: value;
+		})
+		.join('');
+
+	const expectedSignature = crypto
+		.createHmac('sha512', API_KEY)
+		.update(concatenated)
+		.digest('base64');
+
+	const a = Buffer.from(expectedSignature);
+	const b = Buffer.from(receivedSignature || '');
+	return a.length === b.length && crypto.timingSafeEqual(a, b);
+};
+
+export const paywayWebhookHandler = async (req, res) => {
+	try {
+		const signature = req.headers['x-payway-hmac-sha512'];
+		const isValid = verifyWebhookSignature(req.body, signature);
+
+		if (!isValid) return res.status(401).json({ message: 'Invalid signature' });
+
+		const { tran_id } = req.body;
+
+		const result = await checkPaywayTransaction({ tran_id });
+
+		if (result.data?.payment_status === 'APPROVED') {
+			try {
+				await fulfillPaywayOrder(tran_id);
+			} catch (error) {
+				const pending = await PendingPaywayOrder.findOne({ tran_id });
+				await FailedPayment.create({
+					provider: 'payway',
+					tran_id,
+					firebaseUid: pending?.firebaseUid || '',
+					customerEmail: pending?.customerEmail || '',
+					paymentAmount: pending?.totalAmount || 0,
+					attemptedPayload: pending || req.body,
+					errorMessage: error.message,
+					resolved: false,
+				});
+			}
+		}
+		return res.status(200).json({ received: true });
+	} catch (error) {
+		return res.status(500).json({ message: 'Webhook processing failed.' });
 	}
 };

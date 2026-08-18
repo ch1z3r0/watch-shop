@@ -6,6 +6,7 @@ import {
 	createPayment,
 	createPaywayCheckout,
 } from '../controllers/payment.controller.js';
+import { paywayWebhookHandler } from '../utils/payway.js';
 
 const router = express.Router();
 
@@ -15,5 +16,7 @@ router.post('/check', verifyFirebaseToken, checkPaymentStatus);
 
 router.post('/payway/checkout', verifyFirebaseToken, createPaywayCheckout);
 router.post('/payway/check', verifyFirebaseToken, checkPaywayTransactionStatus);
+
+router.post('/payway/webhook', paywayWebhookHandler);
 
 export default router;
