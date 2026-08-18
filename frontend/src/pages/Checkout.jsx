@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../auth/AuthProvider';
 import { useCart } from '../context/CartContext';
 import './Checkout.css';
@@ -80,7 +80,6 @@ const Checkout = () => {
 		shipping,
 		orderTotal,
 	} = useCart();
-	const navigate = useNavigate();
 
 	const [paymentTab, setPaymentTab] = useState('card');
 	const [submitting, setSubmitting] = useState(false);
@@ -104,6 +103,13 @@ const Checkout = () => {
 		cardName: '',
 	});
 
+	//Payway States
+	const [paywayLoading, setPaywayLoading] = useState(false);
+	const [paywayError, setPaywayError] = useState(null);
+	const [paywayCheckout, setPaywayCheckout] = useState(null);
+	const [paywayPolling, setPaywayPolling] = useState(false);
+	const [paywayTimedOut, setPaywayTimedOut] = useState(false);
+
 	// KHQR States
 	const [khqrData, setKhqrData] = useState(null);
 	const [khqrLoading, setKhqrLoading] = useState(false);
@@ -111,6 +117,43 @@ const Checkout = () => {
 	const [khqrExpired, setKhqrExpired] = useState(false);
 	const pollIntervalRef = useRef(null);
 	const pollTimeoutRef = useRef(null);
+	const paywayPollIntervalRef = useRef(null);
+	const paywayPollingRef = useRef(false);
+	const paywayPollTimeoutRef = useRef(null);
+
+	useEffect(() => {
+		const handleMessage = (event) => {
+			if (
+				event.origin !== 'https://checkout.payway.com.kh' &&
+				event.origin !== 'https://checkout-sandbox.payway.com.kh'
+			) {
+				return;
+			}
+			if (paywayCheckout?.fields?.tran_id && !paywayPollingRef.current) {
+				startPaywayPolling(paywayCheckout.fields.tran_id);
+			}
+		};
+
+		window.addEventListener('message', handleMessage);
+		return () => window.removeEventListener('message', handleMessage);
+	}, [paywayCheckout]);
+
+	useEffect(() => {
+		if (paywayCheckout) {
+			const tryCheckout = (attempts = 0) => {
+				if (typeof AbaPayway !== 'undefined') {
+					AbaPayway.checkout();
+				} else if (attempts < 20) {
+					setTimeout(() => tryCheckout(attempts + 1), 150);
+				} else {
+					setPaywayError(
+						'PayWay checkout script failed to load. Please refresh and try again.',
+					);
+				}
+			};
+			tryCheckout();
+		}
+	}, [paywayCheckout]);
 
 	// Stop polling helper
 	const stopPolling = () => {
@@ -118,6 +161,14 @@ const Checkout = () => {
 			clearInterval(pollIntervalRef.current);
 			clearTimeout(pollTimeoutRef.current);
 		}
+		if (paywayPollIntervalRef.current) {
+			clearInterval(paywayPollIntervalRef.current);
+			setPaywayPolling(false);
+		}
+		if (paywayPollTimeoutRef.current) {
+			clearTimeout(paywayPollTimeoutRef.current);
+		}
+		paywayPollingRef.current = false;
 	};
 
 	useEffect(() => {
@@ -198,6 +249,108 @@ const Checkout = () => {
 		}
 	};
 
+	//Handle Payway Payment
+	const handlePaywayPay = async () => {
+		const validateErrors = validate();
+		if (Object.keys(validateErrors).length > 0) {
+			setErrors(validateErrors);
+			return;
+		}
+		setErrors({});
+
+		setPaywayError(null);
+		setPaywayLoading(true);
+
+		try {
+			const token = await user.getIdToken();
+			const items = cartItems.map((item) => ({
+				productId: item.productId,
+				variantId: item.variantId,
+				productName: item.name,
+				variantColor: item.color,
+				size: item.size,
+				image: item.image ? [item.image] : [],
+				price: item.price,
+				quantity: item.qty,
+			}));
+			const res = await axios.post(
+				`${API_BASE}/api/payments/payway/checkout`,
+				{
+					amount: orderTotal,
+					firstname: form.firstName,
+					lastname: form.lastName,
+					email: form.email,
+					phone: form.phone,
+					shippingAddress: `${form.address}, ${form.city}, ${form.zip}, ${form.country}`,
+					items,
+					totalAmount: orderTotal,
+					notes: '',
+				},
+				{ headers: { Authorization: `Bearer ${token}` } },
+			);
+
+			setPaywayCheckout(res.data);
+		} catch (error) {
+			setPaywayError(
+				error.response?.data?.message || 'Failed to start ABA PayWay checkout.',
+			);
+			setPaywayLoading(false);
+		} finally {
+			setPaywayLoading(false);
+		}
+	};
+
+	const startPaywayPolling = (tran_id) => {
+		if (paywayPollingRef.current) return; // extra safety
+		paywayPollingRef.current = true;
+		setPaywayPolling(true);
+		setPaywayTimedOut(false);
+
+		paywayPollTimeoutRef.current = setTimeout(
+			() => {
+				clearInterval(paywayPollIntervalRef.current);
+				paywayPollIntervalRef.current = null;
+				setPaywayPolling(false);
+				setPaywayTimedOut(true);
+			},
+			3 * 60 * 1000,
+		);
+
+		paywayPollIntervalRef.current = setInterval(async () => {
+			try {
+				const token = await user.getIdToken();
+				const res = await axios.post(
+					`${API_BASE}/api/payments/payway/check`,
+					{ tran_id },
+					{ headers: { Authorization: `Bearer ${token}` } },
+				);
+				if (res.data.paid) {
+					clearInterval(paywayPollIntervalRef.current);
+					clearTimeout(paywayPollTimeoutRef.current);
+					paywayPollIntervalRef.current = null;
+					paywayPollTimeoutRef.current = null;
+					paywayPollingRef.current = false;
+					setPaywayPolling(false);
+					setPlacedOrder(res.data.order);
+					clearCart();
+				} else if (res.data.failed) {
+					clearInterval(paywayPollIntervalRef.current);
+					clearTimeout(paywayPollTimeoutRef.current);
+					paywayPollIntervalRef.current = null;
+					paywayPollTimeoutRef.current = null;
+					paywayPollingRef.current = false;
+					setPaywayPolling(false);
+					setPaywayError(
+						res.data.message || 'Payment failed. Please try again.',
+					);
+				}
+			} catch (error) {
+				console.error('PayWay poll error:', error);
+			}
+		}, 3000);
+	};
+
+	// Handle KHQR Payment
 	const handleKHQRPay = async () => {
 		const validationErrors = validate();
 		if (Object.keys(validationErrors).length > 0) {
@@ -272,6 +425,9 @@ const Checkout = () => {
 				}
 			}, 3000);
 		} catch (error) {
+			setKhqrError(
+				error.response?.data?.message || 'Failed to checkout with KHQR.',
+			);
 		} finally {
 			setKhqrLoading(false);
 		}
@@ -434,10 +590,10 @@ const Checkout = () => {
 								💳 Card
 							</button>
 							<button
-								className={`co-pay-tab ${paymentTab === 'applepay' ? 'is-active' : ''}`}
-								onClick={() => setPaymentTab('applepay')}
+								className={`co-pay-tab ${paymentTab === 'payway' ? 'is-active' : ''}`}
+								onClick={() => setPaymentTab('payway')}
 							>
-								Apple Pay
+								ABA PayWay
 							</button>
 							<button
 								className={`co-pay-tab ${paymentTab === 'paypal' ? 'is-active' : ''}`}
@@ -495,6 +651,28 @@ const Checkout = () => {
 										<p className='co-error'>{errors.cardName}</p>
 									)}
 								</div>
+							</div>
+						)}
+
+						{/* PayWay Tab Content */}
+						{paymentTab === 'payway' && (
+							<div className='payway-box'>
+								{paywayTimedOut ? (
+									<p className='co-error'>
+										Payment timed out. Please try again.
+									</p>
+								) : paywayError ? (
+									<p className='co-error'>{paywayError}</p>
+								) : paywayPolling ? (
+									<p>Waiting for payment confirmation…</p>
+								) : paywayLoading || paywayCheckout ? (
+									<p>Opening ABA PayWay checkout…</p>
+								) : (
+									<p>
+										You'll be asked to complete payment via ABA PayWay after
+										placing your order.
+									</p>
+								)}
 							</div>
 						)}
 
@@ -580,12 +758,14 @@ const Checkout = () => {
 							</div>
 						)}
 
-						{paymentTab !== 'card' && paymentTab !== 'khqr' && (
-							<p className='co-pay-placeholder'>
-								You'll be redirected to complete payment after placing your
-								order.
-							</p>
-						)}
+						{paymentTab !== 'card' &&
+							paymentTab !== 'khqr' &&
+							paymentTab !== 'payway' && (
+								<p className='co-pay-placeholder'>
+									You'll be redirected to complete payment after placing your
+									order.
+								</p>
+							)}
 					</div>
 
 					{serverError && <p className='co-server-error'>{serverError}</p>}
@@ -644,21 +824,43 @@ const Checkout = () => {
 
 					<button
 						className='co-place-btn'
-						onClick={paymentTab === 'khqr' ? handleKHQRPay : handleSubmit}
-						disabled={submitting || khqrLoading}
+						onClick={
+							paymentTab === 'khqr'
+								? handleKHQRPay
+								: paymentTab === 'payway'
+									? handlePaywayPay
+									: handleSubmit
+						}
+						disabled={submitting || khqrLoading || paywayLoading}
 					>
 						{khqrLoading
 							? 'Generating QR…'
 							: paymentTab === 'khqr' && khqrData
 								? `Awaiting Payment · ${formatPrice(orderTotal)}`
-								: submitting
-									? 'Placing Order…'
-									: `Place Order · ${formatPrice(orderTotal)}`}
+								: paywayLoading
+									? 'Starting PayWay…'
+									: submitting
+										? 'Placing Order…'
+										: `Place Order · ${formatPrice(orderTotal)}`}
 					</button>
 
 					<p className='co-secure'>🔒 Secure encrypted checkout</p>
 				</aside>
 			</div>
+
+			{/* ABA PayWay hidden form */}
+			<form
+				id='aba_merchant_request'
+				method='POST'
+				target='aba_webservice'
+				action={paywayCheckout?.action || ''}
+				style={{ display: 'none' }}
+			>
+				{paywayCheckout?.fields &&
+					Object.entries(paywayCheckout.fields).map(([key, value]) => (
+						<input key={key} type='hidden' name={key} value={value} />
+					))}
+			</form>
 		</div>
 	);
 };

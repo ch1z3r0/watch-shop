@@ -1,7 +1,14 @@
+import FailedPayment from '../models/FailedPayment.js';
 import Order from '../models/Order.js';
+import PendingPaywayOrder from '../models/PendingPaywayOrder.js';
 import Product from '../models/Product.js';
 import { checkPayment, generateKHQR } from '../utils/bakong.js';
+import { fulfillPaywayOrder } from '../utils/fulfillPaywayOrder.js';
 import generateUniqueId from '../utils/generateUniqueId.js';
+import {
+	buildPaywayCheckout,
+	checkPaywayTransaction,
+} from '../utils/payway.js';
 
 export const createPayment = async (req, res) => {
 	try {
@@ -102,6 +109,114 @@ export const checkPaymentStatus = async (req, res) => {
 	} catch (error) {
 		res.status(500).json({
 			message: 'Failed to create order',
+			error: error.message,
+		});
+	}
+};
+
+// --- PAYWAY ------------------------------------------------------------
+export const createPaywayCheckout = async (req, res) => {
+	try {
+		const {
+			amount,
+			firstname,
+			lastname,
+			email,
+			phone,
+			shippingAddress,
+			items,
+			totalAmount,
+			notes,
+		} = req.body;
+		const tran_id = await generateUniqueId('order');
+
+		const result = await buildPaywayCheckout({
+			amount,
+			tran_id,
+			firstname,
+			lastname,
+			email,
+			phone,
+		});
+
+		await PendingPaywayOrder.create({
+			tran_id,
+			firebaseUid: req.user.uid,
+			customerName: `${firstname} ${lastname}`,
+			customerEmail: email,
+			shippingAddress,
+			phone,
+			items,
+			totalAmount,
+			notes,
+		});
+
+		return res.status(200).json(result);
+	} catch (error) {
+		return res.status(500).json({
+			message: 'Failed to create PayWay checkout.',
+			error: error.message,
+		});
+	}
+};
+
+export const checkPaywayTransactionStatus = async (req, res) => {
+	try {
+		const firebaseUid = req.user.uid;
+		const { tran_id } = req.body;
+		const result = await checkPaywayTransaction({ tran_id });
+
+		// Error/failure shape — no `data`, just a top-level status object
+		if (!result.data && result.status?.code !== '00') {
+			return res.status(200).json({
+				paid: false,
+				failed: true,
+				message: result.status?.message || 'Payment failed.',
+			});
+		}
+
+		if (result.data?.payment_status === 'APPROVED') {
+			try {
+				const { order } = await fulfillPaywayOrder(tran_id);
+				return res.status(201).json({ paid: true, order });
+			} catch (error) {
+				const pending = await PendingPaywayOrder.findOne({ tran_id });
+				await FailedPayment.create({
+					provider: 'payway',
+					tran_id,
+					firebaseUid,
+					customerEmail: pending?.customerEmail || '',
+					paymentAmount: result.data?.total_amount || 0,
+					attemptedPayload: pending || req.body,
+					errorMessage: error.message,
+					resolved: false,
+				});
+				return res.status(200).json({
+					paid: false,
+					failed: true,
+					message:
+						'Payment received, but we could not complete your order. Our team will contact you shortly.',
+				});
+			}
+		}
+
+		if (
+			result.data?.payment_status === 'DECLINED' ||
+			result.data?.payment_status === 'CANCELLED'
+		) {
+			return res.status(200).json({
+				paid: false,
+				failed: true,
+				message: 'Payment was declined or cancelled.',
+			});
+		}
+
+		return res
+			.status(200)
+			.json({ paid: false, status: result.data?.payment_status });
+	} catch (error) {
+		return res.status(500).json({
+			message: 'Failed to check PayWay payment status.',
 			error: error.message,
 		});
 	}
