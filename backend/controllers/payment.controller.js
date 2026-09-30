@@ -12,6 +12,42 @@ import {
 	checkPaywayTransaction,
 } from '../utils/payway.js';
 
+const pollKhqrPaymentServerSide = (orderId, md5) => {
+	const startTime = Date.now();
+	const TIMEOUT_MS = 3 * 60 * 1000;
+
+	const interval = setInterval(async () => {
+		if (Date.now() - startTime >= TIMEOUT_MS) {
+			clearInterval(interval);
+			return;
+		}
+
+		try {
+			const result = await checkPayment(md5);
+			if (result.responseCode === 0) {
+				clearInterval(interval);
+				try {
+					await fulfillKHQROrder(orderId);
+				} catch (error) {
+					const pending = await PendingKHQROrder.findOne({ orderId });
+					await FailedPayment.create({
+						provider: 'khqr',
+						tran_id: orderId,
+						firebaseUid: pending?.firebaseUid || '',
+						customerEmail: pending?.customerEmail || '',
+						paymentAmount: pending?.totalAmount || 0,
+						attemptedPayload: pending || {},
+						errorMessage: error.message,
+						resolved: false,
+					});
+				}
+			}
+		} catch (error) {
+			console.error('Server-side KHQR poll error:', error);
+		}
+	}, 3000);
+};
+
 export const createPayment = async (req, res) => {
 	try {
 		const {
@@ -48,6 +84,7 @@ export const createPayment = async (req, res) => {
 			notes,
 		});
 
+		pollKhqrPaymentServerSide(orderId, md5);
 		res.status(200).json({ orderId, qrImage, md5 });
 	} catch (error) {
 		res.status(500).json({
