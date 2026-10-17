@@ -102,9 +102,7 @@ const TrashIcon = () => (
 export default function BrandTable() {
 	const {
 		isLoading,
-		error,
 		filteredBrands,
-		brands,
 		sort,
 		setSort,
 		searchQuery,

@@ -102,9 +102,7 @@ const TrashIcon = () => (
 export default function CategoryTable() {
 	const {
 		isLoading,
-		error,
 		filteredCategories,
-		categories,
 		sort,
 		setSort,
 		searchQuery,

@@ -25,6 +25,7 @@ interface ProductFormModalProps {
 
 type VariantDraft = {
 	color: string;
+	colorHex: string;
 	size: string;
 	stock: string;
 	price: string;
@@ -36,6 +37,7 @@ type VariantDraft = {
 
 const emptyVariant: VariantDraft = {
 	color: '',
+	colorHex: '#000000',
 	size: '',
 	stock: '',
 	price: '',
@@ -118,6 +120,8 @@ export default function ProductFormModal({
 
 		if (!isEditMode) {
 			if (!variant.color.trim()) e.variantColor = 'Color is required';
+			if (!/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(variant.colorHex))
+				e.variantColorHex = 'Valid hex color is required';
 			if (
 				!variant.size ||
 				isNaN(Number(variant.size)) ||
@@ -159,6 +163,7 @@ export default function ProductFormModal({
 			} else {
 				const variantPayload: Omit<Variant, 'variantId'> = {
 					color: variant.color.trim(),
+					colorHex: variant.colorHex,
 					size: Number(variant.size),
 					stock: Number(variant.stock),
 					price: Number(variant.price),
@@ -298,7 +303,36 @@ export default function ProductFormModal({
 									hint={errors.variantColor}
 								/>
 							</div>
-
+							{/* Color Swatch */}
+							<div>
+								<Label htmlFor='var-colorHex'>Color Hex</Label>
+								<div className='flex items-center gap-2'>
+									<input
+										id='v-colorHex'
+										type='color'
+										value={variant.colorHex}
+										onChange={(e) =>
+											setVariant((prev) => ({
+												...prev,
+												colorHex: e.target.value,
+											}))
+										}
+										className='h-10 w-12 rounded border border-gray-300 dark:border-gray-600 cursor-pointer bg-transparent'
+									/>
+									<Input
+										placeholder='#2b3d63'
+										value={variant.colorHex}
+										onChange={(e) =>
+											setVariant((prev) => ({
+												...prev,
+												colorHex: e.target.value,
+											}))
+										}
+										error={!!errors.colorHex}
+										hint={errors.colorHex}
+									/>
+								</div>
+							</div>
 							{/* Case */}
 							<div>
 								<Label htmlFor='var-case'>Case Material</Label>
