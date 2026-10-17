@@ -23,7 +23,7 @@ export const generateKHQR = async ({
 }) => {
 	const MERCHANT_INFO = getMerchantInfo();
 	const optionalData = {
-		expirationTimestamp: String(Date.now() + 5 * 60 * 1000),
+		expirationTimestamp: String(Date.now() + 3 * 60 * 1000),
 		currency:
 			currency === 'usd' ? khqrData.currency.usd : khqrData.currency.khr,
 		amount,

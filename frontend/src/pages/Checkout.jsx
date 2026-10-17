@@ -365,16 +365,6 @@ const Checkout = () => {
 		try {
 			const token = await user.getIdToken();
 
-			const res = await axios.post(
-				`${API_BASE}/api/payments/create`,
-				{
-					totalAmount: orderTotal,
-					currency: 'usd',
-				},
-				{ headers: { Authorization: `Bearer ${token}` } },
-			);
-			setKhqrData(res.data);
-
 			const items = cartItems.map((item) => ({
 				productId: item.productId,
 				variantId: item.variantId,
@@ -386,35 +376,41 @@ const Checkout = () => {
 				quantity: item.qty,
 			}));
 
-			const orderPayload = {
-				md5: res.data.md5,
-				orderId: res.data.orderId,
-				customerName: `${form.firstName} ${form.lastName}`.trim(),
-				customerEmail: form.email,
-				shippingAddress: `${form.address}, ${form.city}, ${form.zip}, ${form.country}`,
-				phone: form.phone,
-				items,
-				totalAmount: orderTotal,
-				notes: '',
-			};
+			const res = await axios.post(
+				`${API_BASE}/api/payments/create`,
+				{
+					totalAmount: orderTotal,
+					currency: 'usd',
+					customerName: `${form.firstName} ${form.lastName}`.trim(),
+					customerEmail: form.email,
+					shippingAddress: `${form.address}, ${form.city}, ${form.zip}, ${form.country}`,
+					phone: form.phone,
+					items,
+					notes: '',
+				},
+				{ headers: { Authorization: `Bearer ${token}` } },
+			);
+			setKhqrData(res.data);
+
+			const { md5, orderId } = res.data;
 
 			pollTimeoutRef.current = setTimeout(
 				() => {
 					stopPolling();
 					setKhqrExpired(true);
 				},
-				10 * 60 * 1000,
+				3 * 60 * 1000,
 			);
 			pollIntervalRef.current = setInterval(async () => {
 				try {
-					const res = await axios.post(
+					const pollRes = await axios.post(
 						`${API_BASE}/api/payments/check`,
-						orderPayload,
+						{ md5, orderId },
 						{ headers: { Authorization: `Bearer ${token}` } },
 					);
-					if (res.data.paid) {
+					if (pollRes.data.paid) {
 						stopPolling();
-						setPlacedOrder(res.data.order);
+						setPlacedOrder(pollRes.data.order);
 						clearCart();
 					}
 				} catch (error) {
