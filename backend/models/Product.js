@@ -58,6 +58,19 @@ const variantSchema = new mongoose.Schema(
 			trim: true,
 			default: '',
 		},
+		sku: {
+			type: String,
+			trim: true,
+			default: '',
+		},
+		specs: {
+			type: mongoose.Schema.Types.Mixed,
+			default: () => ({}),
+		},
+		isActive: {
+			type: Boolean,
+			default: true,
+		},
 	},
 	{
 		_id: false,
@@ -96,6 +109,15 @@ const productSchema = new mongoose.Schema(
 			required: [true, 'Category ID is required'],
 			trim: true,
 			index: true,
+		},
+		description: {
+			type: String,
+			trim: true,
+			default: '',
+		},
+		isActive: {
+			type: Boolean,
+			default: true,
 		},
 		variants: {
 			type: [variantSchema],
